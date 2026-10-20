@@ -333,6 +333,181 @@ body[data-route="test"] .bottomnav { display: none; }
   body[data-route="test"] .rail { display: none; }
 }
 
+/* ---------- dialog, signup sheet (DESIGN 4.12) ---------- */
+body.scroll-locked { overflow: hidden; }
+
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-scrim);
+  animation: fade-in 160ms ease-out;
+}
+.scrim--sheet { background: var(--scrim-sheet); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); }
+.scrim--lightbox { background: var(--scrim); }
+
+.sheet {
+  position: fixed;
+  z-index: var(--z-dialog);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 12px 20px calc(28px + env(safe-area-inset-bottom, 0px));
+  border-radius: var(--r-sheet) var(--r-sheet) 0 0;
+  background: var(--card);
+  color: var(--ink);
+  animation: sheet-up 200ms ease-out;
+}
+.sheet:focus { outline: none; }
+.sheet__grip { width: 40px; height: 4px; margin: 0 auto var(--s-4); border-radius: 2px; background: var(--line); }
+.sheet__title { font-size: 24px; }
+.sheet__lead { margin-top: var(--s-2); color: var(--sub); }
+.sheet__form { display: flex; flex-direction: column; margin-top: var(--s-5); }
+.sheet__note { margin-top: var(--s-4); font-size: 14px; color: var(--sub); }
+
+.field__label { margin-top: var(--s-4); margin-bottom: var(--s-2); font-size: 14px; font-weight: 600; }
+.sheet__form .field__label:first-child { margin-top: 0; }
+.field { position: relative; }
+.field__input {
+  display: block;
+  width: 100%;
+  height: 52px;
+  padding: 0 var(--s-4);
+  border: 2px solid var(--field-border);
+  border-radius: 16px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+}
+.field__input--at { padding-left: 36px; }
+.field__at { position: absolute; left: var(--s-4); top: 0; height: 52px; display: flex; align-items: center; color: var(--sub); pointer-events: none; }
+.field__input[data-state="available"] { border-color: var(--brand); }
+.field__input[aria-invalid="true"] { border-color: var(--err); }
+.field__msg { display: flex; align-items: center; gap: var(--s-1); min-height: 22px; margin-top: var(--s-2); font-size: 14px; line-height: 1.6; color: var(--sub); }
+.field__msg:empty { margin-top: 0; min-height: 0; }
+.field__msg[data-kind="available"] { color: var(--brand-strong); }
+.field__msg[data-kind="taken"], .field__msg[data-kind="invalid"], .field__msg[data-kind="error"], #display-name-msg { color: var(--err); }
+
+.chips { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-top: var(--s-2); }
+.chips[hidden] { display: none; }
+.chip {
+  min-height: var(--tap);
+  padding: 0 var(--s-4);
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--brandsoft);
+  color: var(--brand-strong);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.chip:hover { background: var(--chip); }
+
+.rules { margin: var(--s-3) 0 0; padding: 0; list-style: none; font-size: 14px; color: var(--sub); }
+.rule { display: flex; align-items: center; gap: var(--s-2); min-height: 24px; }
+.rule__mark { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; flex: none; }
+.rule[data-state="idle"] .rule__mark::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--sub); }
+.rule[data-state="pass"] .rule__mark { color: var(--brand); }
+.rule[data-state="fail"] { color: var(--err); }
+
+.btn--lg { width: 100%; min-height: 56px; margin-top: var(--s-5); border-radius: var(--r-btn-lg); }
+.btn:disabled { background: var(--chip); color: var(--sub); cursor: not-allowed; }
+.btn:disabled:hover { background: var(--chip); }
+
+.link-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--tap);
+  margin-top: var(--s-2);
+  padding: 0 var(--s-4);
+  border: 0;
+  background: transparent;
+  color: var(--brand);
+  font-size: 16px;
+  font-weight: 500;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (min-width: 720px) {
+  .sheet {
+    inset: 0;
+    width: min(440px, calc(100% - 32px));
+    height: fit-content;
+    max-height: calc(100dvh - 32px);
+    margin: auto;
+    padding: var(--s-6);
+    border-radius: 24px;
+    animation: fade-in 160ms ease-out;
+  }
+  .sheet__grip { display: none; }
+}
+
+/* ---------- toast (DESIGN 4.14) ---------- */
+.toasts {
+  position: fixed;
+  z-index: var(--z-toast);
+  left: var(--s-4);
+  right: var(--s-4);
+  bottom: calc(72px + 12px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
+  pointer-events: none;
+}
+body[data-route="test"] .toasts { bottom: calc(var(--s-4) + env(safe-area-inset-bottom, 0px)); }
+.toasts__list { display: flex; flex-direction: column; align-items: center; gap: var(--s-2); width: 100%; }
+.toasts__list:empty { display: none; }
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  max-width: 100%;
+  min-height: 48px;
+  padding: 0 var(--s-1) 0 var(--s-4);
+  border-radius: 16px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 14px;
+  pointer-events: auto;
+  animation: fade-in 160ms ease-out;
+}
+.toast__msg { padding: var(--s-2) 0; }
+.toast__close {
+  flex: none;
+  min-width: var(--tap);
+  height: var(--tap);
+  padding: 0 var(--s-3);
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.toast__close:hover { background: rgba(127, 127, 127, 0.25); }
+.toast :focus-visible { outline-color: var(--bg); }
+.toast--error { box-shadow: inset 4px 0 0 var(--err); }
+
+@media (min-width: 720px) {
+  .toasts { left: max(268px, calc(50% - 174px)); right: auto; bottom: var(--s-6); width: 400px; max-width: calc(100vw - 32px); align-items: flex-start; }
+  .toasts__list { align-items: flex-start; }
+  body[data-route="test"] .toasts { bottom: var(--s-6); left: calc(220px + 40px); }
+}
+@media (min-width: 1100px) {
+  .toasts { left: max(284px, calc(50% - 340px)); }
+}
+
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sheet-up { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+
 /* ---------- motion (DESIGN 7.4) ---------- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

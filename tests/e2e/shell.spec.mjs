@@ -1,7 +1,10 @@
 import { test, expect } from '@playwright/test';
+import { signedInPage } from './fixtures.mjs';
 
 let problems;
-test.beforeEach(({ page }) => {
+test.beforeEach(async ({ page }, testInfo) => {
+  // Without a token the app opens the signup dialog on load; only the "no user" test wants that.
+  if (!testInfo.title.includes('no user')) await signedInPage(page);
   problems = [];
   page.on('console', (m) => {
     if (m.text().includes('Content Security Policy')) problems.push(m.text());
