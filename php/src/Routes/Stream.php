@@ -7,7 +7,6 @@ final class Stream
     private const PING_AFTER_SECONDS = 15;
     private const BATCH = 500;
     private const RETRY_AFTER = 5;
-    private const PROBE_US = 250_000;
 
     public static function register(): void
     {
@@ -96,21 +95,11 @@ final class Stream
                 $lastSent = microtime(true);
             }
 
-            // Wait for the next poll in short slices. Each slice writes a bare blank line:
-            // every SSE parser ignores it, but the write is the only way Apache/mod_php
-            // notices a vanished client (it needs ~3 failed writes), so an idle stream
-            // frees its streams slot in about a second instead of at the next 15 s ping.
-            $nextPoll = microtime(true) + $pollUs / 1_000_000;
-            while (microtime(true) < $nextPoll && microtime(true) < $deadline) {
-                usleep(self::PROBE_US);
-                self::write("\n");
-                if (connection_aborted()) {
-                    break 2;
-                }
-            }
-            if (microtime(true) >= $deadline) {
+            $remaining = $deadline - microtime(true);
+            if ($remaining <= 0 || connection_aborted()) {
                 break;
             }
+            usleep((int) min($pollUs, $remaining * 1_000_000));
         }
 
         $release();

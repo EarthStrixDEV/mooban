@@ -155,12 +155,13 @@ test('R7 11th stream gets 429 rate_limited; reopen succeeds after closing one', 
     assert.match(over.headers.get('content-type'), /application\/json/);
 
     open.pop().close();
+    // Apache only notices the closed client on its next write (next ping, ~15-60 s; the 70 s row expiry is the hard bound), so poll.
     let again;
     const t0 = Date.now();
     for (;;) {
       again = await openStream('/api/stream');
-      if (again.status === 200 || Date.now() - t0 > 2000) break;
-      await sleep(200);
+      if (again.status === 200 || Date.now() - t0 > 75000) break;
+      await sleep(1000);
     }
     assert.equal(again.status, 200, `reopen after ${Date.now() - t0} ms`);
     open.push(again);
