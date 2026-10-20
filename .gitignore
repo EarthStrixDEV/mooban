@@ -1,0 +1,8 @@
+node_modules/
+build/
+.superpowers/
+**/.env
+php/config.php
+__pycache__/
+test-results/
+playwright-report/

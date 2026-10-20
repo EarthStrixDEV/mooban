@@ -1,0 +1,15 @@
+{
+  "name": "mooban-dev",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:contract": "node --test --test-concurrency=1 \"tests/contract/**/*.test.mjs\"",
+    "test:unit": "node --test \"tests/unit/**/*.test.mjs\"",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "mysql2": "^3.11.0",
+    "sharp": "^0.33.0"
+  }
+}
