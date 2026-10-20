@@ -1,4 +1,4 @@
-import { test, expect, signedInPage } from './fixtures.mjs';
+import { test, expect, signedInPage, createUser } from './fixtures.mjs';
 
 let problems;
 test.beforeEach(async ({ page }, testInfo) => {
@@ -50,9 +50,10 @@ test('unknown path shows 404', async ({ page }) => {
 });
 
 test('profile route title', async ({ page }) => {
-  await page.goto('/u/Earth_1');
-  await expect(page).toHaveTitle('@Earth_1 · Mooban');
-  await expect(page.locator('#main h1')).toHaveText('@Earth_1');
+  const user = await createUser({ display_name: 'เอิร์ธ' });
+  await page.goto(`/u/${user.handle}`);
+  await expect(page).toHaveTitle(`@${user.handle} · Mooban`);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('เอิร์ธ');
 });
 
 test('no horizontal scroll at 360px', async ({ page }) => {

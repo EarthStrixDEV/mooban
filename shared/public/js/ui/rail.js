@@ -14,7 +14,8 @@ const STATUS_TEXT = {
 
 // Desktop right rail (DESIGN 5.1.1): latest images + a live-status card Task 18 drives.
 // No "ออนไลน์ตอนนี้" card: the API has no presence data.
-export function mountRail(rail) {
+// `images: false` keeps only the live-status card (the profile page).
+export function mountRail(rail, { images: withImages = true } = {}) {
   const ctrl = new AbortController();
   const mq = window.matchMedia(WIDE);
 
@@ -58,8 +59,10 @@ export function mountRail(rail) {
 
   // The rail is display:none below 1100px, so skip the request until it can be seen.
   const onChange = () => { if (mq.matches) loadImages(); };
-  if (mq.matches) loadImages();
-  else mq.addEventListener('change', onChange);
+  if (withImages) {
+    if (mq.matches) loadImages();
+    else mq.addEventListener('change', onChange);
+  }
 
   return () => {
     ctrl.abort();

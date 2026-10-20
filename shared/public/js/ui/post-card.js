@@ -11,6 +11,25 @@ export function renderPostCard(post, { me = state.me, compact = false } = {}) {
   const { author, image } = post;
   const nameId = `p${post.id}-name`;
 
+  // Compact (profile on mobile): the author is already known, so just time -> body -> counts, no buttons.
+  const head = compact
+    ? h('header', { class: 'post__head' },
+      h('div', { class: 'post__who' },
+        h('p', { id: nameId, class: 'sr-only' }, author.display_name),
+        h('p', { class: 'meta' }, h('time', { datetime: post.created_at }, timeAgo(post.created_at)))),
+      h('div', { class: 'post__menu-slot' }))
+    : h('header', { class: 'post__head' },
+      h('span', { class: 'avatar', 'aria-hidden': 'true' },
+        firstGrapheme(author.display_name)),
+      h('div', { class: 'post__who' },
+        h('p', { id: nameId, class: 'post__name' },
+          h('a', { href: `/u/${encodeURIComponent(author.handle)}` }, author.display_name)),
+        h('p', { class: 'meta' },
+          h('span', { class: 'post__handle' }, `@${author.handle}`),
+          ' · ',
+          h('time', { datetime: post.created_at }, timeAgo(post.created_at)))),
+      h('div', { class: 'post__menu-slot' }));
+
   const el = h('article', {
     class: `post${compact ? ' post--compact' : ''}`,
     'data-testid': 'post-card',
@@ -18,26 +37,18 @@ export function renderPostCard(post, { me = state.me, compact = false } = {}) {
     'data-id': post.id,
     'aria-labelledby': nameId,
   },
-  h('header', { class: 'post__head' },
-    h('span', { class: 'avatar', 'aria-hidden': 'true' },
-      firstGrapheme(author.display_name)),
-    h('div', { class: 'post__who' },
-      h('p', { id: nameId, class: 'post__name' },
-        h('a', { href: `/u/${encodeURIComponent(author.handle)}` }, author.display_name)),
-      h('p', { class: 'meta' },
-        h('span', { class: 'post__handle' }, `@${author.handle}`),
-        ' · ',
-        h('time', { datetime: post.created_at }, timeAgo(post.created_at)))),
-    h('div', { class: 'post__menu-slot' })),
+  head,
   h('p', { class: 'post__body' }),
-  h('div', { class: 'post__actions' }));
+  compact ? h('p', { class: 'post__stats', 'data-testid': 'post-stats' }) : h('div', { class: 'post__actions' }));
 
-  const { button, thread } = commentsToggle(post);
-  el.querySelector('.post__actions').append(likeButton(post), button);
-  el.append(thread);
+  if (!compact) {
+    const { button, thread } = commentsToggle(post);
+    el.querySelector('.post__actions').append(likeButton(post), button);
+    el.append(thread);
+  }
 
   applyOwnership(el, me);
-  if (image) el.querySelector('.post__actions').before(renderImage(post, image));
+  if (image && !compact) el.querySelector('.post__actions').before(renderImage(post, image));
   updatePostCard(el, post);
   return el;
 }
@@ -48,7 +59,7 @@ export function applyOwnership(el, me = state.me) {
   const own = !!me && handle === me.handle;
   el.classList.toggle('post--own', own);
   const av = el.querySelector('.avatar');
-  av.className = `avatar ${own ? 'avatar--me' : `avatar--${avatarColor(handle)}`}`;
+  if (av) av.className = `avatar ${own ? 'avatar--me' : `avatar--${avatarColor(handle)}`}`;
   syncPostMenu(el, own);
 }
 
@@ -90,4 +101,17 @@ export function updatePostCard(el, post) {
   el.dataset.commentCount = post.comment_count ?? 0;
   setLikeCount(el, post.like_count ?? 0);
   setCommentCount(el.querySelector('[data-testid="comment-toggle"]') ?? el, post.comment_count ?? 0);
+  paintStats(el);
+}
+
+// Compact cards show the counts as text instead of buttons.
+function paintStats(el) {
+  const stats = el.querySelector('.post__stats');
+  if (stats) stats.textContent = `ถูกใจ ${el.dataset.likeCount ?? 0} · ความคิดเห็น ${el.dataset.commentCount ?? 0}`;
+}
+
+export function setCardCounts(el, { like, comment } = {}) {
+  if (like !== undefined) el.dataset.likeCount = like;
+  if (comment !== undefined) el.dataset.commentCount = comment;
+  paintStats(el);
 }
