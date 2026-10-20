@@ -16,12 +16,14 @@ export function matchRoute(path) {
 }
 
 let renderFn = null;
+let lastKey = null;
 
 function currentRoute() {
   return matchRoute(window.location.pathname);
 }
 
 function run() {
+  lastKey = window.location.pathname + window.location.search;
   if (renderFn) return Promise.resolve(renderFn(currentRoute()));
   return Promise.resolve();
 }
@@ -56,6 +58,9 @@ function onClick(e) {
 export function startRouter(render) {
   renderFn = render;
   document.addEventListener('click', onClick);
-  window.addEventListener('popstate', () => { run(); });
+  // Fragment-only or same-path history entries (skip link, lightbox) must not remount the view.
+  window.addEventListener('popstate', () => {
+    if (window.location.pathname + window.location.search !== lastKey) run();
+  });
   return run();
 }

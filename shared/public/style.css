@@ -71,7 +71,7 @@ body {
 h1, h2, h3, p { margin: 0; }
 h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.35; }
 h1 { font-size: 22px; }
-h1:focus { outline: none; }
+h1:focus, main:focus { outline: none; }
 a { color: var(--brand); }
 button { font: inherit; color: inherit; }
 img { max-width: 100%; }

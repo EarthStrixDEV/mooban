@@ -115,3 +115,32 @@ test('profile link has data-requires-user when no user', async ({ page }, testIn
   await expect(link).toHaveAttribute('href', '/');
   await expect(link).toContainText('โปรไฟล์');
 });
+
+test('skip link does not remount the view and focuses main', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#main h1')).toBeAttached();
+  await page.evaluate(() => {
+    const s = document.createElement('div');
+    s.id = 'sentinel';
+    document.getElementById('main').append(s);
+  });
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#main')).toBeFocused();
+  await expect(page.locator('#sentinel')).toHaveCount(1);
+});
+
+test('ctrl/meta-click on a nav link is left to the browser', async ({ page }, testInfo) => {
+  test.skip(isMobile(testInfo), 'desktop project only');
+  await page.goto('/');
+  await page.evaluate(() => {
+    window.__pushes = 0;
+    const orig = history.pushState.bind(history);
+    history.pushState = (...a) => { window.__pushes++; return orig(...a); };
+    document.addEventListener('click', (e) => e.preventDefault());
+  });
+  await page.locator('.sidenav a[data-nav="gallery"]').click({ modifiers: ['Control'] });
+  await page.locator('.sidenav a[data-nav="gallery"]').click({ modifiers: ['Meta'] });
+  expect(await page.evaluate(() => window.__pushes)).toBe(0);
+  await expect(page).toHaveURL(/\/$/);
+});
