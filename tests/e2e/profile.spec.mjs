@@ -74,19 +74,25 @@ test('header, title and counts match the API; no edit button, bio, likes stat or
   await expect(page.getByText('ออนไลน์ตอนนี้')).toHaveCount(0);
 
   const h1 = page.getByRole('heading', { level: 1 });
-  await expect(h1).toHaveText(user.display_name);
   if (isMobile(page)) {
-    await expect(page.locator('.topbar h1')).toHaveText(user.display_name);
+    await expect(h1).toHaveText(`@${user.handle}`);
+    await expect(page.locator('.topbar h1')).toHaveText(`@${user.handle}`);
     await expect(page.locator('.topbar .wordmark')).toBeHidden();
     await expect(page.locator('.profile__banner')).toBeHidden();
     await expect(counts.locator('dd')).toHaveCount(2);
-    await expect(page.locator('.profile__handle')).toBeHidden();
+    await expect(page.getByTestId('profile-name')).toBeVisible();
+    await expect(page.getByTestId('profile-name')).toHaveText(user.display_name);
+    await expect(header).toContainText('เข้าหมู่บ้านเมื่อ');
   } else {
+    await expect(h1).toHaveText(user.display_name);
     await expect(page.locator('main h1')).toHaveText(user.display_name);
+    await expect(page.getByTestId('profile-name')).toBeHidden();
     await expect(page.locator('.profile__banner')).toBeVisible();
     await expect(page.locator('.profile__banner')).toHaveAttribute('aria-hidden', 'true');
     await expect(header).toContainText(`@${user.handle} · เข้าหมู่บ้านเมื่อ`);
+    await expect(page.locator('.profile__handle')).toBeVisible();
   }
+  await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
 });
 
 test('mobile: back button (44x44) and the name as h1 in the top bar; desktop: banner + 88px avatar', async ({ page }) => {
@@ -103,7 +109,7 @@ test('mobile: back button (44x44) and the name as h1 in the top bar; desktop: ba
     const b = await back.boundingBox();
     expect(Math.round(b.width)).toBe(44);
     expect(Math.round(b.height)).toBe(44);
-    await expect(page.locator('.topbar').getByRole('heading', { level: 1 })).toHaveText(user.display_name);
+    await expect(page.locator('.topbar').getByRole('heading', { level: 1 })).toHaveText(`@${user.handle}`);
     expect(Math.round(box.width)).toBe(72);
     await back.click();
     await expect(page).toHaveURL(/\/$/);
@@ -337,7 +343,7 @@ test('server error: "โหลดโปรไฟล์ไม่สำเร็�
   fail = false;
   await page.getByRole('button', { name: 'ลองอีกครั้ง' }).click();
   await expect(page.getByTestId('profile-header')).toBeVisible();
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText(user.display_name);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(isMobile(page) ? `@${user.handle}` : user.display_name);
   await expect(page).toHaveTitle(`@${user.handle} · Mooban`);
 });
 
@@ -359,10 +365,10 @@ test('navigating from one profile to another remounts it', async ({ page }) => {
   const b = await author(page, { n: 1, withImages: 0, display_name: 'คนที่สอง' });
   await signedInPage(page);
   await page.goto(`/u/${a.user.handle}`);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('คนแรก');
+  await expect(page.getByTestId('profile-name')).toHaveText('คนแรก');
   await page.evaluate(async (path) => { const { navigate } = await import('/js/router.js'); await navigate(path); }, `/u/${b.user.handle}`);
   await expect(page).toHaveTitle(`@${b.user.handle} · Mooban`);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('คนที่สอง');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(isMobile(page) ? `@${b.user.handle}` : 'คนที่สอง');
   await expect(posts(page)).toHaveCount(1);
   await expect(posts(page).first()).toContainText(b.user.handle);
   await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);

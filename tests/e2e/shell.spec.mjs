@@ -53,7 +53,7 @@ test('profile route title', async ({ page }) => {
   const user = await createUser({ display_name: 'เอิร์ธ' });
   await page.goto(`/u/${user.handle}`);
   await expect(page).toHaveTitle(`@${user.handle} · Mooban`);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('เอิร์ธ');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(page.viewportSize().width < 720 ? `@${user.handle}` : 'เอิร์ธ');
 });
 
 test('no horizontal scroll at 360px', async ({ page }) => {

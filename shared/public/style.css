@@ -1326,6 +1326,7 @@ body[data-route="profile"] .rail { padding-top: var(--s-6); }
 .profile__who { min-width: 0; }
 .profile__title-slot:empty { display: none; }
 .profile__title-slot h1 { margin: 0; }
+.profile__name { font-size: 20px; font-weight: 600; line-height: 1.35; }
 .profile__meta { font-size: 14px; color: var(--sub); }
 .profile__handle { display: none; }
 .profile__stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-2); margin: var(--s-4) 0 0; padding: 0; }
@@ -1385,6 +1386,7 @@ body[data-route="profile"] .rail { padding-top: var(--s-6); }
   .profile__id { flex-direction: column; align-items: flex-start; gap: var(--s-2); margin-top: -44px; padding: 0 var(--s-5); }
   .avatar.profile__avatar { width: 88px; height: 88px; border: 4px solid var(--bg); }
   .profile__handle { display: inline; }
+  .profile__name { display: none; }
   .profile__stats { display: flex; gap: var(--s-6); margin: var(--s-3) var(--s-5) 0; }
   .profile__stat { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: baseline; gap: 6px; padding: 0; border: 0; border-radius: 0; background: none; text-align: left; }
   .profile__stat dd { font-size: 16px; }

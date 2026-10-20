@@ -50,6 +50,8 @@ export async function mount(main, rail, params) {
 
   function place() {
     const hadFocus = document.activeElement === h1;
+    // Mobile follows the board: the bar title is the @handle and the name sits in the header (R25).
+    if (phase === 'ready') h1.textContent = mq.matches ? `@${user.handle}` : user.display_name;
     if (phase === 'ready' && mq.matches) {
       if (h1.parentElement !== topbar) topbar.insertBefore(h1, topbar.querySelector('.topbar__gallery'));
     } else if (titleSlot && h1.parentElement !== titleSlot) {
@@ -112,7 +114,6 @@ export async function mount(main, rail, params) {
   function showReady() {
     const refocus = root.contains(document.activeElement);
     document.title = `@${user.handle} · ${SITE}`;
-    h1.textContent = user.display_name;
     titleSlot = h('div', { class: 'profile__title-slot' });
     avatar = h('span', { class: `avatar profile__avatar ${avatarClass()}`, 'aria-hidden': 'true' },
       firstGrapheme(user.display_name));
@@ -126,6 +127,7 @@ export async function mount(main, rail, params) {
         avatar,
         h('div', { class: 'profile__who' },
           titleSlot,
+          h('p', { class: 'profile__name', 'data-testid': 'profile-name' }, user.display_name),
           h('p', { class: 'profile__meta' },
             h('span', { class: 'profile__handle' }, `@${user.handle} · `),
             joinedLabel(user.created_at)))),
@@ -274,6 +276,7 @@ export async function mount(main, rail, params) {
   // ---------- reactive bits ----------
   const onBreakpoint = () => {
     place();
+    // Intentional: switching between compact and full cards rebuilds the list, so page 1 is fetched again.
     if (postsPanel) buildPosts(); // compact cards on mobile, full cards on desktop
   };
   mq.addEventListener('change', onBreakpoint);
