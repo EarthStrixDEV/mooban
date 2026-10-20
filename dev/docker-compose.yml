@@ -18,5 +18,19 @@ services:
       timeout: 3s
       retries: 40
 
+  apache:
+    build:
+      context: .
+      dockerfile: php-apache.Dockerfile
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8081:80"
+    volumes:
+      - ../build/php:/var/www/site
+    # best-effort: bind mounts may keep host ownership
+    command: sh -c "mkdir -p /var/www/site/public_html/media && chown www-data:www-data /var/www/site/public_html/media || true; exec apache2-foreground"
+
 volumes:
   mysql-data:

@@ -1,0 +1,23 @@
+RewriteEngine On
+
+# API และเครื่องมือทดสอบ ส่งเข้า api.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(api|download|upload|cache)(/|$) api.php [L]
+
+# หน้าเว็บ (SPA) ส่ง index.html สำหรับ path ที่ไม่ใช่ไฟล์จริงและไม่ใช่ /media
+RewriteCond %{REQUEST_URI} !^/media/
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.html [L]
+
+# ไม่บีบอัด SSE
+SetEnvIf Request_URI ^/api/stream$ no-gzip
+
+<IfModule mod_headers.c>
+  # PHP also sets this header; drop its copy so the response carries exactly one
+  Header onsuccess unset X-Robots-Tag
+  Header always set X-Robots-Tag "noindex"
+  <Files "index.html">
+    Header set Content-Security-Policy "default-src 'self'; img-src 'self' data:"
+    Header set X-Content-Type-Options "nosniff"
+  </Files>
+</IfModule>
