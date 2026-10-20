@@ -28,6 +28,8 @@ test('R1 first line retry: 3000 arrives within 1 s with correct headers', async 
     assert.equal(s.headers.get('x-accel-buffering'), 'no');
     assert.ok(s.headers.get('x-stack'));
     assert.equal(s.headers.get('content-encoding'), null);
+    assert.match(s.headers.get('server-timing'), /^app;dur=\d+\.\d$/);
+    assert.equal(s.headers.get('x-robots-tag'), 'noindex');
     const t0 = Date.now();
     while (s.retry === undefined && Date.now() - t0 < 1500) await sleep(20);
     assert.equal(s.retry, 3000);
@@ -48,6 +50,9 @@ test('emit requires the test token and validates nonce', async () => {
   }
   const ok = await emit('x'.repeat(64));
   assert.equal(ok.status, 200);
+  const sp = await emit(' ');
+  assert.equal(sp.status, 200);
+  assert.equal(sp.json.nonce, ' ');
 
   const auto = await emit();
   assert.equal(auto.status, 200);
@@ -109,6 +114,22 @@ test('?last_id works like Last-Event-ID; malformed values are ignored', async ()
     const ev = await s.waitFor(e => e.event === 'post.created' && JSON.parse(e.data).post.id === p.json.id, 3000);
     assert.ok(Number(ev.id) > em.json.event_id);
   } finally { s.close(); }
+
+  // malformed header + valid ?last_id -> ?last_id is used
+  const p2 = await newPost(u, 'lastid2');
+  const fb = await openStream(`/api/stream?last_id=${em.json.event_id}`, { headers: { 'Last-Event-ID': 'abc' } });
+  try {
+    await fb.waitFor(e => e.event === 'post.created' && JSON.parse(e.data).post.id === p2.json.id, 3000);
+  } finally { fb.close(); }
+
+  // ?last_id=-1 / abc -> treated as absent
+  for (const q of ['-1', 'abc']) {
+    const x = await openStream(`/api/stream?last_id=${q}`);
+    try {
+      await sleep(1300);
+      assert.equal(x.events.length, 0, q);
+    } finally { x.close(); }
+  }
 
   // malformed -> treated as absent -> no replay of old events
   const bad = await openStream('/api/stream', { headers: { 'Last-Event-ID': 'abc' } });

@@ -64,42 +64,48 @@ final class Stream
         header('Content-Type: text/event-stream; charset=utf-8');
         header('Cache-Control: no-store');
         header('X-Accel-Buffering: no');
+        header(sprintf('Server-Timing: app;dur=%.1f', Http::elapsedMs()));
 
         // 4. retry first, right now.
         self::write("retry: 3000\n\n");
 
-        $lastId = self::startPoint($pdo);
-        $pollUs = max(50, (int) Config::get('SSE_POLL_MS')) * 1000;
-        $started = microtime(true);
-        $deadline = $started + (int) Config::get('SSE_MAX_SECONDS');
-        $lastSent = $started;
+        try {
+            $lastId = self::startPoint($pdo);
+            $pollUs = max(50, (int) Config::get('SSE_POLL_MS')) * 1000;
+            $started = microtime(true);
+            $deadline = $started + (int) Config::get('SSE_MAX_SECONDS');
+            $lastSent = $started;
 
-        $sel = $pdo->prepare('SELECT id, type, payload FROM events WHERE id > ? ORDER BY id LIMIT ' . self::BATCH);
-        while (!connection_aborted()) {
-            $sel->bindValue(1, $lastId, PDO::PARAM_INT);
-            $sel->execute();
-            $rows = $sel->fetchAll();
-            if ($rows) {
-                $out = '';
-                foreach ($rows as $r) {
-                    $out .= 'id: ' . $r['id'] . "\nevent: " . $r['type'] . "\ndata: " . $r['payload'] . "\n\n";
-                    $lastId = (int) $r['id'];
+            $sel = $pdo->prepare('SELECT id, type, payload FROM events WHERE id > ? ORDER BY id LIMIT ' . self::BATCH);
+            while (!connection_aborted()) {
+                $sel->bindValue(1, $lastId, PDO::PARAM_INT);
+                $sel->execute();
+                $rows = $sel->fetchAll();
+                if ($rows) {
+                    $out = '';
+                    foreach ($rows as $r) {
+                        $out .= 'id: ' . $r['id'] . "\nevent: " . $r['type'] . "\ndata: " . $r['payload'] . "\n\n";
+                        $lastId = (int) $r['id'];
+                    }
+                    self::write($out);
+                    $lastSent = microtime(true);
+                    if (count($rows) === self::BATCH && microtime(true) < $deadline && !connection_aborted()) {
+                        continue; // more backlog waiting, don't sleep
+                    }
+                } elseif (microtime(true) - $lastSent >= self::PING_AFTER_SECONDS) {
+                    self::write(": ping\n\n");
+                    $lastSent = microtime(true);
                 }
-                self::write($out);
-                $lastSent = microtime(true);
-                if (count($rows) === self::BATCH) {
-                    continue; // more backlog waiting, don't sleep
-                }
-            } elseif (microtime(true) - $lastSent >= self::PING_AFTER_SECONDS) {
-                self::write(": ping\n\n");
-                $lastSent = microtime(true);
-            }
 
-            $remaining = $deadline - microtime(true);
-            if ($remaining <= 0 || connection_aborted()) {
-                break;
+                $remaining = $deadline - microtime(true);
+                if ($remaining <= 0 || connection_aborted()) {
+                    break;
+                }
+                usleep((int) min($pollUs, $remaining * 1_000_000));
             }
-            usleep((int) min($pollUs, $remaining * 1_000_000));
+        } catch (Throwable $e) {
+            // Headers are already sent: never emit a JSON error into the event stream.
+            error_log('mooban: stream: ' . get_class($e) . ': ' . $e->getMessage());
         }
 
         $release();
@@ -109,8 +115,13 @@ final class Stream
     /** Resolve where to start; may emit a resync event. */
     private static function startPoint(PDO $pdo): int
     {
-        $raw = $_SERVER['HTTP_LAST_EVENT_ID'] ?? ($_GET['last_id'] ?? null);
-        $given = (is_string($raw) && preg_match('/^[0-9]{1,18}$/D', $raw)) ? (int) $raw : null;
+        $given = null;
+        foreach ([$_SERVER['HTTP_LAST_EVENT_ID'] ?? null, $_GET['last_id'] ?? null] as $raw) {
+            if (is_string($raw) && preg_match('/^[0-9]{1,18}$/D', $raw)) {
+                $given = (int) $raw;
+                break;
+            }
+        }
 
         $row = $pdo->query('SELECT MIN(id) AS lo, MAX(id) AS hi FROM events')->fetch();
         $lo = $row['lo'] !== null ? (int) $row['lo'] : null;
