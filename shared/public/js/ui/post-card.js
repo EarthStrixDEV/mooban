@@ -2,9 +2,11 @@ import { h } from '../dom.js';
 import { state } from '../store.js';
 import { timeAgo, avatarColor, firstGrapheme } from '../util.js';
 import { syncPostMenu } from './post-menu.js';
+import { likeButton, setLikeCount } from './like-button.js';
+import { commentsToggle, setCommentCount } from './comments.js';
 
-// Post card (DESIGN 4.4). Like/comment buttons go into .post__actions (Task 17); the owner menu
-// (ui/post-menu.js) is mounted into .post__menu-slot by applyOwnership.
+// Post card (DESIGN 4.4). Like/comment buttons (like-button.js, comments.js) live in .post__actions
+// with the thread section after it; the owner menu (ui/post-menu.js) is mounted into .post__menu-slot by applyOwnership.
 export function renderPostCard(post, { me = state.me, compact = false } = {}) {
   const { author, image } = post;
   const nameId = `p${post.id}-name`;
@@ -29,6 +31,10 @@ export function renderPostCard(post, { me = state.me, compact = false } = {}) {
     h('div', { class: 'post__menu-slot' })),
   h('p', { class: 'post__body' }),
   h('div', { class: 'post__actions' }));
+
+  const { button, thread } = commentsToggle(post);
+  el.querySelector('.post__actions').append(likeButton(post), button);
+  el.append(thread);
 
   applyOwnership(el, me);
   if (image) el.querySelector('.post__actions').before(renderImage(post, image));
@@ -71,7 +77,6 @@ export function updatePostCard(el, post) {
   body.hidden = !post.body;
   el.dataset.likeCount = post.like_count ?? 0;
   el.dataset.commentCount = post.comment_count ?? 0;
-  for (const [kind, n] of [['like', post.like_count], ['comment', post.comment_count]]) {
-    for (const c of el.querySelectorAll(`[data-count="${kind}"]`)) c.textContent = String(n ?? 0);
-  }
+  setLikeCount(el, post.like_count ?? 0);
+  setCommentCount(el.querySelector('[data-testid="comment-toggle"]') ?? el, post.comment_count ?? 0);
 }
