@@ -103,22 +103,42 @@ function addItem(s, c) {
 }
 
 function renderComment(s, c) {
-  const own = !!state.me && c.author.handle === state.me.handle;
   const body = h('div', { class: 'comment__main' },
     h('div', { class: 'comment__bubble' },
       h('p', { class: 'comment__head' },
         h('span', { class: 'comment__name' }, c.author.display_name),
         h('span', { class: 'comment__time' }, ` · ${timeAgo(c.created_at)}`)),
       h('p', { class: 'comment__text' }, c.body)));
-  const el = h('div', { class: 'comment', 'data-comment-id': c.id },
+  const el = h('div', { class: 'comment', 'data-comment-id': c.id, 'data-author': c.author.handle },
     h('span', { class: 'comment__avatar', 'aria-hidden': 'true' }, firstGrapheme(c.author.display_name)),
     body);
-  if (own) {
-    const del = h('button', { type: 'button', class: 'comment__del' }, 'ลบ');
-    del.addEventListener('click', () => deleteComment(s, c.id, del));
-    body.append(del);
-  }
+  syncDelete(s, el, c.id, state.me);
   return el;
+}
+
+// "ลบ" shows only on the viewer's own comments. `me` can arrive after the thread was rendered.
+function syncDelete(s, el, id, me) {
+  const own = !!me && el.dataset.author === me.handle;
+  const del = el.querySelector('.comment__del');
+  if (own && !del) {
+    const btn = h('button', { type: 'button', class: 'comment__del' }, 'ลบ');
+    btn.addEventListener('click', () => deleteComment(s, id, btn));
+    el.querySelector('.comment__main').append(btn);
+  } else if (!own && del) {
+    del.remove();
+  }
+}
+
+// Called when /api/me resolves after threads were already open.
+export function refreshCommentOwnership(me = state.me) {
+  for (const thread of document.querySelectorAll('.thread')) {
+    const s = threads.get(thread);
+    if (!s) continue;
+    for (const el of thread.querySelectorAll('.comment[data-author]')) {
+      const id = [...s.ids].find((x) => String(x) === el.dataset.commentId);
+      if (id !== undefined) syncDelete(s, el, id, me);
+    }
+  }
 }
 
 async function deleteComment(s, id, btn) {

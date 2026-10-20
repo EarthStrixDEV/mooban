@@ -214,7 +214,9 @@ test('desktop rail shows latest images and live status', async ({ page }, testIn
   expect(n).toBeLessThanOrEqual(6);
   await expect(tiles.first()).toHaveAttribute('href', '/gallery');
   await expect(rail.locator('#live-status')).toContainText('สถานะฟีดสด');
-  await expect(rail.locator('#live-status')).toContainText('กำลังเชื่อมต่อ…');
+  // Task 18 drives this line from the SSE status; which one depends on the shared stream slots.
+  await expect(rail.locator('#live-status [role=status]'))
+    .toHaveText(/กำลังเชื่อมต่อ…|เชื่อมต่อแล้ว|เชื่อมต่อใหม่…|เชื่อมต่อสดไม่ได้ \(มีการเชื่อมต่อมากเกินไป\)/);
   await expect(rail).not.toContainText('ออนไลน์ตอนนี้');
 });
 

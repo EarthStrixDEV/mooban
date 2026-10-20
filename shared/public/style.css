@@ -942,3 +942,55 @@ main > h1 { margin-bottom: var(--s-4); }
 .thread__send:disabled { background: var(--chip); color: var(--sub); cursor: not-allowed; }
 .thread__err { margin-top: var(--s-2); padding-left: 16px; font-size: 14px; color: var(--err); }
 .thread__err:empty { display: none; }
+
+/* ---------- live pill + connection dot (DESIGN 4.7, 5.1) ---------- */
+/* The wrapper has no height, so showing or hiding the button never moves the feed (CLS 0). */
+.live-pill-wrap {
+  position: absolute;
+  top: 64px;
+  left: 0;
+  right: 0;
+  z-index: var(--z-pill);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  height: 0;
+  pointer-events: none;
+}
+@media (min-width: 720px) {
+  .live-pill-wrap { position: sticky; top: 12px; left: auto; right: auto; }
+}
+.live-pill {
+  pointer-events: auto;
+  min-height: var(--tap);
+  padding: 0 20px;
+  border: 0;
+  border-radius: 22px;
+  background: var(--brand);
+  color: var(--onbrand);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: var(--shadow-pill);
+  cursor: pointer;
+}
+.live-pill:hover { background: var(--brand-strong); }
+.live-pill:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+@media (prefers-reduced-motion: no-preference) {
+  .live-pill { animation: fade-in 160ms ease-out; }
+}
+
+.post--deleted { display: flex; align-items: center; justify-content: center; }
+.post__gone { margin: 0; color: var(--sub); font-size: 14px; }
+
+.live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: var(--s-2);
+  border-radius: 50%;
+  background: var(--sub);
+}
+.rail-card__status[data-state="open"] .live-dot { background: var(--brand); }
+.rail-card__status[data-state="reconnecting"] .live-dot { background: var(--warn); }
+.rail-card__status[data-state="blocked"] .live-dot { background: var(--err); }

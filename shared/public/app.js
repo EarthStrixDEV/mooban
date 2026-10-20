@@ -4,6 +4,7 @@ import { toast } from './js/ui/toast.js';
 import { GENERIC_ERROR } from './js/ui/errors.js';
 import { api } from './js/api.js';
 import { openSignup } from './js/ui/signup.js';
+import { sse } from './js/sse.js';
 
 const SITE = 'Mooban';
 
@@ -130,6 +131,9 @@ async function loadMe() {
     return 'failed';
   }
 }
+
+// One stream per tab, for every route (feed, gallery, profile and /test all listen).
+sse.connect();
 
 const firstRender = startRouter(render).catch(() => {});
 const [, meStatus] = await Promise.all([firstRender, loadMe()]);

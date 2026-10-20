@@ -41,6 +41,13 @@ export async function resetRateLimits() {
   try { await c.query('DELETE FROM rate_limits'); } finally { await c.end(); }
 }
 
+// The server frees an SSE slot only when it notices the disconnect (~70 s), so specs that open
+// several streams clear the counter rows first to stay under the 10-per-IP limit.
+export async function clearStreams() {
+  const c = await db();
+  try { await c.query('DELETE FROM streams'); } finally { await c.end(); }
+}
+
 // Injects mb_token before any page script runs, so the app boots as that user.
 export async function signedInPage(page, user) {
   user = user ?? await createUser();
