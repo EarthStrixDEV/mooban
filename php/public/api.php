@@ -12,6 +12,8 @@ try {
     Ping::register();
     Users::register();
     Posts::register();
+    Likes::register();
+    Comments::register();
 
     Router::dispatch(
         $_SERVER['REQUEST_METHOD'] ?? 'GET',
