@@ -4,6 +4,7 @@ import { api, ApiError } from '../api.js';
 import { state, setToken, clearToken, emit } from '../store.js';
 import { openDialog } from './dialog.js';
 import { toast } from './toast.js';
+import { reportApiError, GENERIC_ERROR } from './errors.js';
 
 const HANDLE_RE = /^[a-z0-9_]{3,20}$/;
 const LEN_RE = /^.{3,20}$/;
@@ -16,7 +17,7 @@ const MSG = {
   available: 'ชื่อนี้ใช้ได้',
   taken: 'ชื่อนี้มีคนใช้แล้ว ลองชื่อด้านล่างแทนได้เลย',
   rules: 'ต้องยาว 3–20 ตัวอักษร ใช้ได้เฉพาะ a-z, 0-9 และ _',
-  generic: 'มีบางอย่างผิดพลาด ลองอีกครั้ง',
+  generic: GENERIC_ERROR,
 };
 
 let active = null;
@@ -42,14 +43,6 @@ export function handleAuthError(err) {
   toast('เซสชันหมดอายุ กรุณาตั้งชื่อใหม่', { error: true });
   openSignup({ reason: 'write' });
   return true;
-}
-
-export function reportApiError(err) {
-  if (err instanceof ApiError && err.status === 429) {
-    toast(`ทำรายการเร็วเกินไป ลองใหม่ในอีก ${err.retryAfter ?? 1} วินาที`, { error: true });
-  } else {
-    toast(MSG.generic, { error: true });
-  }
 }
 
 function suggestionsFor(handle) {
@@ -106,7 +99,7 @@ function build(reason, resolve) {
   const submit = h('button', { class: 'btn btn--primary btn--lg', type: 'submit', disabled: true, 'data-testid': 'signup-submit' }, 'เข้าหมู่บ้าน');
 
   const peek = reason === 'first'
-    ? h('button', { class: 'link-btn', type: 'button', onclick: () => close() }, 'ดูเฉยๆ ก่อน')
+    ? h('button', { class: 'link-btn', type: 'button', onclick: () => { if (!submitting) close(); } }, 'ดูเฉยๆ ก่อน')
     : null;
 
   const form = h('form', { class: 'sheet__form', novalidate: true },
@@ -128,7 +121,7 @@ function build(reason, resolve) {
 
   const close = openDialog(el, {
     labelledBy: 'su-title',
-    dismissible: true,
+    dismissible: () => !submitting,
     initialFocus: handleInput,
     onClose: () => {
       clearTimeout(timer);
@@ -230,6 +223,15 @@ function build(reason, resolve) {
     evaluate({ immediate: true });
   }
 
+  function setBusy(busy) {
+    submitting = busy;
+    handleInput.disabled = busy;
+    nameInput.disabled = busy;
+    for (const c of suggest.querySelectorAll('button')) c.disabled = busy;
+    el.toggleAttribute('aria-busy', busy);
+    updateSubmit();
+  }
+
   function updateSubmit() {
     submit.disabled = submitting || status !== 'available' || nameInput.value.trim() === '';
   }
@@ -256,8 +258,7 @@ function build(reason, resolve) {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (submit.disabled) return;
-    submitting = true;
-    updateSubmit();
+    setBusy(true);
     const handle = handleInput.value;
     try {
       const res = await api('POST', '/api/users', {
@@ -272,7 +273,8 @@ function build(reason, resolve) {
       // DESIGN 4.12: focus goes to the composer when the page has one.
       document.querySelector('[data-testid="composer-input"]')?.focus({ preventScroll: true });
     } catch (err) {
-      submitting = false;
+      setBusy(false);
+      if (!el.contains(document.activeElement)) (submit.disabled ? handleInput : submit).focus();
       if (err instanceof ApiError && err.status === 409) {
         clearTimeout(timer);
         controller?.abort();
@@ -294,7 +296,6 @@ function build(reason, resolve) {
       } else {
         reportApiError(err);
       }
-      updateSubmit();
     }
   });
 

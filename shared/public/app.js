@@ -1,5 +1,7 @@
 import { startRouter, navigate } from './js/router.js';
-import { state, getToken, clearToken, on } from './js/store.js';
+import { state, getToken, clearToken, on, emit } from './js/store.js';
+import { toast } from './js/ui/toast.js';
+import { GENERIC_ERROR } from './js/ui/errors.js';
 import { api } from './js/api.js';
 import { openSignup } from './js/ui/signup.js';
 
@@ -102,17 +104,21 @@ document.addEventListener('click', async (e) => {
 
 on('me', () => syncNav());
 
-// Resolves once state.me is known. A rejected token is dropped; network errors keep it for later.
+// Resolves to 'ok' | 'none' (no usable token) | 'failed' (token kept; /api/me unreachable or 5xx).
 async function loadMe() {
-  if (!getToken()) return;
+  if (!getToken()) return 'none';
   try {
     state.me = await api('GET', '/api/me');
     syncNav();
+    emit('me', state.me);
+    return 'ok';
   } catch (err) {
-    if (err && err.status === 401) clearToken();
+    if (err && err.status === 401) { clearToken(); return 'none'; }
+    return 'failed';
   }
 }
 
 const firstRender = startRouter(render).catch(() => {});
-await Promise.all([firstRender, loadMe()]);
-if (!state.me) openSignup({ reason: 'first' });
+const [, meStatus] = await Promise.all([firstRender, loadMe()]);
+if (meStatus === 'failed') toast(GENERIC_ERROR, { error: true });
+else if (!state.me) openSignup({ reason: 'first' });

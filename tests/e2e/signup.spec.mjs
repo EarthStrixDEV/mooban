@@ -264,9 +264,61 @@ test('submit is disabled while the request is in flight', async ({ page }) => {
   });
   await page.getByTestId('signup-submit').click();
   await expect(page.getByTestId('signup-submit')).toBeDisabled();
-  await page.getByTestId('signup-display-name').press('Enter');
+  await expect(page.getByTestId('signup-handle')).toBeDisabled();
+  await expect(page.getByTestId('signup-display-name')).toBeDisabled();
   await expect(dialog(page)).toBeHidden();
   expect(posts).toBe(1);
+});
+
+test('during a slow POST: Esc and scrim do not close, inputs disabled; error re-enables', async ({ page }) => {
+  await page.goto('/');
+  await fillValid(page);
+  let release;
+  const gate = new Promise((r) => { release = r; });
+  await page.route('**/api/users', async (route) => {
+    if (route.request().method() !== 'POST') return route.continue();
+    await gate;
+    return route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ error: 'server_error' }) });
+  });
+  await page.getByTestId('signup-submit').click();
+  await expect(page.getByTestId('signup-handle')).toBeDisabled();
+  await expect(page.getByTestId('signup-display-name')).toBeDisabled();
+  await page.keyboard.press('Escape');
+  await page.mouse.click(2, 2);
+  await expect(dialog(page)).toBeVisible();
+  release();
+  await expect(page.getByTestId('toast')).toHaveText(/มีบางอย่างผิดพลาด ลองอีกครั้ง/);
+  await expect(dialog(page)).toBeVisible();
+  await expect(page.getByTestId('signup-handle')).toBeEnabled();
+  await expect(page.getByTestId('signup-display-name')).toBeEnabled();
+  await expect(page.getByTestId('signup-submit')).toBeEnabled();
+  await page.keyboard.press('Escape');
+  await expect(dialog(page)).toBeHidden();
+});
+
+test('token present but /api/me returns 500: no signup, toast, token kept', async ({ page }) => {
+  const user = await createUser();
+  await page.addInitScript((t) => localStorage.setItem('mb_token', t), user.token);
+  await page.route('**/api/me', (route) => route.fulfill({ status: 500, contentType: 'application/json', body: '{"error":"server_error"}' }));
+  await page.goto('/');
+  await expect(page.getByTestId('toast')).toHaveText(/มีบางอย่างผิดพลาด ลองอีกครั้ง/);
+  await expect(dialog(page)).toHaveCount(0);
+  expect(await page.evaluate(() => localStorage.getItem('mb_token'))).toBe(user.token);
+});
+
+test('boot with a valid token emits "me"', async ({ page }) => {
+  const user = await signedInPage(page);
+  await page.route('**/api/me', async (route) => {
+    await new Promise((r) => setTimeout(r, 1000));
+    await route.continue();
+  });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  const handle = await page.evaluate(async () => {
+    const { on, state } = await import('/js/store.js');
+    if (state.me) throw new Error('me already set');
+    return new Promise((r) => on('me', (u) => r(u.handle)));
+  });
+  expect(handle).toBe(user.handle);
 });
 
 test('stale token: /api/me 401 clears it and opens signup', async ({ page }) => {

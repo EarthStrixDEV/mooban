@@ -30,7 +30,7 @@ function onKeydown(e) {
   const top = stack[stack.length - 1];
   if (!top || e.defaultPrevented) return;
   if (e.key === 'Escape') {
-    if (top.dismissible) { e.preventDefault(); top.close(); }
+    if (top.canDismiss()) { e.preventDefault(); top.close(); }
     return;
   }
   if (e.key !== 'Tab') return;
@@ -45,7 +45,7 @@ function onKeydown(e) {
 }
 
 /**
- * openDialog(el, { labelledBy, onClose, dismissible = true, initialFocus, scrim = 'sheet' }) -> close()
+ * openDialog(el, { labelledBy, onClose, dismissible = true (boolean or () => boolean), initialFocus, scrim = 'sheet' }) -> close()
  * `scrim` picks the backdrop variant: 'sheet' (--scrim-sheet) or 'lightbox' (--scrim).
  */
 export function openDialog(el, { labelledBy, onClose, dismissible = true, initialFocus, scrim = 'sheet' } = {}) {
@@ -70,7 +70,8 @@ export function openDialog(el, { labelledBy, onClose, dismissible = true, initia
   document.body.append(backdrop, el);
   lockScroll();
 
-  const entry = { el, dismissible, close: () => close() };
+  const canDismiss = () => (typeof dismissible === 'function' ? dismissible() : dismissible);
+  const entry = { el, canDismiss, close: () => close() };
   if (stack.length === 0) document.addEventListener('keydown', onKeydown, true);
   stack.push(entry);
 
@@ -91,7 +92,7 @@ export function openDialog(el, { labelledBy, onClose, dismissible = true, initia
     if (onClose) onClose();
   }
 
-  backdrop.addEventListener('click', () => { if (dismissible) close(); });
+  backdrop.addEventListener('click', () => { if (canDismiss()) close(); });
 
   const target = typeof initialFocus === 'function' ? initialFocus() : initialFocus;
   (target || focusables(el)[0] || el).focus({ preventScroll: true });
