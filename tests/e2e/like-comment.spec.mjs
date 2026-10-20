@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-import { createUser, signedInPage } from './fixtures.mjs';
+import { test, expect, createUser, signedInPage } from './fixtures.mjs';
 
 const card = (page, id) => page.locator(`[data-testid=post-card][data-id="${id}"]`);
 const likeBtn = (page, id) => card(page, id).getByTestId('like-btn');

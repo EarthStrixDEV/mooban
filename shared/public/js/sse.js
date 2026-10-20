@@ -1,5 +1,8 @@
-// One EventSource('/api/stream') per tab (DESIGN 6.5). The browser owns `retry:` and Last-Event-ID;
-// this module only adds status reporting, 429 detection with backoff, and closing while hidden.
+// One EventSource('/api/stream') per tab (DESIGN 6.5). The browser owns `retry:` and its own
+// Last-Event-ID on automatic reconnects. A stream this module creates itself (after hiding or a
+// backoff retry) has no such header, so it passes the last id seen as ?last_id=; the server
+// prefers the header, so the browser's own reconnects never replay. Also: status reporting and
+// 429 detection with backoff.
 import { emit } from './store.js';
 
 const URL_STREAM = '/api/stream';
@@ -10,7 +13,8 @@ const TYPES = [
 ];
 const MAX_ERRORS = 3;                       // consecutive errors without an `open` before probing
 const BACKOFF_S = [5, 10, 20, 40, 60];      // retry delays after a failed attempt (cap 60)
-const HIDDEN_MS = 60_000;                   // close the stream after this long in a hidden tab
+const SHOW_RECONNECTING_MS = 4000;          // the server closes every 60 s; hide that blip from the status
+const HIDDEN_MS = Number(globalThis.__MB_HIDDEN_MS) || 60_000; // close the stream after this long in a hidden tab (override: tests)
 
 const handlers = new Map(); // type -> Set<fn>
 let es = null;
@@ -22,6 +26,8 @@ let retryTimer = null;
 let hiddenTimer = null;
 let suspended = false;
 let probe = null;
+let lastId = '';
+let blipTimer = null;
 
 function setStatus(next) {
   if (next === status) return;
@@ -31,6 +37,7 @@ function setStatus(next) {
 }
 
 function dispatch(type, ev) {
+  if (ev.lastEventId) lastId = ev.lastEventId;
   let data = {};
   try {
     data = ev.data ? JSON.parse(ev.data) : {};
@@ -44,19 +51,23 @@ function dispatch(type, ev) {
 function closeStream() {
   if (es) { es.close(); es = null; }
   clearTimeout(retryTimer);
+  clearTimeout(blipTimer);
   retryTimer = null;
+  blipTimer = null;
   probe?.abort();
   probe = null;
 }
 
 function open() {
   closeStream();
-  const mine = new EventSource(URL_STREAM);
+  const mine = new EventSource(lastId ? `${URL_STREAM}?last_id=${encodeURIComponent(lastId)}` : URL_STREAM);
   es = mine;
   mine.addEventListener('open', () => {
     if (es !== mine) return;
     errors = 0;
     backoff = 0;
+    clearTimeout(blipTimer);
+    blipTimer = null;
     setStatus('open');
   });
   mine.addEventListener('error', () => {
@@ -67,8 +78,9 @@ function open() {
       mine.close();
       es = null;
       checkAndRetry();
-    } else {
-      setStatus('reconnecting');
+    } else if (!blipTimer) {
+      // Only announce "reconnecting" if the stream has not come back by itself shortly.
+      blipTimer = setTimeout(() => { blipTimer = null; if (es === mine && status === 'open') setStatus('reconnecting'); }, SHOW_RECONNECTING_MS);
     }
   });
   for (const type of TYPES) mine.addEventListener(type, (ev) => dispatch(type, ev));

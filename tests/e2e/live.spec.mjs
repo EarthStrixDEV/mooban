@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-import { createUser, signedInPage, clearStreams } from './fixtures.mjs';
+import { test, expect, createUser, signedInPage } from './fixtures.mjs';
 
 const card = (page, id) => page.locator(`[data-testid=post-card][data-id="${id}"]`);
 const likeBtn = (page, id) => card(page, id).getByTestId('like-btn');
@@ -10,7 +9,6 @@ const auth = (u) => ({ Authorization: `Bearer ${u.token}` });
 
 let problems;
 test.beforeEach(async ({ page }) => {
-  await clearStreams();
   problems = [];
   page.on('console', (m) => {
     if (m.text().includes('Content Security Policy')) problems.push(m.text());
@@ -164,4 +162,35 @@ test('rail shows the connected state (desktop)', async ({ page }) => {
   test.skip(isMobile(page), 'the rail only exists on desktop');
   await open(page);
   await expect(page.locator('#live-status [role=status]')).toContainText('เชื่อมต่อแล้ว');
+});
+
+test('a stream reopened after the tab was hidden catches up on posts made during the gap', async ({ page }) => {
+  await page.addInitScript(() => { window.__MB_HIDDEN_MS = 300; });
+  const { b } = await open(page);
+  const setHidden = (hidden) => page.evaluate((v) => {
+    Object.defineProperty(document, 'hidden', { configurable: true, get: () => v });
+    document.dispatchEvent(new Event('visibilitychange'));
+  }, hidden);
+
+  await makePost(page, b, `before-${b.handle}`);
+  await expect(pill(page)).toHaveText('มีโพสต์ใหม่ 1 รายการ', { timeout: 3000 });
+  await setHidden(true);
+  await page.waitForTimeout(600); // past the (test) threshold: the stream is closed now
+  await makePost(page, b, `gap-${b.handle}`);
+  await setHidden(false);
+  await expect(pill(page)).toHaveText('มีโพสต์ใหม่ 2 รายการ', { timeout: 6000 });
+});
+
+test('mobile: the pill stays in view while scrolled down and nothing moves', async ({ page }) => {
+  test.skip(!isMobile(page), 'mobile layout only');
+  const { b, seeded } = await open(page, { posts: 14 });
+  await page.evaluate(() => window.scrollTo(0, 1500));
+  const probe = await page.evaluate(() => {
+    const el = [...document.querySelectorAll('[data-testid=post-card]')].find((c) => c.getBoundingClientRect().top > 0);
+    return el.dataset.id;
+  });
+  const before = (await card(page, probe).boundingBox()).y;
+  await makePost(page, b, `scrolled-${b.handle}`);
+  await expect(pill(page)).toBeInViewport({ timeout: 3000 });
+  expect((await card(page, probe).boundingBox()).y).toBe(before);
 });

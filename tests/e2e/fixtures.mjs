@@ -1,5 +1,8 @@
 import { createHash, randomBytes } from 'node:crypto';
 import mysql from 'mysql2/promise';
+import { test as base, expect } from '@playwright/test';
+
+export { expect };
 
 async function db() {
   const c = await mysql.createConnection({
@@ -56,3 +59,9 @@ export async function signedInPage(page, user) {
   }, user.token);
   return user;
 }
+
+// Every spec imports `test` from here: the auto fixture frees SSE slots before each test, so the
+// 10-streams-per-IP limit (slots linger ~70 s on the dev stack) never turns the live status to blocked.
+export const test = base.extend({
+  _streams: [async ({}, use) => { await clearStreams(); await use(); }, { auto: true }],
+});

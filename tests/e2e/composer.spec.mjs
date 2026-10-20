@@ -1,7 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { test, expect } from '@playwright/test';
-import { createUser, signedInPage } from './fixtures.mjs';
+import { test, expect, createUser, signedInPage } from './fixtures.mjs';
 
 const FIX = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../fixtures');
 const cards = (page) => page.locator('[data-testid=post-card]');

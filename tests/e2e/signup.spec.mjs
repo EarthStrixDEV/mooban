@@ -1,5 +1,4 @@
-import { test, expect } from '@playwright/test';
-import { createUser, resetRateLimits, signedInPage, uniqueHandle } from './fixtures.mjs';
+import { test, expect, createUser, resetRateLimits, signedInPage, uniqueHandle } from './fixtures.mjs';
 
 let problems;
 test.beforeEach(async ({ page }) => {

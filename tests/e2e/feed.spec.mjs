@@ -1,5 +1,5 @@
-import { test, expect, request as pwRequest } from '@playwright/test';
-import { createUser, signedInPage } from './fixtures.mjs';
+import { request as pwRequest } from '@playwright/test';
+import { test, expect, createUser, signedInPage } from './fixtures.mjs';
 
 const BASE = process.env.E2E_BASE || 'http://localhost:8081';
 const TEST_TOKEN = { 'X-Test-Token': 'dev-test-token-0123456789abcd' };
@@ -214,9 +214,7 @@ test('desktop rail shows latest images and live status', async ({ page }, testIn
   expect(n).toBeLessThanOrEqual(6);
   await expect(tiles.first()).toHaveAttribute('href', '/gallery');
   await expect(rail.locator('#live-status')).toContainText('สถานะฟีดสด');
-  // Task 18 drives this line from the SSE status; which one depends on the shared stream slots.
-  await expect(rail.locator('#live-status [role=status]'))
-    .toHaveText(/กำลังเชื่อมต่อ…|เชื่อมต่อแล้ว|เชื่อมต่อใหม่…|เชื่อมต่อสดไม่ได้ \(มีการเชื่อมต่อมากเกินไป\)/);
+  await expect(rail.locator('#live-status [role=status]')).toHaveText('เชื่อมต่อแล้ว');
   await expect(rail).not.toContainText('ออนไลน์ตอนนี้');
 });
 

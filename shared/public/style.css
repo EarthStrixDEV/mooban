@@ -946,8 +946,8 @@ main > h1 { margin-bottom: var(--s-4); }
 /* ---------- live pill + connection dot (DESIGN 4.7, 5.1) ---------- */
 /* The wrapper has no height, so showing or hiding the button never moves the feed (CLS 0). */
 .live-pill-wrap {
-  position: absolute;
-  top: 64px;
+  position: fixed;
+  top: calc(12px + env(safe-area-inset-top, 0px));
   left: 0;
   right: 0;
   z-index: var(--z-pill);
