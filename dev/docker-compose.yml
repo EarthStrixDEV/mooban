@@ -57,6 +57,35 @@ services:
       - ../nginx/nginx-snippet.conf:/etc/nginx/mooban/nginx-snippet.conf:ro
       - fpm-sock:/run/php-fpm
 
+  node:
+    build:
+      context: ../node
+      dockerfile: ../dev/node.Dockerfile
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8083:8083"
+    volumes:
+      - ../node:/app/node:ro
+      - ../shared:/app/shared:ro
+      - node-media:/data/media
+      - node-cache:/data/cache
+    environment:
+      DB_HOST: mysql
+      DB_NAME: mb_node
+      DB_USER: mb
+      DB_PASS: mb
+      APP_STACK: node
+      PORT: "8083"
+      TEST_TOKEN: dev-test-token-0123456789abcd
+      PUBLIC_DIR: /app/shared/public
+      MEDIA_DIR: /data/media
+      CACHE_DIR: /data/cache
+    command: ["node", "app.js"]
+
 volumes:
   mysql-data:
   fpm-sock:
+  node-media:
+  node-cache:
