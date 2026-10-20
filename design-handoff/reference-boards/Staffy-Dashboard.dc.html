@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Staffy แดชบอร์ด</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; box-sizing: border-box; display: flex; background: #F5F6FA; color: #1B2033; font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 240px; box-sizing: border-box; padding: 24px 16px; background: #232A5C; color: #F2F3FA; display: flex; flex-direction: column;">
+    <p style="margin: 0 8px 24px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Staffy</p>
+    <sc-for list="{{menu}}" as="m" hint-placeholder-count="6">
+      <a href="{{m.href}}" aria-current="{{m.current}}" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; margin-bottom: 4px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; font-size: 16px; font-weight: {{m.weight}}; background: {{m.bg}}; color: {{m.fg}};">
+        {{m.label}}
+        <span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: #D0584E; color: #FFFFFF; display: {{m.badgeShow}};">{{m.badge}}</span>
+      </a>
+    </sc-for>
+    <div style="margin-top: auto; padding: 12px; border-top: 1px solid #3A4278;">
+      <p style="margin: 0; font-size: 14px; font-weight: 600;">สมหญิง ใจดี</p>
+      <p style="margin: 2px 0 8px; font-size: 14px; color: #C9CDE8;">HR</p>
+      <a href="Staffy-Login.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">ออกจากระบบ</a>
+    </div>
+  </nav>
+
+  <main id="dashboard" data-active="128" data-pending-leaves="4" data-expiring="3" data-birthdays="5" style="flex: 1; min-width: 0; padding: 32px 40px; box-sizing: border-box;">
+
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+      <div>
+        <h1 style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">แดชบอร์ด</h1>
+        <p style="margin: 4px 0 0; font-size: 14px; color: #4F566E;">วันอังคารที่ 20 ตุลาคม 2569</p>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <a href="Staffy-Import-Upload.dc.html" style="min-height: 44px; box-sizing: border-box; padding: 0 16px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; display: flex; align-items: center; font-size: 14px; font-weight: 600; text-decoration: none;">นำเข้า CSV</a>
+        <a href="Staffy-Emp-Form.dc.html" style="min-height: 44px; box-sizing: border-box; padding: 0 18px; border-radius: 10px; background: #3B4BC4; color: #FFFFFF; display: flex; align-items: center; font-size: 14px; font-weight: 600; text-decoration: none;">เพิ่มพนักงาน</a>
+      </div>
+    </div>
+
+    <section aria-label="ภาพรวม" style="margin-top: 24px; display: flex; gap: 16px;">
+      <sc-for list="{{cards}}" as="c" hint-placeholder-count="4">
+        <a href="{{c.href}}" style="flex: 1; min-width: 0; box-sizing: border-box; padding: 20px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF; text-decoration: none; color: #1B2033; display: block;">
+          <p style="margin: 0; font-size: 14px; font-weight: 600; color: #4F566E;">{{c.label}}</p>
+          <p style="margin: 8px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 40px; font-weight: 600; line-height: 1.1; color: {{c.color}};">{{c.value}}</p>
+          <p style="margin: 6px 0 0; font-size: 14px; color: #4F566E;">{{c.hint}}</p>
+        </a>
+      </sc-for>
+    </section>
+
+    <div style="margin-top: 24px; display: flex; gap: 16px; align-items: flex-start;">
+
+      <section aria-labelledby="pending-h" style="flex: 3; min-width: 0; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF; overflow: hidden;">
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px;">
+          <h2 id="pending-h" style="margin: 0; font-size: 18px; font-weight: 600;">ใบลารออนุมัติ</h2>
+          <a href="Staffy-Leaves.dc.html" style="min-height: 44px; display: flex; align-items: center; color: #3B4BC4; font-size: 14px; font-weight: 600; text-decoration: none;">ดูทั้งหมด</a>
+        </div>
+        <ul style="margin: 0; padding: 0; list-style: none;">
+          <sc-for list="{{leaves}}" as="l" hint-placeholder-count="4">
+            <li style="display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-top: 1px solid #ECEEF6;">
+              <span aria-hidden="true" style="flex: none; width: 40px; height: 40px; border-radius: 20px; background: {{l.bg}}; color: {{l.fg}}; display: flex; align-items: center; justify-content: center; font-weight: 600;">{{l.initial}}</span>
+              <div style="flex: 1; min-width: 0;">
+                <p style="margin: 0; font-size: 16px; font-weight: 600;">{{l.name}}</p>
+                <p style="margin: 0; font-size: 14px; color: #4F566E;">{{l.type}} · {{l.range}} ({{l.days}} วัน)</p>
+              </div>
+              <form method="post" action="/leaves/{{l.id}}/reject" style="margin: 0;">
+                <input type="hidden" name="csrf" value="token">
+                <button type="submit" style="min-height: 44px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #8E1B12; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">ปฏิเสธ</button>
+              </form>
+              <form method="post" action="/leaves/{{l.id}}/approve" style="margin: 0;">
+                <input type="hidden" name="csrf" value="token">
+                <button type="submit" style="min-height: 44px; padding: 0 16px; border: 0; border-radius: 10px; background: #3B4BC4; color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">อนุมัติ</button>
+              </form>
+            </li>
+          </sc-for>
+        </ul>
+      </section>
+
+      <div style="flex: 2; min-width: 0; display: flex; flex-direction: column; gap: 16px;">
+        <section aria-labelledby="exp-h" style="border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF; overflow: hidden;">
+          <h2 id="exp-h" style="margin: 0; padding: 16px 20px; font-size: 18px; font-weight: 600;">สัญญาใกล้หมดใน 30 วัน</h2>
+          <ul style="margin: 0; padding: 0; list-style: none;">
+            <sc-for list="{{expiring}}" as="e" hint-placeholder-count="3">
+              <li style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 20px; border-top: 1px solid #ECEEF6;">
+                <div>
+                  <p style="margin: 0; font-size: 16px; font-weight: 600;">{{e.name}}</p>
+                  <p style="margin: 0; font-size: 14px; color: #4F566E;">{{e.dept}} · หมดสัญญา {{e.date}}</p>
+                </div>
+                <span style="flex: none; padding: 2px 10px; border-radius: 12px; font-size: 14px; font-weight: 600; background: {{e.bg}}; color: {{e.fg}};">อีก {{e.left}} วัน</span>
+              </li>
+            </sc-for>
+          </ul>
+        </section>
+
+        <section aria-labelledby="bd-h" style="border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF; overflow: hidden;">
+          <h2 id="bd-h" style="margin: 0; padding: 16px 20px; font-size: 18px; font-weight: 600;">วันเกิดเดือนนี้</h2>
+          <ul style="margin: 0; padding: 0; list-style: none;">
+            <sc-for list="{{birthdays}}" as="b" hint-placeholder-count="4">
+              <li style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 20px; border-top: 1px solid #ECEEF6;">
+                <p style="margin: 0; font-size: 16px; font-weight: 500;">{{b.name}}</p>
+                <p style="margin: 0; font-size: 14px; color: #4F566E;">{{b.date}}</p>
+              </li>
+            </sc-for>
+          </ul>
+        </section>
+      </div>
+
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const items = [
+      ['แดชบอร์ด', 'Staffy-Dashboard.dc.html', 'page', ''],
+      ['พนักงาน', 'Staffy-Employees.dc.html', '', ''],
+      ['การลา', 'Staffy-Leaves.dc.html', '', '4'],
+      ['บัญชีผู้ใช้', 'Staffy-Users.dc.html', '', ''],
+      ['บันทึกการใช้งาน', 'Staffy-Audit.dc.html', '', ''],
+      ['สถานะระบบ', 'Staffy-Status.dc.html', '', ''],
+      ['แผนก', 'Staffy-Departments.dc.html', '', ''],
+      ['ข้อมูลบริษัท', 'Staffy-Company.dc.html', '', '']
+    ];
+    const menu = items.map(([label, href, cur, badge]) => ({
+      label, href,
+      current: cur ? 'page' : 'false',
+      weight: cur ? 600 : 500,
+      bg: cur ? '#3B4BC4' : 'transparent',
+      fg: cur ? '#FFFFFF' : '#E4E6F6',
+      badge,
+      badgeShow: badge ? 'inline-block' : 'none'
+    }));
+    const a = { bg: '#E0E4FA', fg: '#2B3699' };
+    const b = { bg: '#FDE3C8', fg: '#7A3A07' };
+    const c = { bg: '#DDEFE4', fg: '#14573A' };
+    return {
+      menu,
+      cards: [
+        { label: 'ปฏิบัติงานอยู่', value: '128', hint: 'จากทั้งหมด 137 คน', color: '#232A5C', href: 'Staffy-Employees.dc.html' },
+        { label: 'ใบลารออนุมัติ', value: '4', hint: 'ต้องดำเนินการ', color: '#B3261E', href: 'Staffy-Leaves.dc.html' },
+        { label: 'สัญญาใกล้หมดใน 30 วัน', value: '3', hint: 'ควรต่อหรือแจ้งผล', color: '#8A5A00', href: 'Staffy-Employees.dc.html' },
+        { label: 'วันเกิดเดือนนี้', value: '5', hint: 'เดือนตุลาคม', color: '#14573A', href: 'Staffy-Employees.dc.html' }
+      ],
+      leaves: [
+        { id: 31, name: 'ธนากร พิทักษ์', initial: 'ธ', type: 'ลาป่วย', range: '21–22 ต.ค.', days: 2, ...b },
+        { id: 30, name: 'พิมพ์ชนก อรุณ', initial: 'พ', type: 'ลาพักร้อน', range: '27–31 ต.ค.', days: 5, ...c },
+        { id: 29, name: 'วิทยา สุขสม', initial: 'ว', type: 'ลากิจ', range: '23 ต.ค.', days: 1, ...a },
+        { id: 28, name: 'อรทัย มีชัย', initial: 'อ', type: 'ลาพักร้อน', range: '3–4 พ.ย.', days: 2, ...b }
+      ],
+      expiring: [
+        { name: 'ชัยวัฒน์ บุญมา', dept: 'ไอที', date: '2 พ.ย. 2569', left: 13, bg: '#FFF4DB', fg: '#6B4A00' },
+        { name: 'สุนิสา วงศ์ใหญ่', dept: 'บัญชี', date: '12 พ.ย. 2569', left: 23, bg: '#ECEEF6', fg: '#4F566E' },
+        { name: 'กิตติ ประสิทธิ์', dept: 'ขาย', date: '18 พ.ย. 2569', left: 29, bg: '#ECEEF6', fg: '#4F566E' }
+      ],
+      birthdays: [
+        { name: 'วิทยา สุขสม', date: '24 ต.ค.' },
+        { name: 'กัญญา เรืองศรี', date: '26 ต.ค.' },
+        { name: 'อรทัย มีชัย', date: '28 ต.ค.' },
+        { name: 'ภานุพงศ์ ทองดี', date: '30 ต.ค.' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

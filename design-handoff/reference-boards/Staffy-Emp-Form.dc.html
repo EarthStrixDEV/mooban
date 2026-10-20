@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Staffy ฟอร์มพนักงาน</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; box-sizing: border-box; display: flex; background: #F5F6FA; color: #1B2033; font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 240px; box-sizing: border-box; padding: 24px 16px; background: #232A5C; color: #F2F3FA; display: flex; flex-direction: column;">
+    <p style="margin: 0 8px 24px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Staffy</p>
+    <sc-for list="{{menu}}" as="m" hint-placeholder-count="6">
+      <a href="{{m.href}}" aria-current="{{m.current}}" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; margin-bottom: 4px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; font-size: 16px; font-weight: {{m.weight}}; background: {{m.bg}}; color: {{m.fg}};">
+        {{m.label}}
+        <span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: #D0584E; color: #FFFFFF; display: {{m.badgeShow}};">{{m.badge}}</span>
+      </a>
+    </sc-for>
+    <div style="margin-top: auto; padding: 12px; border-top: 1px solid #3A4278;">
+      <p style="margin: 0; font-size: 14px; font-weight: 600;">สมหญิง ใจดี</p>
+      <p style="margin: 2px 0 8px; font-size: 14px; color: #C9CDE8;">HR</p>
+      <a href="Staffy-Login.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">ออกจากระบบ</a>
+    </div>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; padding: 32px 40px 120px; box-sizing: border-box; max-width: 980px;">
+
+    <a href="Staffy-Employees.dc.html" style="min-height: 44px; display: inline-flex; align-items: center; color: #3B4BC4; font-size: 14px; font-weight: 600; text-decoration: none;">← กลับไปรายการพนักงาน</a>
+    <h1 style="margin: 4px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">เพิ่มพนักงานใหม่</h1>
+
+    <form id="employee-form" method="post" action="/employees/new" style="margin-top: 20px;">
+      <input type="hidden" name="csrf" value="token">
+
+      <div id="flash-error" role="alert" style="padding: 14px 18px; border-radius: 12px; background: #FDECEA; border: 1px solid #F3B8B2; color: #8E1B12;">
+        <p style="margin: 0; font-size: 16px; font-weight: 600;">บันทึกไม่สำเร็จ แก้ 3 ช่องด้านล่างแล้วลองอีกครั้ง</p>
+        <ul style="margin: 8px 0 0; padding-left: 20px; font-size: 14px; line-height: 1.7;">
+          <li><a href="#national_id" style="color: #8E1B12; font-weight: 500;">เลขบัตรประชาชน</a></li>
+          <li><a href="#email" style="color: #8E1B12; font-weight: 500;">อีเมล</a></li>
+          <li><a href="#hire_date" style="color: #8E1B12; font-weight: 500;">วันเริ่มงาน</a></li>
+        </ul>
+      </div>
+
+      <fieldset style="margin: 20px 0 0; padding: 24px; border: 1px solid #E1E4EF; border-radius: 16px; background: #FFFFFF;">
+        <legend style="padding: 0 8px; font-size: 18px; font-weight: 600;">ข้อมูลส่วนตัว</legend>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 200px;">
+            <label for="first_name" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">ชื่อ</label>
+            <input id="first_name" name="first_name" type="text" value="สุนิสา" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+          </div>
+          <div style="flex: 1; min-width: 200px;">
+            <label for="last_name" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">นามสกุล</label>
+            <input id="last_name" name="last_name" type="text" value="วงศ์ใหญ่" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+          </div>
+        </div>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 16px;">
+          <div style="flex: 1; min-width: 200px;">
+            <label for="national_id" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">เลขบัตรประชาชน</label>
+            <input id="national_id" name="national_id" type="text" inputmode="numeric" value="110170012345" aria-invalid="true" aria-describedby="err-nid" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 2px solid #B3261E; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+            <p id="err-nid" class="field-error" data-field="national_id" style="margin: 6px 0 0; font-size: 14px; font-weight: 500; color: #B3261E;">ต้องมี 13 หลัก (กรอกมา 12 หลัก)</p>
+          </div>
+          <div style="flex: 1; min-width: 200px;">
+            <label for="birth_date" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">วันเกิด</label>
+            <input id="birth_date" name="birth_date" type="date" value="1994-10-28" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset style="margin: 20px 0 0; padding: 24px; border: 1px solid #E1E4EF; border-radius: 16px; background: #FFFFFF;">
+        <legend style="padding: 0 8px; font-size: 18px; font-weight: 600;">การจ้างงาน</legend>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 200px;">
+            <label for="code" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">รหัสพนักงาน</label>
+            <input id="code" name="code" type="text" value="EMP-0138" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+          </div>
+          <div style="flex: 1; min-width: 200px;">
+            <label for="dept" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">แผนก</label>
+            <select id="dept" name="department" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 12px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;"><option>บัญชี</option><option>ขาย</option><option>ไอที</option></select>
+          </div>
+          <div style="flex: 1; min-width: 200px;">
+            <label for="position" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">ตำแหน่ง</label>
+            <input id="position" name="position" type="text" value="เจ้าหน้าที่บัญชี" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+          </div>
+        </div>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; margin-top: 16px;">
+          <div style="flex: 1; min-width: 200px;">
+            <label for="hire_date" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">วันเริ่มงาน</label>
+            <input id="hire_date" name="hire_date" type="date" value="2027-03-01" aria-invalid="true" aria-describedby="err-hire" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 2px solid #B3261E; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+            <p id="err-hire" class="field-error" data-field="hire_date" style="margin: 6px 0 0; font-size: 14px; font-weight: 500; color: #B3261E;">วันเริ่มงานต้องไม่อยู่ในอนาคตเกิน 90 วัน</p>
+          </div>
+          <div style="flex: 1; min-width: 200px;">
+            <label for="contract_end" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">วันสิ้นสุดสัญญา <span style="font-weight: 400; color: #4F566E;">(ถ้ามี)</span></label>
+            <input id="contract_end" name="contract_end" type="date" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset style="margin: 20px 0 0; padding: 24px; border: 1px solid #E1E4EF; border-radius: 16px; background: #FFFFFF;">
+        <legend style="padding: 0 8px; font-size: 18px; font-weight: 600;">ติดต่อ</legend>
+        <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 200px;">
+            <label for="email" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">อีเมล</label>
+            <input id="email" name="email" type="text" value="sunisa.w@example" aria-invalid="true" aria-describedby="err-email" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 2px solid #B3261E; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+            <p id="err-email" class="field-error" data-field="email" style="margin: 6px 0 0; font-size: 14px; font-weight: 500; color: #B3261E;">รูปแบบอีเมลไม่ถูกต้อง เช่น name@company.co.th</p>
+          </div>
+          <div style="flex: 1; min-width: 200px;">
+            <label for="phone" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">เบอร์โทร</label>
+            <input id="phone" name="phone" type="tel" value="081-234-5678" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+          </div>
+        </div>
+        <label for="address" style="display: block; margin: 16px 0 6px; font-size: 14px; font-weight: 600;">ที่อยู่</label>
+        <textarea id="address" name="address" rows="3" style="width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px; resize: vertical;">99/1 ถ.สุขุมวิท ต.ทุ่งสุขลา อ.ศรีราชา จ.ชลบุรี 20230</textarea>
+      </fieldset>
+
+      <fieldset style="margin: 20px 0 0; padding: 24px; border: 1px solid #C9CDE8; border-radius: 16px; background: #F0F2FB;">
+        <legend style="padding: 0 8px; font-size: 18px; font-weight: 600;">เงินเดือน <span style="font-size: 14px; font-weight: 500; color: #4F566E;">(เห็นเฉพาะ HR และผู้ดูแล)</span></legend>
+        <div style="max-width: 320px;">
+          <label for="salary" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">เงินเดือน (บาท)</label>
+          <input id="salary" name="salary" type="text" inputmode="decimal" value="28,000" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+        </div>
+      </fieldset>
+
+      <div style="position: sticky; bottom: 0; margin-top: 24px; padding: 16px 0; background: #F5F6FA; display: flex; gap: 12px; align-items: center;">
+        <button type="submit" style="min-height: 48px; padding: 0 28px; border: 0; border-radius: 10px; background: #3B4BC4; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">บันทึก</button>
+        <a href="Staffy-Employees.dc.html" style="min-height: 48px; box-sizing: border-box; padding: 0 20px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; display: flex; align-items: center; font-size: 16px; font-weight: 600; text-decoration: none;">ยกเลิก</a>
+      </div>
+    </form>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const items = [
+      ['แดชบอร์ด', 'Staffy-Dashboard.dc.html', '', ''],
+      ['พนักงาน', 'Staffy-Employees.dc.html', 'page', ''],
+      ['การลา', 'Staffy-Leaves.dc.html', '', '4'],
+      ['บัญชีผู้ใช้', 'Staffy-Users.dc.html', '', ''],
+      ['บันทึกการใช้งาน', 'Staffy-Audit.dc.html', '', ''],
+      ['สถานะระบบ', 'Staffy-Status.dc.html', '', ''],
+      ['แผนก', 'Staffy-Departments.dc.html', '', ''],
+      ['ข้อมูลบริษัท', 'Staffy-Company.dc.html', '', '']
+    ];
+    return {
+      menu: items.map(([label, href, cur, badge]) => ({
+        label, href,
+        current: cur ? 'page' : 'false',
+        weight: cur ? 600 : 500,
+        bg: cur ? '#3B4BC4' : 'transparent',
+        fg: cur ? '#FFFFFF' : '#E4E6F6',
+        badge,
+        badgeShow: badge ? 'inline-block' : 'none'
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

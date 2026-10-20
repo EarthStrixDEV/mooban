@@ -1,0 +1,48 @@
+/* Mooban tokens — generated from DESIGN-mooban.md §2 (canonical). Edit the spec and this together. */
+:root {
+  color-scheme: light dark;
+
+  /* สี — light */
+  --bg:        #F3F6F1;   /* พื้นหลังหน้า */
+  --card:      #FFFFFF;   /* การ์ด, nav, dialog */
+  --ink:       #17261D;   /* ข้อความหลัก */
+  --sub:       #55665B;   /* ข้อความรอง (meta, label) */
+  --line:      #E1E8DF;   /* เส้นคั่น, ขอบการ์ด */
+  --brand:     #1F7A4D;   /* ปุ่มหลัก, ลิงก์, สถานะ active */
+  --brandsoft: #DDEFE4;   /* พื้นปุ่มไอคอน, avatar ตัวเอง, nav active (เดสก์ท็อป) */
+  --chip:      #E9EFE7;   /* chip, skeleton, ปุ่มรอง, bubble คอมเมนต์ */
+  --onbrand:   #FFFFFF;   /* ตัวอักษรบน --brand */
+  --err:       #B3261E;
+  --warn:      #9A5B00;   /* กราฟ p95 */
+  --brand-strong: #17663F; /* + ข้อความสี brand บนพื้น --brandsoft (4.44:1 ไม่ผ่าน ใช้ตัวนี้แทน) */
+  --field-border: #76867B; /* + ขอบ input/textarea (เส้น --line ได้ 1.25:1 ไม่ผ่าน 3:1) */
+  --scrim:     rgba(8, 14, 10, 0.84);   /* ฉากหลัง lightbox เดสก์ท็อป */
+  --scrim-sheet: rgba(0, 0, 0, 0.55);   /* ฉากหลัง sheet ตั้ง handle */
+  --media-badge: rgba(0, 0, 0, 0.62);   /* ป้าย @handle บนรูป, ปุ่มบนรูป */
+
+  /* shape */
+  --r-card: 20px;  --r-tile: 16px;  --r-input: 14px;  --r-sm: 12px;
+  --r-pill: 22px;  --r-btn-lg: 28px; --r-sheet: 28px;
+
+  /* spacing (4px base) */
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px; --s-6: 24px; --s-8: 32px;
+
+  /* shadow */
+  --shadow-pill: 0 4px 14px rgba(0, 0, 0, 0.18);   /* live pill */
+
+  /* z-index */
+  --z-pill: 2; --z-nav: 10; --z-scrim: 40; --z-dialog: 50; --z-lightbox: 60; --z-toast: 70;
+
+  /* target */
+  --tap: 44px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0F1712;  --card: #18231C;  --ink: #EAF2EC;  --sub: #A6B8AB;
+    --line: #263329; --brand: #5CC48D; --brandsoft: #1E3A2B; --chip: #202D24;
+    --onbrand: #0F1712; --err: #FF8A80; --warn: #F2B24C;
+    --brand-strong: #5CC48D;  /* dark: --brand ผ่านอยู่แล้ว 5.74:1 บน --brandsoft */
+    --field-border: #667D6D;
+  }
+}

@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Mooban ฟีด</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+:root{--bg:#F3F6F1;--card:#FFFFFF;--ink:#17261D;--sub:#55665B;--line:#E1E8DF;--brand:#1F7A4D;--brandsoft:#DDEFE4;--chip:#E9EFE7;--onbrand:#FFFFFF}
+@media (prefers-color-scheme: dark){:root{--bg:#0F1712;--card:#18231C;--ink:#EAF2EC;--sub:#A6B8AB;--line:#263329;--brand:#5CC48D;--brandsoft:#1E3A2B;--chip:#202D24;--onbrand:#0F1712}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; background: var(--bg); color: var(--ink); font-family: 'Noto Sans Thai', system-ui, sans-serif; display: flex; flex-direction: column;">
+
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 16px 12px 8px 20px;">
+    <h1 style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 22px; font-weight: 600; color: var(--brand);">Mooban</h1>
+    <a href="Mooban-Gallery.dc.html" aria-label="แกลเลอรีรูป" style="width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; color: var(--ink); text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="3"></rect><circle cx="9" cy="10" r="1.6"></circle><path d="M4 17l5-4.5 4 3.5 3-2.5 4 3.5"></path></svg>
+    </a>
+  </header>
+
+  <div aria-live="polite" style="position: absolute; top: 64px; left: 0; right: 0; z-index: 2; display: flex; justify-content: center; pointer-events: none;">
+    <button type="button" style="pointer-events: auto; min-height: 44px; padding: 0 18px; border: 0; border-radius: 22px; background: var(--brand); color: var(--onbrand); font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,0.18);">มีโพสต์ใหม่ 3 รายการ</button>
+  </div>
+
+  <main style="flex: 1; min-height: 0; overflow: hidden; padding: 0 16px 90px;">
+
+    <a href="Mooban-Compose.dc.html" style="display: flex; align-items: center; gap: 12px; min-height: 64px; box-sizing: border-box; padding: 0 16px; border-radius: 20px; background: var(--card); border: 1px solid var(--line); text-decoration: none; color: var(--sub); font-size: 16px;">
+      <span aria-hidden="true" style="flex: none; width: 40px; height: 40px; border-radius: 20px; background: var(--brandsoft); color: var(--brand); display: flex; align-items: center; justify-content: center; font-weight: 600;">ฉ</span>
+      วันนี้มีอะไรในหมู่บ้าน
+    </a>
+
+    <sc-for list="{{posts}}" as="p" hint-placeholder-count="3">
+      <article style="margin-top: 12px; padding: 16px; border-radius: 20px; background: var(--card); border: 1px solid var(--line);">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span aria-hidden="true" style="flex: none; width: 40px; height: 40px; border-radius: 20px; background: {{p.bg}}; color: {{p.fg}}; display: flex; align-items: center; justify-content: center; font-weight: 600;">{{p.initial}}</span>
+          <div style="flex: 1; min-width: 0;">
+            <p style="margin: 0; font-size: 16px; font-weight: 600;">{{p.name}}</p>
+            <p style="margin: 0; font-size: 14px; color: var(--sub);">@{{p.handle}} · {{p.ago}}</p>
+          </div>
+        </div>
+        <p style="margin: 12px 0 0; font-size: 16px; line-height: 1.6;">{{p.text}}</p>
+        <div style="display: flex; gap: 4px; margin-top: 8px; margin-left: -12px;">
+          <button type="button" aria-pressed="{{p.liked}}" aria-label="ถูกใจ {{p.likes}}" style="min-height: 44px; padding: 0 12px; border: 0; border-radius: 22px; background: transparent; color: {{p.likeColor}}; font-family: inherit; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="{{p.likeFill}}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg>
+            {{p.likes}}
+          </button>
+          <button type="button" aria-label="ความคิดเห็น {{p.comments}}" style="min-height: 44px; padding: 0 12px; border: 0; border-radius: 22px; background: transparent; color: var(--sub); font-family: inherit; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H11l-5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg>
+            {{p.comments}}
+          </button>
+        </div>
+      </article>
+    </sc-for>
+
+  </main>
+
+  <nav aria-label="เมนูหลัก" style="position: absolute; left: 0; right: 0; bottom: 0; height: 72px; box-sizing: border-box; padding-bottom: 8px; display: flex; background: var(--card); border-top: 1px solid var(--line);">
+    <a href="Mooban-Feed.dc.html" aria-current="page" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: var(--brand); font-size: 12px; font-weight: 600; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-6.5 8 6.5v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"></path></svg>
+      ฟีด
+    </a>
+    <a href="Mooban-Gallery.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: var(--sub); font-size: 12px; font-weight: 500; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="3"></rect><circle cx="9" cy="10" r="1.6"></circle><path d="M4 17l5-4.5 4 3.5 3-2.5 4 3.5"></path></svg>
+      แกลเลอรี
+    </a>
+    <a href="Mooban-Feed.dc.html" style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; color: var(--sub); font-size: 12px; font-weight: 500; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="3.5"></circle><path d="M5 20c.8-3.6 3.5-5.5 7-5.5s6.2 1.9 7 5.5"></path></svg>
+      โปรไฟล์
+    </a>
+  </nav>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const mk = (o) => ({
+      ...o,
+      likeColor: o.liked ? 'var(--brand)' : 'var(--sub)',
+      likeFill: o.liked ? 'currentColor' : 'none'
+    });
+    return {
+      posts: [
+        mk({ name: 'สมชาย ใจดี', handle: 'somchai', initial: 'ส', bg: '#DDEFE4', fg: '#14573A', ago: '2 นาที', text: 'เช้านี้ตลาดนัดปากซอยมีมะม่วงน้ำดอกไม้ลูกโตมาก ใครผ่านไปแวะได้เลยนะ', likes: 12, comments: 3, liked: true }),
+        mk({ name: 'ป้าหน่อย', handle: 'pa_noi', initial: 'ป', bg: '#FBE6C8', fg: '#7A4A07', ago: '18 นาที', text: 'พรุ่งนี้ 4 โมงเย็นนัดทำความสะอาดคลองหน้าหมู่บ้านกัน ใครว่างมาช่วยกันนะคะ', likes: 27, comments: 9, liked: false }),
+        mk({ name: 'ลุงเอก', handle: 'lungek', initial: 'ล', bg: '#E3E0F5', fg: '#3B2F82', ago: '1 ชม.', text: 'ไฟถนนซอย 5 ดับสามคืนแล้ว แจ้งเทศบาลไปเรียบร้อย', likes: 8, comments: 2, liked: false })
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

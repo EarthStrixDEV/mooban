@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Mooban เดสก์ท็อป โปรไฟล์</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+:root{--bg:#F3F6F1;--card:#FFFFFF;--ink:#17261D;--sub:#55665B;--line:#E1E8DF;--brand:#1F7A4D;--brandsoft:#DDEFE4;--chip:#E9EFE7;--onbrand:#FFFFFF}
+@media (prefers-color-scheme: dark){:root{--bg:#0F1712;--card:#18231C;--ink:#EAF2EC;--sub:#A6B8AB;--line:#263329;--brand:#5CC48D;--brandsoft:#1E3A2B;--chip:#202D24;--onbrand:#0F1712}}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 860px; box-sizing: border-box; display: flex; justify-content: center; gap: 32px; padding: 0 32px; background: var(--bg); color: var(--ink); font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 220px; padding: 24px 0; display: flex; flex-direction: column;">
+    <p style="margin: 0 12px 20px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 26px; font-weight: 600; color: var(--brand);">Mooban</p>
+    <sc-for list="{{menu}}" as="m" hint-placeholder-count="4">
+      <a href="{{m.href}}" aria-current="{{m.current}}" style="min-height: 48px; box-sizing: border-box; padding: 0 14px; margin-bottom: 4px; border-radius: 24px; display: flex; align-items: center; gap: 12px; text-decoration: none; font-size: 16px; font-weight: {{m.weight}}; background: {{m.bg}}; color: {{m.fg}};">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{m.d}}"></path></svg>
+        {{m.label}}
+      </a>
+    </sc-for>
+    <a href="Mooban-Desktop-Feed.dc.html" style="margin-top: 16px; min-height: 48px; border-radius: 24px; background: var(--brand); color: var(--onbrand); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; text-decoration: none;">โพสต์ใหม่</a>
+  </nav>
+
+  <main style="flex: none; width: 640px; max-width: 100%; border-left: 1px solid var(--line); border-right: 1px solid var(--line); box-sizing: border-box;">
+
+    <div aria-hidden="true" style="height: 140px; background: linear-gradient(120deg, #7FB77E, #1F7A4D);"></div>
+    <section aria-label="ข้อมูลโปรไฟล์" style="padding: 0 24px 16px; position: relative;">
+      <span aria-hidden="true" style="display: flex; margin-top: -44px; width: 88px; height: 88px; border-radius: 44px; border: 4px solid var(--bg); box-sizing: border-box; background: var(--brandsoft); color: var(--brand); align-items: center; justify-content: center; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 36px; font-weight: 600;">ส</span>
+      <button type="button" style="position: absolute; right: 24px; top: 12px; min-height: 44px; padding: 0 20px; border: 1.5px solid var(--brand); border-radius: 22px; background: transparent; color: var(--ink); font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">แก้โปรไฟล์</button>
+      <h1 style="margin: 12px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">สมชาย ใจดี</h1>
+      <p style="margin: 2px 0 0; font-size: 14px; color: var(--sub);">@somchai · เข้าหมู่บ้านเมื่อ มิ.ย. 2569</p>
+      <p style="margin: 12px 0 0; font-size: 16px; line-height: 1.6;">คนสวนมือสมัครเล่น ชอบถ่ายรูปผลไม้ในสวน ใครอยากได้ลำไยทักมา</p>
+      <dl style="margin: 12px 0 0; display: flex; gap: 24px; font-size: 14px;">
+        <sc-for list="{{counts}}" as="c" hint-placeholder-count="3">
+          <div style="display: flex; gap: 6px; align-items: baseline;">
+            <dd style="margin: 0; order: 1; font-size: 16px; font-weight: 600;">{{c.value}}</dd>
+            <dt style="order: 2; color: var(--sub);">{{c.label}}</dt>
+          </div>
+        </sc-for>
+      </dl>
+    </section>
+
+    <div role="tablist" aria-label="เนื้อหาโปรไฟล์" style="display: flex; border-bottom: 1px solid var(--line);">
+      <button type="button" role="tab" id="d-tab-posts" aria-selected="true" aria-controls="d-panel" style="flex: 1; min-height: 52px; border: 0; border-bottom: 3px solid var(--brand); background: transparent; color: var(--ink); font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">โพสต์</button>
+      <button type="button" role="tab" id="d-tab-photos" aria-selected="false" aria-controls="d-panel" style="flex: 1; min-height: 52px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--sub); font-family: inherit; font-size: 16px; font-weight: 500; cursor: pointer;">รูป 21</button>
+    </div>
+
+    <div id="d-panel" role="tabpanel" aria-labelledby="d-tab-posts" style="padding: 16px 24px 32px;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <h2 style="margin: 0; font-size: 16px; font-weight: 600;">รูปล่าสุด</h2>
+        <a href="Mooban-Desktop-Gallery.dc.html" style="min-height: 44px; display: flex; align-items: center; color: var(--brand); font-size: 14px; font-weight: 600; text-decoration: none;">ดูทั้งหมด</a>
+      </div>
+      <ul style="margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+        <sc-for list="{{tiles}}" as="t" hint-placeholder-count="4">
+          <li style="aspect-ratio: 1 / 1; border-radius: 12px; background: {{t.bg}};"></li>
+        </sc-for>
+      </ul>
+
+      <sc-for list="{{posts}}" as="p" hint-placeholder-count="3">
+        <article style="margin-top: 16px; padding: 16px 20px; border-radius: 20px; background: var(--card); border: 1px solid var(--line);">
+          <p style="margin: 0; font-size: 14px; color: var(--sub);">{{p.ago}}</p>
+          <p style="margin: 6px 0 0; font-size: 16px; line-height: 1.6;">{{p.text}}</p>
+          <div style="display: flex; gap: 4px; margin-top: 8px; margin-left: -12px;">
+            <button type="button" aria-label="ถูกใจ {{p.likes}}" style="min-height: 44px; padding: 0 12px; border: 0; border-radius: 22px; background: transparent; color: var(--sub); font-family: inherit; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"></path></svg>
+              {{p.likes}}
+            </button>
+            <button type="button" aria-label="ความคิดเห็น {{p.comments}}" style="min-height: 44px; padding: 0 12px; border: 0; border-radius: 22px; background: transparent; color: var(--sub); font-family: inherit; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 5h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H11l-5 3.5V17H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"></path></svg>
+              {{p.comments}}
+            </button>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </main>
+
+  <aside aria-label="ข้างเคียง" style="flex: none; width: 300px; padding: 24px 0;">
+    <section style="padding: 16px 20px; border-radius: 20px; background: var(--card); border: 1px solid var(--line);">
+      <h2 style="margin: 0; font-size: 16px; font-weight: 600;">คนในหมู่บ้าน</h2>
+      <ul style="margin: 8px 0 0; padding: 0; list-style: none;">
+        <sc-for list="{{people}}" as="u" hint-placeholder-count="3">
+          <li style="display: flex; align-items: center; gap: 12px; min-height: 56px;">
+            <span aria-hidden="true" style="flex: none; width: 40px; height: 40px; border-radius: 20px; background: {{u.bg}}; color: {{u.fg}}; display: flex; align-items: center; justify-content: center; font-weight: 600;">{{u.initial}}</span>
+            <div style="flex: 1; min-width: 0;">
+              <p style="margin: 0; font-size: 14px; font-weight: 600;">{{u.name}}</p>
+              <p style="margin: 0; font-size: 14px; color: var(--sub);">@{{u.handle}}</p>
+            </div>
+            <a href="Mooban-Desktop-Profile.dc.html" aria-label="ดูโปรไฟล์ {{u.name}}" style="min-height: 44px; padding: 0 8px; display: flex; align-items: center; color: var(--brand); font-size: 14px; font-weight: 600; text-decoration: none;">ดู</a>
+          </li>
+        </sc-for>
+      </ul>
+    </section>
+    <section style="margin-top: 16px; padding: 16px 20px; border-radius: 20px; background: var(--card); border: 1px solid var(--line);">
+      <h2 style="margin: 0; font-size: 16px; font-weight: 600;">สถานะฟีดสด</h2>
+      <p role="status" style="margin: 8px 0 0; display: flex; align-items: center; gap: 8px; font-size: 14px;">
+        <span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 4px; background: var(--brand);"></span>
+        เชื่อมต่อแล้ว · ความหน่วง 43 ms
+      </p>
+      <a href="Mooban-Desktop-Test.dc.html" style="margin-top: 4px; min-height: 44px; display: flex; align-items: center; color: var(--brand); font-size: 14px; font-weight: 600; text-decoration: none;">ไปหน้าทดสอบระบบ</a>
+    </section>
+  </aside>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":860}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const items = [
+      ['ฟีด', 'Mooban-Desktop-Feed.dc.html', 'M4 11l8-6.5 8 6.5v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z'],
+      ['แกลเลอรี', 'Mooban-Desktop-Gallery.dc.html', 'M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z M4 17l5-4.5 4 3.5 3-2.5 4 3.5'],
+      ['โปรไฟล์', 'Mooban-Desktop-Profile.dc.html', 'M12 12a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z M5 20c.8-3.6 3.5-5.5 7-5.5s6.2 1.9 7 5.5'],
+      ['ทดสอบระบบ', 'Mooban-Desktop-Test.dc.html', 'M5 19V11 M12 19V5 M19 19v-6']
+    ];
+    const menu = items.map(([label, href, d]) => {
+      const cur = label === 'โปรไฟล์';
+      return { label, href, d, current: cur ? 'page' : 'false', weight: cur ? 600 : 500, bg: cur ? 'var(--brandsoft)' : 'transparent', fg: 'var(--ink)' };
+    });
+    return {
+      menu,
+      counts: [
+        { label: 'โพสต์', value: 48 },
+        { label: 'รูป', value: 21 },
+        { label: 'ถูกใจ', value: 312 }
+      ],
+      tiles: [
+        { bg: 'linear-gradient(160deg,#E4B363,#B5651D)' },
+        { bg: 'linear-gradient(160deg,#7FB77E,#2F6B3A)' },
+        { bg: 'linear-gradient(160deg,#9CB4D8,#3E5C8A)' },
+        { bg: 'linear-gradient(160deg,#F1D27A,#B88A12)' }
+      ],
+      posts: [
+        { ago: '2 นาทีที่แล้ว', text: 'เช้านี้ตลาดนัดปากซอยมีมะม่วงน้ำดอกไม้ลูกโตมาก ใครผ่านไปแวะได้เลยนะ', likes: 12, comments: 3 },
+        { ago: 'เมื่อวาน', text: 'ลำไยปีนี้หวานกว่าปีที่แล้ว แบ่งกันกินฟรีหน้าบ้านนะครับ', likes: 34, comments: 11 },
+        { ago: '3 วันที่แล้ว', text: 'ฝนตกหนักซอย 5 น้ำเริ่มท่วมขัง ระวังกันด้วยนะครับ', likes: 19, comments: 6 }
+      ],
+      people: [
+        { name: 'ป้าหน่อย', handle: 'pa_noi', initial: 'ป', bg: '#FBE6C8', fg: '#7A4A07' },
+        { name: 'ลุงเอก', handle: 'lungek', initial: 'ล', bg: '#E3E0F5', fg: '#3B2F82' },
+        { name: 'น้องนุ่น', handle: 'nong', initial: 'น', bg: '#F8DCE2', fg: '#8A2142' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

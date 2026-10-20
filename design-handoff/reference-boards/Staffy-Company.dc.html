@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Staffy ข้อมูลบริษัท</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 1100px; box-sizing: border-box; display: flex; background: #F5F6FA; color: #1B2033; font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 240px; box-sizing: border-box; padding: 24px 16px; background: #232A5C; color: #F2F3FA; display: flex; flex-direction: column;">
+    <p style="margin: 0 8px 24px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Staffy</p>
+    <sc-for list="{{menu}}" as="m" hint-placeholder-count="8">
+      <a href="{{m.href}}" aria-current="{{m.current}}" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; margin-bottom: 4px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; font-size: 16px; font-weight: {{m.weight}}; background: {{m.bg}}; color: {{m.fg}};">
+        {{m.label}}
+        <span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: #B3261E; color: #FFFFFF; display: {{m.badgeShow}};">{{m.badge}}</span>
+      </a>
+    </sc-for>
+    <div style="margin-top: auto; padding: 12px; border-top: 1px solid #3A4278;">
+      <p style="margin: 0; font-size: 14px; font-weight: 600;">ผู้ดูแลระบบ</p>
+      <p style="margin: 2px 0 8px; font-size: 14px; color: #C9CDE8;">Admin</p>
+      <a href="Staffy-Account.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">บัญชีของฉัน</a>
+      <a href="Staffy-Login.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">ออกจากระบบ</a>
+    </div>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; padding: 32px 40px; box-sizing: border-box;">
+
+    <div>
+      <h1 style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">ข้อมูลบริษัท</h1>
+      <p style="margin: 4px 0 0; font-size: 14px; color: #4F566E;">ใช้บนบัตรพนักงาน อีเมลสรุปประจำวัน และค่าเริ่มต้นของระบบ · เฉพาะผู้ดูแลระบบ</p>
+    </div>
+
+    <div id="flash-error" role="alert" style="margin-top: 20px; padding: 12px 16px; border-radius: 12px; background: #FDECEA; border: 1px solid #F3B8B2; color: #8E1B12; font-size: 14px; font-weight: 500;">บันทึกไม่สำเร็จ กรุณาแก้ 1 ช่องที่มีข้อความสีแดง</div>
+
+    <div style="margin-top: 20px; display: flex; gap: 24px; align-items: flex-start;">
+
+      <form method="post" action="/admin/company" style="flex: 1; min-width: 0;">
+        <input type="hidden" name="csrf" value="token">
+
+        <section aria-labelledby="s1" style="padding: 24px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF;">
+          <h2 id="s1" style="margin: 0 0 16px; font-size: 18px; font-weight: 600;">ข้อมูลทั่วไป</h2>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+            <div>
+              <label for="name_th" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">ชื่อบริษัท (ไทย)</label>
+              <input id="name_th" name="name_th" type="text" value="บริษัท ตัวอย่างเทรดดิ้ง จำกัด" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+            </div>
+            <div>
+              <label for="name_en" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">ชื่อบริษัท (อังกฤษ)</label>
+              <input id="name_en" name="name_en" type="text" value="Example Trading Co., Ltd." style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+            </div>
+            <div>
+              <label for="tax" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">เลขประจำตัวผู้เสียภาษี</label>
+              <input id="tax" name="tax_id" type="text" inputmode="numeric" value="01055" aria-invalid="true" aria-describedby="tax-err" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 2px solid #B3261E; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+              <p id="tax-err" class="field-error" data-field="tax_id" style="margin: 6px 0 0; font-size: 14px; color: #B3261E; font-weight: 500;">ต้องเป็นตัวเลข 13 หลัก</p>
+            </div>
+            <div>
+              <label for="phone" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">โทรศัพท์</label>
+              <input id="phone" name="phone" type="tel" value="038-123-456" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+            </div>
+          </div>
+          <label for="addr" style="display: block; margin: 16px 0 6px; font-size: 14px; font-weight: 600;">ที่อยู่</label>
+          <textarea id="addr" name="address" rows="3" style="width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; line-height: 1.6; color: #1B2033; resize: none;">99/9 หมู่ 5 ต.ทุ่งสุขลา อ.ศรีราชา จ.ชลบุรี 20230</textarea>
+        </section>
+
+        <section aria-labelledby="s2" style="margin-top: 20px; padding: 24px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF;">
+          <h2 id="s2" style="margin: 0 0 4px; font-size: 18px; font-weight: 600;">ค่าเริ่มต้นของระบบ</h2>
+          <p style="margin: 0 0 16px; font-size: 14px; color: #4F566E;">ใช้ตอนเพิ่มพนักงานใหม่และคำนวณวันลา</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+            <div>
+              <label for="prefix" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">รหัสพนักงานขึ้นต้นด้วย</label>
+              <input id="prefix" name="emp_prefix" type="text" value="EMP-" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+            </div>
+            <div>
+              <label for="wstart" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">เริ่มงาน</label>
+              <input id="wstart" name="work_start" type="time" value="08:30" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+            </div>
+            <div>
+              <label for="wend" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">เลิกงาน</label>
+              <input id="wend" name="work_end" type="time" value="17:30" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+            </div>
+          </div>
+          <p style="margin: 20px 0 8px; font-size: 14px; font-weight: 600;">สิทธิ์วันลาต่อปี (วัน)</p>
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+            <sc-for list="{{quotas}}" as="q" hint-placeholder-count="3">
+              <div>
+                <label for="{{q.id}}" style="display: block; margin-bottom: 6px; font-size: 14px; color: #4F566E;">{{q.label}}</label>
+                <input id="{{q.id}}" name="{{q.id}}" type="number" min="0" value="{{q.value}}" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+              </div>
+            </sc-for>
+          </div>
+        </section>
+
+        <section aria-labelledby="s3" style="margin-top: 20px; padding: 24px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF;">
+          <h2 id="s3" style="margin: 0 0 4px; font-size: 18px; font-weight: 600;">อีเมลสรุปประจำวัน</h2>
+          <p style="margin: 0 0 16px; font-size: 14px; color: #4F566E;">งานตั้งเวลาจะส่งสรุปสัญญาใกล้หมด วันเกิด และใบลารออนุมัติ</p>
+          <div style="display: grid; grid-template-columns: 1fr 160px; gap: 16px;">
+            <div>
+              <label for="mailto" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">ส่งถึง</label>
+              <input id="mailto" name="digest_to" type="email" value="hr@example.co.th" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+            </div>
+            <div>
+              <label for="mailtime" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">เวลาส่ง</label>
+              <input id="mailtime" name="digest_time" type="time" value="07:00" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+            </div>
+          </div>
+          <label style="margin-top: 16px; min-height: 44px; display: flex; align-items: center; gap: 12px; font-size: 16px;">
+            <input type="checkbox" name="digest_on" checked style="width: 22px; height: 22px; accent-color: #3B4BC4;">
+            ส่งอีเมลสรุปทุกวัน
+          </label>
+        </section>
+
+        <div style="margin-top: 24px; display: flex; gap: 12px;">
+          <button type="submit" style="min-height: 48px; padding: 0 24px; border: 0; border-radius: 10px; background: #3B4BC4; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">บันทึกการตั้งค่า</button>
+          <a href="Staffy-Dashboard.dc.html" style="min-height: 48px; box-sizing: border-box; padding: 0 20px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; display: flex; align-items: center; font-size: 16px; font-weight: 600; text-decoration: none;">ยกเลิก</a>
+        </div>
+      </form>
+
+      <aside aria-label="โลโก้และตัวอย่างบัตร" style="flex: none; width: 320px;">
+        <section style="padding: 24px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF;">
+          <h2 style="margin: 0 0 12px; font-size: 18px; font-weight: 600;">โลโก้บริษัท</h2>
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <span aria-hidden="true" style="flex: none; width: 72px; height: 72px; border-radius: 16px; background: #232A5C; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">ต</span>
+            <div>
+              <label for="logo" style="min-height: 44px; box-sizing: border-box; padding: 0 16px; border: 1.5px solid #C5CADB; border-radius: 10px; display: inline-flex; align-items: center; font-size: 14px; font-weight: 600; cursor: pointer;">เลือกไฟล์ใหม่</label>
+              <input id="logo" name="logo" type="file" accept="image/png,image/jpeg" style="position: absolute; width: 1px; height: 1px; opacity: 0;">
+              <p style="margin: 6px 0 0; font-size: 14px; color: #4F566E;">PNG หรือ JPG ไม่เกิน 1 MB</p>
+            </div>
+          </div>
+        </section>
+
+        <section aria-label="ตัวอย่างบัตรพนักงาน" style="margin-top: 20px; padding: 24px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF;">
+          <h2 style="margin: 0 0 12px; font-size: 18px; font-weight: 600;">ตัวอย่างบัตรพนักงาน</h2>
+          <div style="border-radius: 14px; overflow: hidden; border: 1px solid #D5D9E8;">
+            <div style="padding: 14px 16px; background: #232A5C; color: #FFFFFF; display: flex; align-items: center; gap: 10px;">
+              <span aria-hidden="true" style="width: 32px; height: 32px; border-radius: 8px; background: #FFFFFF; color: #232A5C; display: flex; align-items: center; justify-content: center; font-weight: 600;">ต</span>
+              <span style="font-size: 14px; font-weight: 600;">ตัวอย่างเทรดดิ้ง</span>
+            </div>
+            <div style="padding: 16px; display: flex; gap: 12px; align-items: center;">
+              <span aria-hidden="true" style="flex: none; width: 56px; height: 56px; border-radius: 28px; background: #E0E4FA; color: #2B3699; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 600;">ส</span>
+              <div>
+                <p style="margin: 0; font-size: 16px; font-weight: 600;">สุนิสา วงศ์ใหญ่</p>
+                <p style="margin: 0; font-size: 14px; color: #4F566E;">เจ้าหน้าที่บัญชี · EMP-0137</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const items = [
+      ['แดชบอร์ด', 'Staffy-Dashboard.dc.html'], ['พนักงาน', 'Staffy-Employees.dc.html'], ['การลา', 'Staffy-Leaves.dc.html'],
+      ['บัญชีผู้ใช้', 'Staffy-Users.dc.html'], ['บันทึกการใช้งาน', 'Staffy-Audit.dc.html'], ['สถานะระบบ', 'Staffy-Status.dc.html'],
+      ['แผนก', 'Staffy-Departments.dc.html'], ['ข้อมูลบริษัท', 'Staffy-Company.dc.html']
+    ];
+    const cur = 7;
+    const menu = items.map(([label, href], i) => ({
+      label, href,
+      current: i === cur ? 'page' : 'false',
+      weight: i === cur ? 600 : 500,
+      bg: i === cur ? '#3B4BC4' : 'transparent',
+      fg: i === cur ? '#FFFFFF' : '#E4E6F6',
+      badge: '4',
+      badgeShow: label === 'การลา' ? 'inline-block' : 'none'
+    }));
+    const quotas = [
+      { id: 'quota_sick', label: 'ลาป่วย', value: 30 },
+      { id: 'quota_personal', label: 'ลากิจ', value: 6 },
+      { id: 'quota_annual', label: 'พักร้อน', value: 10 }
+    ];
+    return { menu, quotas };
+  }
+}
+</script>
+</body>
+</html>

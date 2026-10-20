@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Staffy แผนก</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; box-sizing: border-box; display: flex; background: #F5F6FA; color: #1B2033; font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 240px; box-sizing: border-box; padding: 24px 16px; background: #232A5C; color: #F2F3FA; display: flex; flex-direction: column;">
+    <p style="margin: 0 8px 24px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Staffy</p>
+    <sc-for list="{{menu}}" as="m" hint-placeholder-count="8">
+      <a href="{{m.href}}" aria-current="{{m.current}}" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; margin-bottom: 4px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; font-size: 16px; font-weight: {{m.weight}}; background: {{m.bg}}; color: {{m.fg}};">
+        {{m.label}}
+        <span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: #B3261E; color: #FFFFFF; display: {{m.badgeShow}};">{{m.badge}}</span>
+      </a>
+    </sc-for>
+    <div style="margin-top: auto; padding: 12px; border-top: 1px solid #3A4278;">
+      <p style="margin: 0; font-size: 14px; font-weight: 600;">สมหญิง ใจดี</p>
+      <p style="margin: 2px 0 8px; font-size: 14px; color: #C9CDE8;">HR</p>
+      <a href="Staffy-Account.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">บัญชีของฉัน</a>
+      <a href="Staffy-Login.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">ออกจากระบบ</a>
+    </div>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; padding: 32px 40px; box-sizing: border-box;">
+
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+      <div>
+        <h1 style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">แผนก</h1>
+        <p style="margin: 4px 0 0; font-size: 14px; color: #4F566E;">6 แผนก · ใช้กรองรายชื่อพนักงานและกำหนดหัวหน้าอนุมัติลา</p>
+      </div>
+      <a href="#" style="min-height: 44px; box-sizing: border-box; padding: 0 18px; border-radius: 10px; background: #3B4BC4; color: #FFFFFF; display: flex; align-items: center; font-size: 14px; font-weight: 600; text-decoration: none;">เพิ่มแผนก</a>
+    </div>
+
+    <div id="flash-ok" role="status" style="margin-top: 20px; padding: 12px 16px; border-radius: 12px; background: #E6F4EA; border: 1px solid #B5DFC2; color: #14532D; font-size: 14px; font-weight: 500;">เพิ่มแผนกจัดซื้อ เรียบร้อยแล้ว</div>
+
+    <div style="margin-top: 20px; display: flex; gap: 24px; align-items: flex-start;">
+
+      <div style="flex: 1; min-width: 0; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF; overflow: hidden;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">รายการแผนก</caption>
+          <thead>
+            <tr style="background: #F0F2F9; text-align: left;">
+              <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">แผนก</th>
+              <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">รหัส</th>
+              <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">หัวหน้าแผนก</th>
+              <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E; text-align: right;">พนักงาน</th>
+              <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">สถานะ</th>
+              <th scope="col" style="padding: 12px 16px;"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">จัดการ</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{depts}}" as="d" hint-placeholder-count="6">
+              <tr style="border-top: 1px solid #ECEEF6; background: {{d.rowBg}};">
+                <td style="padding: 12px 16px; font-size: 16px; font-weight: 600;">{{d.name}}</td>
+                <td style="padding: 12px 16px; color: #4F566E;">{{d.code}}</td>
+                <td style="padding: 12px 16px;">{{d.head}}</td>
+                <td style="padding: 12px 16px; text-align: right; font-weight: 600;">{{d.count}}</td>
+                <td style="padding: 12px 16px;"><span style="display: inline-block; padding: 2px 10px; border-radius: 12px; font-weight: 600; background: {{d.stBg}}; color: {{d.stFg}};">{{d.status}}</span></td>
+                <td style="padding: 6px 8px; text-align: right;">
+                  <a href="#" aria-label="แก้ไขแผนก{{d.name}}" style="min-height: 44px; padding: 0 12px; display: inline-flex; align-items: center; color: #3B4BC4; font-size: 14px; font-weight: 600; text-decoration: none;">แก้ไข</a>
+                </td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+
+      <aside aria-label="แก้ไขแผนก" style="flex: none; width: 360px;">
+        <form method="post" action="/admin/departments/3" style="padding: 24px; border-radius: 16px; background: #FFFFFF; border: 2px solid #3B4BC4;">
+          <input type="hidden" name="csrf" value="token">
+          <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600;">แก้ไขแผนก</h2>
+
+          <label for="dname" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">ชื่อแผนก</label>
+          <input id="dname" name="name" type="text" value="ขาย" aria-invalid="true" aria-describedby="dname-err" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 2px solid #B3261E; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+          <p id="dname-err" class="field-error" data-field="name" style="margin: 6px 0 0; font-size: 14px; color: #B3261E; font-weight: 500;">มีแผนกชื่อ "ขาย" อยู่แล้ว</p>
+
+          <label for="dcode" style="display: block; margin: 16px 0 6px; font-size: 14px; font-weight: 600;">รหัสแผนก</label>
+          <input id="dcode" name="code" type="text" value="SAL" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+
+          <label for="dhead" style="display: block; margin: 16px 0 6px; font-size: 14px; font-weight: 600;">หัวหน้าแผนก</label>
+          <select id="dhead" name="head" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 12px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+            <option>วิทยา สุขสม (EMP-0134)</option><option>ไม่ระบุ</option>
+          </select>
+
+          <label style="margin-top: 16px; min-height: 44px; display: flex; align-items: center; gap: 12px; font-size: 16px;">
+            <input type="checkbox" name="active" checked style="width: 22px; height: 22px; accent-color: #3B4BC4;">
+            เปิดใช้งานแผนกนี้
+          </label>
+
+          <div style="margin-top: 16px; display: flex; gap: 12px;">
+            <button type="submit" style="flex: 1; min-height: 48px; border: 0; border-radius: 10px; background: #3B4BC4; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">บันทึก</button>
+            <a href="Staffy-Departments.dc.html" style="min-height: 48px; box-sizing: border-box; padding: 0 18px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; display: flex; align-items: center; font-size: 16px; font-weight: 600; text-decoration: none;">ยกเลิก</a>
+          </div>
+        </form>
+
+        <div style="margin-top: 16px; padding: 16px; border-radius: 12px; background: #FFF4DB; border: 1px solid #F0D58A; color: #6B4A00; font-size: 14px; line-height: 1.7;">
+          แผนกที่ยังมีพนักงานลบไม่ได้ ให้ย้ายพนักงานไปแผนกอื่นก่อน หรือปิดใช้งานแผนกแทน
+        </div>
+      </aside>
+
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const items = [
+      ['แดชบอร์ด', 'Staffy-Dashboard.dc.html'], ['พนักงาน', 'Staffy-Employees.dc.html'], ['การลา', 'Staffy-Leaves.dc.html'],
+      ['บัญชีผู้ใช้', 'Staffy-Users.dc.html'], ['บันทึกการใช้งาน', 'Staffy-Audit.dc.html'], ['สถานะระบบ', 'Staffy-Status.dc.html'],
+      ['แผนก', 'Staffy-Departments.dc.html'], ['ข้อมูลบริษัท', 'Staffy-Company.dc.html']
+    ];
+    const cur = 6;
+    const menu = items.map(([label, href], i) => ({
+      label, href,
+      current: i === cur ? 'page' : 'false',
+      weight: i === cur ? 600 : 500,
+      bg: i === cur ? '#3B4BC4' : 'transparent',
+      fg: i === cur ? '#FFFFFF' : '#E4E6F6',
+      badge: '4',
+      badgeShow: label === 'การลา' ? 'inline-block' : 'none'
+    }));
+    const on = { status: 'ใช้งาน', stBg: '#E6F4EA', stFg: '#14532D', rowBg: 'transparent' };
+    const off = { status: 'ปิดใช้งาน', stBg: '#ECEEF6', stFg: '#4F566E', rowBg: 'transparent' };
+    const depts = [
+      { name: 'บัญชี', code: 'ACC', head: 'กัญญา เรืองศรี', count: 18, ...on },
+      { name: 'ขาย', code: 'SAL', head: 'วิทยา สุขสม', count: 42, ...on, rowBg: '#EEF0FC' },
+      { name: 'ไอที', code: 'IT', head: 'ธนากร พิทักษ์', count: 15, ...on },
+      { name: 'ทรัพยากรบุคคล', code: 'HR', head: 'สมหญิง ใจดี', count: 6, ...on },
+      { name: 'จัดซื้อ', code: 'PUR', head: 'ไม่ระบุ', count: 0, ...on },
+      { name: 'คลังสินค้า (เก่า)', code: 'WH', head: 'ไม่ระบุ', count: 0, ...off }
+    ];
+    return { menu, depts };
+  }
+}
+</script>
+</body>
+</html>

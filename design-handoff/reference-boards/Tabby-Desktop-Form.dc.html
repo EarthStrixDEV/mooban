@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Tabby เดสก์ท็อป แก้ไขรายการ</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="position: relative; width: 100%; min-height: 800px; box-sizing: border-box; display: flex; overflow: hidden; background: #FBF6EF; color: #2B2118; font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 232px; box-sizing: border-box; padding: 24px 16px; background: #2B2118; color: #FBF6EF;">
+    <p style="margin: 0 8px 28px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Tabby</p>
+    <p style="min-height: 44px; box-sizing: border-box; padding: 0 12px; margin: 0 0 4px; border-radius: 12px; display: flex; align-items: center; background: {{accent}}; color: #2B2118; font-size: 16px; font-weight: 600;">รายการหนี้</p>
+    <p style="min-height: 44px; box-sizing: border-box; padding: 0 12px; margin: 0; display: flex; align-items: center; color: #E8D9C5; font-size: 16px;">ทดสอบระบบ</p>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; padding: 32px 40px; box-sizing: border-box;">
+    <h1 style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">รายการหนี้</h1>
+    <section style="margin-top: 24px; display: flex; gap: 16px;">
+      <div style="flex: 1; padding: 20px 24px; border-radius: 20px; background: #2B2118; color: #FBF6EF;"><p style="margin: 0; font-size: 14px; color: #E8D9C5;">ยอดค้างรวม</p><p style="margin: 4px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 32px; font-weight: 600;">฿12,345</p></div>
+      <div style="flex: 1; padding: 20px 24px; border-radius: 20px; background: #FFFFFF;"><p style="margin: 0; font-size: 14px; color: #6B5B4B;">เพื่อนที่ติดเงิน</p><p style="margin: 4px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 32px; font-weight: 600;">7 คน</p></div>
+      <div style="flex: 1; padding: 20px 24px; border-radius: 20px; background: #FFFFFF;"><p style="margin: 0; font-size: 14px; color: #6B5B4B;">รายการค้างจ่าย</p><p style="margin: 4px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 32px; font-weight: 600;">10 รายการ</p></div>
+    </section>
+    <div style="margin-top: 24px; border-radius: 20px; background: #FFFFFF; overflow: hidden;">
+      <ul style="margin: 0; padding: 0; list-style: none;">
+        <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+          <li style="display: flex; align-items: center; gap: 16px; min-height: 60px; padding: 0 20px; border-top: {{r.divider}};">
+            <span style="flex: 1; font-size: 16px; font-weight: 600;">{{r.name}}</span>
+            <span style="flex: 2; font-size: 14px; color: #6B5B4B;">{{r.note}}</span>
+            <span style="flex: 1; text-align: right; font-size: 16px; font-weight: 600;">{{r.amount}}</span>
+          </li>
+        </sc-for>
+      </ul>
+    </div>
+  </main>
+
+  <div style="position: absolute; inset: 0; background: rgba(43,33,24,0.6);"></div>
+
+  <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px;">
+    <form role="dialog" aria-modal="true" aria-labelledby="fm-title" style="width: 100%; max-width: 460px; box-sizing: border-box; padding: 32px; border-radius: 28px; background: #FFFFFF; box-shadow: 0 24px 60px rgba(43,33,24,0.3);">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <h2 id="fm-title" style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 22px; font-weight: 600;">แก้ไขรายการ</h2>
+        <a href="Tabby-Desktop.dc.html" aria-label="ปิด" style="width: 44px; height: 44px; margin-right: -12px; border-radius: 22px; display: flex; align-items: center; justify-content: center; color: #6B5B4B; text-decoration: none;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
+        </a>
+      </div>
+
+      <label for="f-name" style="display: block; margin: 20px 0 8px; font-size: 14px; font-weight: 600;">ใครยืม</label>
+      <input id="f-name" type="text" value="แพรว" style="width: 100%; box-sizing: border-box; height: 52px; padding: 0 16px; border: 1.5px solid #D9CBB6; border-radius: 16px; background: #FFFFFF; color: #2B2118; font-family: inherit; font-size: 16px;">
+
+      <label for="f-amt" style="display: block; margin: 20px 0 8px; font-size: 14px; font-weight: 600;">จำนวนเงิน (บาท)</label>
+      <input id="f-amt" type="text" inputmode="decimal" value="280" style="width: 100%; box-sizing: border-box; height: 52px; padding: 0 16px; border: 1.5px solid #D9CBB6; border-radius: 16px; background: #FFFFFF; color: #2B2118; font-family: inherit; font-size: 16px;">
+
+      <label for="f-note" style="display: block; margin: 20px 0 8px; font-size: 14px; font-weight: 600;">โน้ต <span style="font-weight: 400; color: #6B5B4B;">(ไม่ใส่ก็ได้)</span></label>
+      <input id="f-note" type="text" value="ค่าแท็กซี่กลับบ้าน" style="width: 100%; box-sizing: border-box; height: 52px; padding: 0 16px; border: 1.5px solid #D9CBB6; border-radius: 16px; background: #FFFFFF; color: #2B2118; font-family: inherit; font-size: 16px;">
+
+      <div style="margin-top: 28px; display: flex; gap: 12px;">
+        <button type="submit" style="flex: 1; height: 52px; border: 0; border-radius: 26px; background: {{accent}}; color: #2B2118; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">บันทึก</button>
+        <a href="Tabby-Desktop.dc.html" style="height: 52px; box-sizing: border-box; padding: 0 24px; border-radius: 26px; background: #F0E7DA; color: #2B2118; display: flex; align-items: center; font-size: 16px; font-weight: 600; text-decoration: none;">ยกเลิก</a>
+      </div>
+      <button type="button" style="margin-top: 12px; width: 100%; min-height: 44px; border: 0; background: transparent; color: #B3261E; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">ลบรายการนี้</button>
+    </form>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#E2762B","options":["#E2762B","#E0A030","#D0584E"]},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const line = '1px solid #F3EBDF';
+    const none = '0 solid transparent';
+    return {
+      accent: this.props.accent ?? '#E2762B',
+      rows: [
+        { name: 'ต้น', note: 'ค่าข้าวเที่ยง', amount: '฿180', divider: none },
+        { name: 'แพรว', note: 'ค่าแท็กซี่กลับบ้าน', amount: '฿280', divider: line },
+        { name: 'มีน', note: 'ค่าสุกี้ 4 คน', amount: '฿650', divider: line },
+        { name: 'โอ๊ต', note: 'ตั๋วหนัง 2 ที่นั่ง', amount: '฿420', divider: line },
+        { name: 'ฟ้า', note: 'ค่าน้ำมันไปเขาใหญ่', amount: '฿500', divider: line }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

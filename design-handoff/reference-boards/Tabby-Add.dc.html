@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Tabby เพิ่มรายการ</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; background: #FBF6EF; color: #2B2118; font-family: 'Noto Sans Thai', system-ui, sans-serif; display: flex; flex-direction: column;">
+
+  <header style="display: flex; align-items: center; gap: 4px; padding: 20px 12px 0 8px;">
+    <a href="Main.dc.html" aria-label="กลับไปรายการหนี้" style="width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; color: #2B2118; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+    </a>
+    <h1 style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 22px; font-weight: 600;">เพิ่มรายการ</h1>
+  </header>
+
+  <form style="flex: 1; min-height: 0; overflow: hidden; padding: 20px 20px 0; display: flex; flex-direction: column; gap: 20px;">
+
+    <div>
+      <label for="friend" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600;">ใครยืม</label>
+      <input id="friend" name="friend_name" type="text" value="ต้น" autocomplete="off" style="width: 100%; box-sizing: border-box; height: 52px; padding: 0 16px; border: 1.5px solid #D9CBB6; border-radius: 16px; background: #FFFFFF; color: #2B2118; font-family: inherit; font-size: 16px;">
+      <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+        <sc-for list="{{friends}}" as="f" hint-placeholder-count="4">
+          <button type="button" style="min-height: 44px; padding: 0 16px; border: 0; border-radius: 22px; background: #F0E7DA; color: #2B2118; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer;">{{f}}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div>
+      <label for="amount" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600;">จำนวนเงิน (บาท)</label>
+      <input id="amount" name="amount" type="text" inputmode="decimal" placeholder="0" aria-invalid="true" aria-describedby="amount-err" style="width: 100%; box-sizing: border-box; height: 64px; padding: 0 16px; border: 2px solid #B3261E; border-radius: 16px; background: #FFFFFF; color: #2B2118; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">
+      <p id="amount-err" style="margin: 8px 0 0; font-size: 14px; color: #B3261E; font-weight: 500;">กรอกจำนวนเงินเป็นตัวเลข เช่น 150</p>
+      <div style="display: flex; gap: 8px; margin-top: 8px;">
+        <sc-for list="{{amounts}}" as="a" hint-placeholder-count="4">
+          <button type="button" style="flex: 1; min-height: 44px; border: 0; border-radius: 22px; background: #F0E7DA; color: #2B2118; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer;">+{{a}}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div>
+      <label for="note" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600;">โน้ต <span style="font-weight: 400; color: #6B5B4B;">(ไม่ใส่ก็ได้)</span></label>
+      <input id="note" name="note" type="text" placeholder="เช่น ค่าข้าวเที่ยง" style="width: 100%; box-sizing: border-box; height: 52px; padding: 0 16px; border: 1.5px solid #D9CBB6; border-radius: 16px; background: #FFFFFF; color: #2B2118; font-family: inherit; font-size: 16px;">
+    </div>
+
+  </form>
+
+  <div style="padding: 12px 20px 24px; display: flex; flex-direction: column; gap: 8px; background: #FBF6EF;">
+    <button type="submit" style="height: 56px; border: 0; border-radius: 28px; background: {{accent}}; color: #2B2118; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">บันทึก</button>
+    <a href="Main.dc.html" style="min-height: 44px; display: flex; align-items: center; justify-content: center; color: #6B5B4B; font-size: 14px; font-weight: 500; text-decoration: none;">ยกเลิก</a>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#E2762B","options":["#E2762B","#E0A030","#D0584E"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      accent: this.props.accent ?? '#E2762B',
+      friends: ['ต้น', 'แพรว', 'มีน', 'โอ๊ต'],
+      amounts: [50, 100, 500, 1000]
+    };
+  }
+}
+</script>
+</body>
+</html>

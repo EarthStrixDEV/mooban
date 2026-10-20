@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Mooban เดสก์ท็อป แกลเลอรี</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+:root{--bg:#F3F6F1;--card:#FFFFFF;--ink:#17261D;--sub:#55665B;--line:#E1E8DF;--brand:#1F7A4D;--brandsoft:#DDEFE4;--chip:#E9EFE7;--onbrand:#FFFFFF}
+@media (prefers-color-scheme: dark){:root{--bg:#0F1712;--card:#18231C;--ink:#EAF2EC;--sub:#A6B8AB;--line:#263329;--brand:#5CC48D;--brandsoft:#1E3A2B;--chip:#202D24;--onbrand:#0F1712}}
+</style>
+</helmet>
+<div style="position: relative; width: 100%; min-height: 860px; box-sizing: border-box; overflow: hidden; display: flex; background: var(--bg); color: var(--ink); font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 252px; box-sizing: border-box; padding: 24px 16px 24px 32px;">
+    <p style="margin: 0 12px 24px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 26px; font-weight: 600; color: var(--brand);">Mooban</p>
+    <sc-for list="{{menu}}" as="m" hint-placeholder-count="4">
+      <a href="{{m.href}}" aria-current="{{m.current}}" style="min-height: 48px; box-sizing: border-box; padding: 0 16px; margin-bottom: 4px; border-radius: 24px; display: flex; align-items: center; background: {{m.bg}}; color: {{m.fg}}; font-size: 16px; font-weight: {{m.weight}}; text-decoration: none;">{{m.label}}</a>
+    </sc-for>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; padding: 24px 32px 24px 16px; box-sizing: border-box;">
+    <div style="display: flex; align-items: flex-end; justify-content: space-between;">
+      <div>
+        <h1 style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">แกลเลอรี</h1>
+        <p style="margin: 4px 0 0; font-size: 14px; color: var(--sub);">รูปจากทุกคนในหมู่บ้าน 128 รูป</p>
+      </div>
+      <div role="group" aria-label="เรียงรูป" style="display: flex; gap: 8px;">
+        <button type="button" aria-pressed="true" style="min-height: 44px; padding: 0 20px; border: 0; border-radius: 22px; background: var(--brand); color: var(--onbrand); font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">ล่าสุด</button>
+        <button type="button" aria-pressed="false" style="min-height: 44px; padding: 0 20px; border: 0; border-radius: 22px; background: var(--chip); color: var(--ink); font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer;">ถูกใจมากสุด</button>
+        <button type="button" aria-pressed="false" style="min-height: 44px; padding: 0 20px; border: 0; border-radius: 22px; background: var(--chip); color: var(--ink); font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer;">ของฉัน</button>
+      </div>
+    </div>
+
+    <div style="margin-top: 20px; display: flex; gap: 12px;">
+      <sc-for list="{{cols}}" as="col" hint-placeholder-count="4">
+        <ul style="flex: 1; min-width: 0; margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px;">
+          <sc-for list="{{col}}" as="t" hint-placeholder-count="3">
+            <li style="position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: {{t.ratio}}; background: {{t.bg}};">
+              <a href="Mooban-Desktop-Gallery.dc.html" aria-label="เปิดรูป {{t.alt}}" style="position: absolute; inset: 0;"></a>
+              <span style="position: absolute; left: 10px; bottom: 10px; padding: 2px 10px; border-radius: 12px; background: rgba(0,0,0,0.62); color: #FFFFFF; font-size: 12px; font-weight: 500; pointer-events: none;">@{{t.by}}</span>
+            </li>
+          </sc-for>
+        </ul>
+      </sc-for>
+    </div>
+  </main>
+
+  <div style="position: absolute; inset: 0; background: rgba(8,14,10,0.84);"></div>
+
+  <div role="dialog" aria-modal="true" aria-labelledby="lb-title" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 16px; padding: 24px;">
+    <button type="button" aria-label="รูปก่อนหน้า" style="flex: none; width: 52px; height: 52px; border: 0; border-radius: 26px; background: rgba(255,255,255,0.16); color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+    </button>
+
+    <div style="width: 100%; max-width: 980px; height: 640px; box-sizing: border-box; display: flex; border-radius: 24px; overflow: hidden; background: var(--card);">
+      <div role="img" aria-label="ท้องฟ้าตอนเย็นเหนือหมู่บ้าน" style="flex: 1; min-width: 0; background: linear-gradient(160deg,#9CB4D8 0%,#6F89B8 50%,#3E5C8A 100%);"></div>
+      <aside style="flex: none; width: 320px; box-sizing: border-box; padding: 24px; display: flex; flex-direction: column;">
+        <div style="display: flex; align-items: flex-start; justify-content: space-between;">
+          <div>
+            <h2 id="lb-title" style="margin: 0; font-size: 18px; font-weight: 600;">ท้องฟ้าตอนเย็น</h2>
+            <p style="margin: 4px 0 0; font-size: 14px; color: var(--sub);">@lungek · 2 ชม. ที่แล้ว</p>
+          </div>
+          <a href="Mooban-Desktop-Gallery.dc.html" aria-label="ปิด" style="width: 44px; height: 44px; margin: -8px -12px 0 0; border-radius: 22px; display: flex; align-items: center; justify-content: center; color: var(--ink); text-decoration: none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
+          </a>
+        </div>
+
+        <p style="margin: 20px 0 0; font-size: 14px; color: var(--sub);">1600 × 2133 · WebP · 214 KB</p>
+
+        <label for="alt" style="display: block; margin: 20px 0 8px; font-size: 14px; font-weight: 600;">คำอธิบายรูป (alt)</label>
+        <textarea id="alt" rows="3" style="width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1.5px solid var(--line); border-radius: 14px; background: var(--card); color: var(--ink); font-family: inherit; font-size: 14px; line-height: 1.5; resize: none;">ท้องฟ้าสีฟ้าอมม่วงตอนเย็นเหนือหลังคาบ้านในหมู่บ้าน</textarea>
+        <button type="button" style="margin-top: 12px; height: 44px; border: 0; border-radius: 22px; background: var(--brand); color: var(--onbrand); font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">บันทึกคำอธิบาย</button>
+
+        <div style="margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 14px; color: var(--sub);">รูปของคุณ</span>
+          <button type="button" style="min-height: 44px; padding: 0 16px; border: 1.5px solid #B3261E; border-radius: 22px; background: transparent; color: #B3261E; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">ลบรูป</button>
+        </div>
+      </aside>
+    </div>
+
+    <button type="button" aria-label="รูปถัดไป" style="flex: none; width: 52px; height: 52px; border: 0; border-radius: 26px; background: rgba(255,255,255,0.16); color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+    </button>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":860}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const items = [
+      ['ฟีด', 'Mooban-Desktop-Feed.dc.html'],
+      ['แกลเลอรี', 'Mooban-Desktop-Gallery.dc.html'],
+      ['โปรไฟล์', 'Mooban-Desktop-Profile.dc.html'],
+      ['ทดสอบระบบ', 'Mooban-Desktop-Test.dc.html']
+    ];
+    return {
+      menu: items.map(([label, href], i) => ({
+        label, href,
+        current: i === 1 ? 'page' : 'false',
+        bg: i === 1 ? 'var(--brandsoft)' : 'transparent',
+        fg: i === 1 ? 'var(--brand)' : 'var(--ink)',
+        weight: i === 1 ? 600 : 500
+      })),
+      cols: [
+        [
+          { ratio: '4 / 5', bg: 'linear-gradient(160deg,#E4B363,#B5651D)', by: 'pa_noi', alt: 'มะม่วงที่ตลาด' },
+          { ratio: '1 / 1', bg: 'linear-gradient(160deg,#7FB77E,#2F6B3A)', by: 'somchai', alt: 'ต้นไม้หน้าบ้าน' },
+          { ratio: '3 / 4', bg: 'linear-gradient(160deg,#9CB4D8,#3E5C8A)', by: 'lungek', alt: 'ท้องฟ้าตอนเย็น' }
+        ],
+        [
+          { ratio: '1 / 1', bg: 'linear-gradient(160deg,#E9A6A1,#A8403B)', by: 'nong', alt: 'ดอกไม้ในสวน' },
+          { ratio: '3 / 4', bg: 'linear-gradient(160deg,#C9B8E6,#6A4FA8)', by: 'somchai', alt: 'งานวัดวันเสาร์' },
+          { ratio: '4 / 5', bg: 'linear-gradient(160deg,#F1D27A,#B88A12)', by: 'pa_noi', alt: 'ข้าวเหนียวมะม่วง' }
+        ],
+        [
+          { ratio: '3 / 4', bg: 'linear-gradient(160deg,#A8D5C2,#2E7D68)', by: 'aoy', alt: 'คลองหน้าหมู่บ้าน' },
+          { ratio: '4 / 3', bg: 'linear-gradient(160deg,#F2B880,#C0622B)', by: 'lungek', alt: 'ตะวันตกดิน' },
+          { ratio: '1 / 1', bg: 'linear-gradient(160deg,#B7C4E8,#5468B5)', by: 'nong', alt: 'แมวนอนหน้าบ้าน' }
+        ],
+        [
+          { ratio: '1 / 1', bg: 'linear-gradient(160deg,#D9C79B,#8F7A3C)', by: 'somchai', alt: 'ลำไยในตะกร้า' },
+          { ratio: '4 / 5', bg: 'linear-gradient(160deg,#9ED0A0,#3E8A4A)', by: 'pa_noi', alt: 'ผักสวนครัว' },
+          { ratio: '3 / 4', bg: 'linear-gradient(160deg,#EBA8C0,#B24A74)', by: 'aoy', alt: 'ดอกบัว' }
+        ]
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

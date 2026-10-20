@@ -1,0 +1,35 @@
+/* Tabby tokens — generated from DESIGN-tabby.md §2 (canonical). Edit the spec and this together. */
+:root {
+  --bg: #FBF6EF; --surface: #FFFFFF;
+  --ink: #2B2118; --ink-2: #6B5B4B;
+  --on-dark: #FBF6EF; --on-dark-2: #E8D9C5;
+  --line: #F3EBDF; --chip: #F0E7DA; --thead: #F6EEE2;
+  --border: #D9CBB6; --border-strong: #8C7A66;
+  --accent: #E2762B; --accent-ui: #C2570F;
+  --danger: #B3261E; --danger-bar: #D0584E; --danger-bg: #FDECEA; --danger-ink: #8E1B12;
+  --ok-bg: #DDEBDD; --ok-ink: #1F5B36;
+  --warn-bg: #FDE3C8; --warn-ink: #7A3A07;
+  --row-hl: #FDF1E4; --scrim: rgba(43,33,24,.6); --undo: #FFB27A;
+
+  --av-a-bg: #FDE3C8; --av-a-fg: #7A3A07;
+  --av-b-bg: #E3E0F5; --av-b-fg: #3B2F82;
+  --av-c-bg: #DDEBDD; --av-c-fg: #1F5B36;
+  --av-d-bg: #F8DCE2; --av-d-fg: #8A2142;
+
+  --font-body: 'Noto Sans Thai', 'Leelawadee UI', Tahoma, system-ui, sans-serif;
+  --font-display: 'Prompt', 'Noto Sans Thai', 'Leelawadee UI', Tahoma, system-ui, sans-serif;
+
+  --r-card: 24px; --r-card-lg: 20px; --r-input: 16px; --r-input-sm: 14px;
+  --r-tile: 16px; --r-badge: 12px; --r-sheet: 28px;
+  --shadow-modal: 0 24px 60px rgba(43,33,24,.3);
+  --z-fab: 20; --z-toast: 30; --z-scrim: 40; --z-dialog: 50;
+  --sidebar-w: 232px;
+}
+:root[data-accent="amber"] { --accent: #E0A030; --accent-ui: #A8740F; }
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 16px/1.5 var(--font-body); }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.on-dark :focus-visible { outline-color: var(--on-dark); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

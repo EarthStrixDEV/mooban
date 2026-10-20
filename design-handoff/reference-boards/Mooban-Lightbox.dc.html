@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Mooban ดูรูป</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+:root{--bg:#F3F6F1;--card:#FFFFFF;--ink:#17261D;--sub:#55665B;--line:#E1E8DF;--brand:#1F7A4D;--brandsoft:#DDEFE4;--chip:#E9EFE7;--onbrand:#FFFFFF}
+@media (prefers-color-scheme: dark){:root{--bg:#0F1712;--card:#18231C;--ink:#EAF2EC;--sub:#A6B8AB;--line:#263329;--brand:#5CC48D;--brandsoft:#1E3A2B;--chip:#202D24;--onbrand:#0F1712}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; background: #000000; color: #EAF2EC; font-family: 'Noto Sans Thai', system-ui, sans-serif; display: flex; flex-direction: column;">
+
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 16px 8px 4px 8px;">
+    <a href="Mooban-Gallery.dc.html" aria-label="ปิดรูป กลับแกลเลอรี" style="width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; color: #FFFFFF; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12"></path><path d="M18 6L6 18"></path></svg>
+    </a>
+    <p style="margin: 0; font-size: 14px; font-weight: 500; color: #EAF2EC;">{{pos}} / {{total}}</p>
+    <span style="width: 44px;"></span>
+  </header>
+
+  <div style="position: relative; flex: 1; min-height: 0;">
+    <div role="img" aria-label="{{alt}}" style="position: absolute; inset: 0; background: linear-gradient(160deg, #E4B363 0%, #B5651D 55%, #5E3A12 100%);"></div>
+    <button type="button" aria-label="รูปก่อนหน้า" style="position: absolute; left: 8px; top: 50%; margin-top: -22px; width: 44px; height: 44px; border: 0; border-radius: 22px; background: rgba(0,0,0,0.62); color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+    </button>
+    <button type="button" aria-label="รูปถัดไป" style="position: absolute; right: 8px; top: 50%; margin-top: -22px; width: 44px; height: 44px; border: 0; border-radius: 22px; background: rgba(0,0,0,0.62); color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"></path></svg>
+    </button>
+    <p style="position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); margin: 0; padding: 6px 14px; border-radius: 16px; background: rgba(0,0,0,0.68); color: #FFFFFF; font-size: 14px; white-space: nowrap;">บีบนิ้วเพื่อซูม · ปัดซ้าย-ขวาเพื่อเปลี่ยนรูป</p>
+  </div>
+
+  <section aria-label="รายละเอียดรูป" style="padding: 16px 20px 24px; background: #121A15; border-radius: 24px 24px 0 0;">
+    <p style="margin: 0; font-size: 16px; line-height: 1.6;">{{alt}}</p>
+    <p style="margin: 4px 0 0; font-size: 14px; color: #A6B8AB;">โดย @somchai · 2 ชั่วโมงที่แล้ว</p>
+
+    <form style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #263329;">
+      <p style="margin: 0 0 8px; font-size: 14px; font-weight: 600; color: #EAF2EC;">เครื่องมือเจ้าของรูป</p>
+      <label for="alt" style="display: block; margin-bottom: 6px; font-size: 14px; color: #A6B8AB;">คำอธิบายรูป (alt text)</label>
+      <input id="alt" name="alt" type="text" value="{{alt}}" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #3A4A3F; border-radius: 12px; background: #0B110D; color: #EAF2EC; font-family: inherit; font-size: 16px;">
+      <p style="margin: 6px 0 0; font-size: 14px; color: #A6B8AB;">ช่วยให้คนที่ใช้โปรแกรมอ่านหน้าจอเข้าใจว่าในรูปมีอะไร</p>
+      <div style="display: flex; gap: 8px; margin-top: 12px;">
+        <button type="submit" style="flex: 1; min-height: 48px; border: 0; border-radius: 24px; background: #5CC48D; color: #0F1712; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">บันทึกคำอธิบาย</button>
+        <button type="button" style="min-height: 48px; padding: 0 20px; border: 1.5px solid #FF8A80; border-radius: 24px; background: transparent; color: #FF8A80; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">ลบรูป</button>
+      </div>
+    </form>
+  </section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      pos: 3,
+      total: 128,
+      alt: 'ลำไยในตะกร้าหน้าบ้าน แสงยามเช้า'
+    };
+  }
+}
+</script>
+</body>
+</html>

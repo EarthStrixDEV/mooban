@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Staffy ผลการนำเข้า CSV</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 980px; box-sizing: border-box; display: flex; background: #F5F6FA; color: #1B2033; font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 240px; box-sizing: border-box; padding: 24px 16px; background: #232A5C; color: #F2F3FA;">
+    <p style="margin: 0 8px 24px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Staffy</p>
+    <a href="Staffy-Employees.dc.html" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; border-radius: 10px; display: flex; align-items: center; background: #3B4BC4; color: #FFFFFF; font-size: 16px; font-weight: 600; text-decoration: none;">พนักงาน</a>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; padding: 32px 40px; box-sizing: border-box; max-width: 960px;">
+
+    <a href="Staffy-Employees.dc.html" style="min-height: 44px; display: inline-flex; align-items: center; color: #3B4BC4; font-size: 14px; font-weight: 600; text-decoration: none;">← กลับไปรายการพนักงาน</a>
+    <h1 style="margin: 4px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">ผลการนำเข้า CSV</h1>
+    <p style="margin: 4px 0 0; font-size: 14px; color: #4F566E;">ไฟล์ employees_oct.csv · 53 แถว</p>
+
+    <section id="import-summary" aria-label="สรุปผล" style="margin-top: 24px; display: flex; gap: 16px;">
+      <div style="flex: 1; padding: 20px; border-radius: 16px; background: #E6F4EA; border: 1px solid #B5DFC2;">
+        <p style="margin: 0; font-size: 14px; color: #14532D; font-weight: 600;">เพิ่มสำเร็จ</p>
+        <p style="margin: 4px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 36px; font-weight: 600; color: #14532D;">48</p>
+      </div>
+      <div style="flex: 1; padding: 20px; border-radius: 16px; background: #FFF4DB; border: 1px solid #F0D58A;">
+        <p style="margin: 0; font-size: 14px; color: #6B4A00; font-weight: 600;">ข้าม (รหัสซ้ำ)</p>
+        <p style="margin: 4px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 36px; font-weight: 600; color: #6B4A00;">3</p>
+      </div>
+      <div style="flex: 1; padding: 20px; border-radius: 16px; background: #FDECEA; border: 1px solid #F3B8B2;">
+        <p style="margin: 0; font-size: 14px; color: #8E1B12; font-weight: 600;">ข้อมูลไม่ถูกต้อง</p>
+        <p style="margin: 4px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 36px; font-weight: 600; color: #8E1B12;">2</p>
+      </div>
+    </section>
+
+    <section style="margin-top: 28px;">
+      <h2 style="margin: 0 0 12px; font-size: 18px; font-weight: 600;">แถวที่ต้องแก้</h2>
+      <div style="border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF; overflow: hidden;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+          <thead>
+            <tr style="background: #F0F2F9; text-align: left;">
+              <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E; width: 80px;">แถวที่</th>
+              <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">ชื่อ</th>
+              <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">ปัญหา</th>
+              <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E; width: 120px;">สถานะ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{issues}}" as="i" hint-placeholder-count="5">
+              <tr style="border-top: 1px solid #ECEEF6;">
+                <td style="padding: 12px 16px; color: #4F566E;">{{i.row}}</td>
+                <td style="padding: 12px 16px; font-weight: 600;">{{i.name}}</td>
+                <td style="padding: 12px 16px;">{{i.msg}}</td>
+                <td style="padding: 12px 16px;"><span style="display: inline-block; padding: 2px 10px; border-radius: 12px; font-weight: 600; background: {{i.bg}}; color: {{i.fg}};">{{i.tag}}</span></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div style="margin-top: 24px; display: flex; gap: 12px;">
+      <a href="#" style="min-height: 48px; box-sizing: border-box; padding: 0 20px; border-radius: 10px; background: #3B4BC4; color: #FFFFFF; display: flex; align-items: center; font-size: 16px; font-weight: 600; text-decoration: none;">ดาวน์โหลดแถวที่มีปัญหา (CSV)</a>
+      <a href="Staffy-Employees.dc.html" style="min-height: 48px; box-sizing: border-box; padding: 0 20px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; display: flex; align-items: center; font-size: 16px; font-weight: 600; text-decoration: none;">ดูรายการพนักงาน</a>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":980}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dup = { tag: 'ข้าม', bg: '#FFF4DB', fg: '#6B4A00' };
+    const bad = { tag: 'ต้องแก้', bg: '#FDECEA', fg: '#8E1B12' };
+    return {
+      issues: [
+        { row: 7, name: 'มานะ ตั้งใจ', msg: 'รหัสพนักงาน EMP-0102 มีอยู่แล้วในระบบ', ...dup },
+        { row: 19, name: 'ศศิธร แก้วใส', msg: 'รหัสพนักงาน EMP-0115 มีอยู่แล้วในระบบ', ...dup },
+        { row: 31, name: 'นพดล รุ่งเรือง', msg: 'รหัสพนักงาน EMP-0120 มีอยู่แล้วในระบบ', ...dup },
+        { row: 38, name: 'ปริญญา ศรีสุข', msg: 'รูปแบบอีเมลไม่ถูกต้อง: priyaya@', ...bad },
+        { row: 45, name: 'อภิชาติ จันทร์เพ็ญ', msg: 'วันเริ่มงานต้องเป็นรูปแบบ ปปปป-ดด-วว', ...bad }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

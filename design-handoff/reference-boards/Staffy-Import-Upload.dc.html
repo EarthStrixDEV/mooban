@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Staffy นำเข้า CSV</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; box-sizing: border-box; display: flex; background: #F5F6FA; color: #1B2033; font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 240px; box-sizing: border-box; padding: 24px 16px; background: #232A5C; color: #F2F3FA; display: flex; flex-direction: column;">
+    <p style="margin: 0 8px 24px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Staffy</p>
+    <sc-for list="{{menu}}" as="m" hint-placeholder-count="6">
+      <a href="{{m.href}}" aria-current="{{m.current}}" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; margin-bottom: 4px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; font-size: 16px; font-weight: {{m.weight}}; background: {{m.bg}}; color: {{m.fg}};">
+        {{m.label}}
+        <span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: #D0584E; color: #FFFFFF; display: {{m.badgeShow}};">{{m.badge}}</span>
+      </a>
+    </sc-for>
+    <div style="margin-top: auto; padding: 12px; border-top: 1px solid #3A4278;">
+      <p style="margin: 0; font-size: 14px; font-weight: 600;">สมหญิง ใจดี</p>
+      <p style="margin: 2px 0 8px; font-size: 14px; color: #C9CDE8;">HR</p>
+      <a href="Staffy-Login.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">ออกจากระบบ</a>
+    </div>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; padding: 32px 40px; box-sizing: border-box; max-width: 960px;">
+
+    <a href="Staffy-Employees.dc.html" style="min-height: 44px; display: inline-flex; align-items: center; color: #3B4BC4; font-size: 14px; font-weight: 600; text-decoration: none;">← กลับไปรายการพนักงาน</a>
+    <h1 style="margin: 4px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">นำเข้าพนักงานจาก CSV</h1>
+    <p style="margin: 4px 0 0; font-size: 14px; color: #4F566E;">เพิ่มพนักงานหลายคนพร้อมกัน ระบบจะตรวจทีละแถวและสรุปผลให้ดู</p>
+
+    <form method="post" action="/employees/import" enctype="multipart/form-data" style="margin-top: 24px; display: flex; gap: 24px; align-items: flex-start;">
+      <input type="hidden" name="csrf" value="token">
+
+      <div style="flex: 3; min-width: 0;">
+        <p style="margin: 0 0 8px; font-size: 14px; font-weight: 600;">ไฟล์ CSV</p>
+        <div style="position: relative; padding: 40px 24px; border: 2px dashed #9AA1C8; border-radius: 16px; background: #FFFFFF; text-align: center;">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3B4BC4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V5"></path><path d="M7.5 9.5L12 5l4.5 4.5"></path><path d="M5 15v3a1.5 1.5 0 0 0 1.5 1.5h11A1.5 1.5 0 0 0 19 18v-3"></path></svg>
+          <p style="margin: 12px 0 0; font-size: 16px; font-weight: 600;">ลากไฟล์มาวางที่นี่</p>
+          <p style="margin: 4px 0 16px; font-size: 14px; color: #4F566E;">รองรับ .csv แบบ UTF-8 ขนาดไม่เกิน 2 MB</p>
+          <label for="csvfile" style="min-height: 44px; box-sizing: border-box; padding: 0 20px; border-radius: 10px; background: #3B4BC4; color: #FFFFFF; display: inline-flex; align-items: center; font-size: 14px; font-weight: 600; cursor: pointer;">เลือกไฟล์</label>
+          <input id="csvfile" name="file" type="file" accept=".csv,text/csv" style="position: absolute; width: 1px; height: 1px; opacity: 0;">
+        </div>
+
+        <div style="margin-top: 12px; display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; background: #FFFFFF; border: 1px solid #E1E4EF;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#14532D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3.5h7l4 4V19a1.5 1.5 0 0 1-1.5 1.5h-9.5A1.5 1.5 0 0 1 5.5 19V5A1.5 1.5 0 0 1 7 3.5z"></path><path d="M9 14l2 2 4-4"></path></svg>
+          <div style="flex: 1; min-width: 0;">
+            <p style="margin: 0; font-size: 16px; font-weight: 600;">employees_oct.csv</p>
+            <p style="margin: 0; font-size: 14px; color: #4F566E;">53 แถว · 18 KB</p>
+          </div>
+          <button type="button" style="min-height: 44px; padding: 0 14px; border: 0; background: transparent; color: #8E1B12; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">เอาออก</button>
+        </div>
+
+        <label for="dry_run" style="margin-top: 16px; min-height: 44px; display: flex; align-items: center; gap: 12px; font-size: 16px; cursor: pointer;">
+          <input id="dry_run" name="dry_run" type="checkbox" checked style="width: 22px; height: 22px; accent-color: #3B4BC4;">
+          <span>ลองตรวจก่อน (ยังไม่บันทึกข้อมูลจริง)</span>
+        </label>
+
+        <div style="margin-top: 20px; display: flex; gap: 12px;">
+          <button type="submit" style="min-height: 48px; padding: 0 26px; border: 0; border-radius: 10px; background: #3B4BC4; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">ตรวจและนำเข้า</button>
+          <a href="Staffy-Employees.dc.html" style="min-height: 48px; box-sizing: border-box; padding: 0 20px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; display: flex; align-items: center; font-size: 16px; font-weight: 600; text-decoration: none;">ยกเลิก</a>
+        </div>
+        <p style="margin: 12px 0 0; font-size: 14px; color: #4F566E;">ตัวอย่างหลังกดปุ่ม ดูได้ที่ <a href="Staffy-Import.dc.html" style="color: #3B4BC4; font-weight: 600;">หน้าผลการนำเข้า</a></p>
+      </div>
+
+      <aside style="flex: 2; min-width: 0; display: flex; flex-direction: column; gap: 16px;">
+        <section aria-labelledby="rules-h" style="padding: 20px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF;">
+          <h2 id="rules-h" style="margin: 0 0 10px; font-size: 16px; font-weight: 600;">กติกาของไฟล์</h2>
+          <ul style="margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.8; color: #1B2033;">
+            <sc-for list="{{rules}}" as="r" hint-placeholder-count="5">
+              <li>{{r}}</li>
+            </sc-for>
+          </ul>
+          <a href="/employees/import/template.csv" style="margin-top: 12px; min-height: 44px; display: inline-flex; align-items: center; color: #3B4BC4; font-size: 14px; font-weight: 600;">ดาวน์โหลดไฟล์ตัวอย่าง (template.csv)</a>
+        </section>
+
+        <section aria-labelledby="cols-h" style="padding: 20px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF;">
+          <h2 id="cols-h" style="margin: 0 0 4px; font-size: 16px; font-weight: 600;">คอลัมน์ที่ระบบรู้จัก</h2>
+          <p style="margin: 0 0 12px; font-size: 14px; color: #4F566E;">หัวตารางต้องตรงตามนี้ (ภาษาอังกฤษ)</p>
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <tbody>
+              <sc-for list="{{cols}}" as="c" hint-placeholder-count="6">
+                <tr style="border-top: 1px solid #ECEEF6;">
+                  <td style="padding: 8px 0; font-family: ui-monospace, Menlo, monospace; color: #232A5C;">{{c.name}}</td>
+                  <td style="padding: 8px 0; color: #4F566E;">{{c.desc}}</td>
+                  <td style="padding: 8px 0; text-align: right; font-weight: 600; color: {{c.color}};">{{c.req}}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </section>
+      </aside>
+    </form>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const items = [
+      ['แดชบอร์ด', 'Staffy-Dashboard.dc.html', '', ''],
+      ['พนักงาน', 'Staffy-Employees.dc.html', 'page', ''],
+      ['การลา', 'Staffy-Leaves.dc.html', '', '4'],
+      ['บัญชีผู้ใช้', 'Staffy-Users.dc.html', '', ''],
+      ['บันทึกการใช้งาน', 'Staffy-Audit.dc.html', '', ''],
+      ['สถานะระบบ', 'Staffy-Status.dc.html', '', ''],
+      ['แผนก', 'Staffy-Departments.dc.html', '', ''],
+      ['ข้อมูลบริษัท', 'Staffy-Company.dc.html', '', '']
+    ];
+    const req = '#8E1B12';
+    const opt = '#4F566E';
+    return {
+      menu: items.map(([label, href, cur, badge]) => ({
+        label, href,
+        current: cur ? 'page' : 'false',
+        weight: cur ? 600 : 500,
+        bg: cur ? '#3B4BC4' : 'transparent',
+        fg: cur ? '#FFFFFF' : '#E4E6F6',
+        badge,
+        badgeShow: badge ? 'inline-block' : 'none'
+      })),
+      rules: [
+        'บรรทัดแรกเป็นหัวตาราง',
+        'รหัสพนักงานห้ามซ้ำกับที่มีอยู่ (แถวซ้ำจะถูกข้าม)',
+        'วันที่ใช้รูปแบบ ปปปป-ดด-วว (ค.ศ.)',
+        'แถวที่ผิดจะไม่ทำให้แถวอื่นล้มเหลว',
+        'จำกัดไม่เกิน 1,000 แถวต่อครั้ง'
+      ],
+      cols: [
+        { name: 'code', desc: 'รหัสพนักงาน', req: 'จำเป็น', color: req },
+        { name: 'first_name', desc: 'ชื่อ', req: 'จำเป็น', color: req },
+        { name: 'last_name', desc: 'นามสกุล', req: 'จำเป็น', color: req },
+        { name: 'department', desc: 'แผนก', req: 'จำเป็น', color: req },
+        { name: 'hire_date', desc: 'วันเริ่มงาน', req: 'จำเป็น', color: req },
+        { name: 'email', desc: 'อีเมล', req: 'ไม่บังคับ', color: opt },
+        { name: 'salary', desc: 'เงินเดือน', req: 'ไม่บังคับ', color: opt }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

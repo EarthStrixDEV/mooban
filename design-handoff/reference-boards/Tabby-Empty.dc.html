@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Tabby ยังไม่มีรายการ</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; background: #FBF6EF; color: #2B2118; font-family: 'Noto Sans Thai', system-ui, sans-serif; display: flex; flex-direction: column;">
+
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 20px 12px 0 20px;">
+    <h1 style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Tabby</h1>
+  </header>
+
+  <section aria-label="ยอดค้างรวม" style="margin: 16px 20px 0; padding: 20px; border-radius: 24px; background: #2B2118; color: #FBF6EF;">
+    <p style="margin: 0; font-size: 14px; color: #E8D9C5;">ยอดค้างรวม</p>
+    <p style="margin: 4px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 40px; font-weight: 600; line-height: 1.2;">฿0</p>
+    <p style="margin: 8px 0 0; font-size: 14px; color: #E8D9C5;">ยังไม่มีใครติดเงิน</p>
+  </section>
+
+  <main style="flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 40px 80px; text-align: center;">
+    <svg width="180" height="150" viewBox="0 0 180 150" role="img" aria-label="สมุดจดเปล่าพร้อมดินสอ">
+      <ellipse cx="90" cy="134" rx="62" ry="8" fill="#F0E7DA"></ellipse>
+      <rect x="40" y="18" width="92" height="112" rx="12" fill="#FFFFFF" stroke="#D9CBB6" stroke-width="3"></rect>
+      <rect x="40" y="18" width="16" height="112" rx="8" fill="{{accent}}"></rect>
+      <rect x="68" y="42" width="48" height="6" rx="3" fill="#F0E7DA"></rect>
+      <rect x="68" y="60" width="36" height="6" rx="3" fill="#F0E7DA"></rect>
+      <rect x="68" y="78" width="44" height="6" rx="3" fill="#F0E7DA"></rect>
+      <g transform="rotate(35 140 90)">
+        <rect x="134" y="48" width="14" height="70" rx="3" fill="#E0A030"></rect>
+        <path d="M134 118h14l-7 14z" fill="#2B2118"></path>
+        <rect x="134" y="48" width="14" height="10" rx="3" fill="#D0584E"></rect>
+      </g>
+    </svg>
+    <h2 style="margin: 24px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 22px; font-weight: 600;">สมุดยังว่างอยู่</h2>
+    <p style="margin: 8px 0 0; font-size: 16px; line-height: 1.6; color: #6B5B4B;">เริ่มจดว่าใครยืมเงินไปเท่าไหร่ จะได้ไม่ต้องจำเอง</p>
+    <a href="Tabby-Add.dc.html" style="margin-top: 24px; height: 56px; box-sizing: border-box; padding: 0 28px; border-radius: 28px; background: {{accent}}; color: #2B2118; display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; text-decoration: none;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+      เพิ่มรายการ
+    </a>
+  </main>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#E2762B","options":["#E2762B","#E0A030","#D0584E"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#E2762B' };
+  }
+}
+</script>
+</body>
+</html>

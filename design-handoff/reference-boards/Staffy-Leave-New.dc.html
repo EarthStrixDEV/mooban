@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Staffy ขอลาใหม่</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; box-sizing: border-box; display: flex; background: #F5F6FA; color: #1B2033; font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 240px; box-sizing: border-box; padding: 24px 16px; background: #232A5C; color: #F2F3FA; display: flex; flex-direction: column;">
+    <p style="margin: 0 8px 24px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Staffy</p>
+    <sc-for list="{{menu}}" as="m" hint-placeholder-count="6">
+      <a href="{{m.href}}" aria-current="{{m.current}}" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; margin-bottom: 4px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; font-size: 16px; font-weight: {{m.weight}}; background: {{m.bg}}; color: {{m.fg}};">
+        {{m.label}}
+        <span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: #B3261E; color: #FFFFFF; display: {{m.badgeShow}};">{{m.badge}}</span>
+      </a>
+    </sc-for>
+    <div style="margin-top: auto; padding: 12px; border-top: 1px solid #3A4278;">
+      <p style="margin: 0; font-size: 14px; font-weight: 600;">สมหญิง ใจดี</p>
+      <p style="margin: 2px 0 8px; font-size: 14px; color: #C9CDE8;">HR</p>
+      <a href="Staffy-Account.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">บัญชีของฉัน</a>
+      <a href="Staffy-Login.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">ออกจากระบบ</a>
+    </div>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; padding: 32px 40px; box-sizing: border-box;">
+
+    <a href="Staffy-Leaves.dc.html" style="min-height: 44px; display: inline-flex; align-items: center; color: #3B4BC4; font-size: 14px; font-weight: 600; text-decoration: none;">← กลับไปรายการลา</a>
+    <h1 style="margin: 4px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">ขอลาใหม่</h1>
+    <p style="margin: 4px 0 0; font-size: 14px; color: #4F566E;">หัวหน้างานและ HR จะได้รับแจ้งเมื่อส่งคำขอ</p>
+
+    <div style="margin-top: 24px; display: flex; gap: 24px; align-items: flex-start;">
+
+      <form method="post" action="/leaves/new" style="flex: 1; min-width: 0; max-width: 640px; padding: 28px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF;">
+        <input type="hidden" name="csrf" value="token">
+
+        <div role="alert" style="margin-bottom: 20px; padding: 12px 16px; border-radius: 12px; background: #FDECEA; border: 1px solid #F3B8B2; color: #8E1B12; font-size: 14px; font-weight: 500;">ส่งคำขอไม่สำเร็จ กรุณาแก้ช่องที่มีข้อความสีแดง</div>
+
+        <label for="type" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600;">ประเภทการลา</label>
+        <select id="type" name="type" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+          <option>พักร้อน</option><option>ลากิจ</option><option>ลาป่วย</option>
+        </select>
+
+        <div style="margin-top: 20px; display: flex; gap: 16px;">
+          <div style="flex: 1;">
+            <label for="start" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600;">วันที่เริ่มลา</label>
+            <input id="start" name="start_date" type="date" value="2026-10-27" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+          </div>
+          <div style="flex: 1;">
+            <label for="end" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600;">วันที่สิ้นสุด</label>
+            <input id="end" name="end_date" type="date" value="2026-10-24" aria-invalid="true" aria-describedby="end-err" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 2px solid #B3261E; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+            <p id="end-err" class="field-error" data-field="end_date" style="margin: 8px 0 0; font-size: 14px; font-weight: 500; color: #B3261E;">วันสิ้นสุดต้องไม่ก่อนวันเริ่มลา</p>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px; padding: 12px 16px; border-radius: 10px; background: #F0F2F9; display: flex; align-items: center; justify-content: space-between;">
+          <span style="font-size: 14px; color: #4F566E;">จำนวนวันลา (ไม่นับเสาร์-อาทิตย์)</span>
+          <span style="font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 18px; font-weight: 600; color: #4F566E;">-</span>
+        </div>
+
+        <label for="reason" style="display: block; margin: 20px 0 8px; font-size: 14px; font-weight: 600;">เหตุผล <span style="font-weight: 400; color: #4F566E;">(ไม่ใส่ก็ได้)</span></label>
+        <textarea id="reason" name="reason" rows="4" style="width: 100%; box-sizing: border-box; padding: 12px 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; line-height: 1.6; color: #1B2033; resize: vertical;">ไปงานแต่งงานญาติที่เชียงใหม่</textarea>
+
+        <div style="margin-top: 28px; display: flex; gap: 12px;">
+          <button type="submit" style="min-height: 48px; padding: 0 28px; border: 0; border-radius: 10px; background: #3B4BC4; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">ส่งคำขอลา</button>
+          <a href="Staffy-Leaves.dc.html" style="min-height: 48px; box-sizing: border-box; padding: 0 24px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; display: flex; align-items: center; font-size: 16px; font-weight: 600; text-decoration: none;">ยกเลิก</a>
+        </div>
+      </form>
+
+      <aside aria-label="วันลาคงเหลือ" style="flex: none; width: 300px; padding: 24px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF;">
+        <h2 style="margin: 0; font-size: 18px; font-weight: 600;">วันลาคงเหลือ ปี 2569</h2>
+        <sc-for list="{{balances}}" as="b" hint-placeholder-count="3">
+          <div style="margin-top: 20px;">
+            <div style="display: flex; align-items: baseline; justify-content: space-between;">
+              <span style="font-size: 14px; font-weight: 600;">{{b.label}}</span>
+              <span style="font-size: 14px; color: #4F566E;">เหลือ <strong style="font-size: 18px; color: #1B2033;">{{b.left}}</strong> / {{b.total}} วัน</span>
+            </div>
+            <div style="margin-top: 8px; height: 10px; border-radius: 5px; background: #ECEEF6; overflow: hidden;">
+              <div style="height: 100%; width: {{b.pct}}; background: {{b.color}}; border-radius: 5px;"></div>
+            </div>
+          </div>
+        </sc-for>
+        <p style="margin: 24px 0 0; font-size: 14px; line-height: 1.6; color: #4F566E;">ลาป่วยเกิน 3 วันติดต่อกัน ต้องแนบใบรับรองแพทย์ให้ HR</p>
+      </aside>
+
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const items = [
+      ['แดชบอร์ด', 'Staffy-Dashboard.dc.html'], ['พนักงาน', 'Staffy-Employees.dc.html'], ['การลา', 'Staffy-Leaves.dc.html'],
+      ['บัญชีผู้ใช้', 'Staffy-Users.dc.html'], ['บันทึกการใช้งาน', 'Staffy-Audit.dc.html'], ['สถานะระบบ', 'Staffy-Status.dc.html'], ['แผนก', 'Staffy-Departments.dc.html'], ['ข้อมูลบริษัท', 'Staffy-Company.dc.html']
+    ];
+    const cur = 2;
+    const menu = items.map(([label, href], i) => ({
+      label, href,
+      current: i === cur ? 'page' : 'false',
+      weight: i === cur ? 600 : 500,
+      bg: i === cur ? '#3B4BC4' : 'transparent',
+      fg: i === cur ? '#FFFFFF' : '#E4E6F6',
+      badge: '4',
+      badgeShow: label === 'การลา' && i !== cur ? 'inline-block' : 'none'
+    }));
+    const balances = [
+      { label: 'พักร้อน', left: 7, total: 10, pct: '70%', color: '#3B4BC4' },
+      { label: 'ลากิจ', left: 2, total: 3, pct: '67%', color: '#B7791F' },
+      { label: 'ลาป่วย', left: 28, total: 30, pct: '93%', color: '#14532D' }
+    ];
+    return { menu, balances };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Staffy บัญชีผู้ใช้</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; box-sizing: border-box; display: flex; background: #F5F6FA; color: #1B2033; font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 240px; box-sizing: border-box; padding: 24px 16px; background: #232A5C; color: #F2F3FA; display: flex; flex-direction: column;">
+    <p style="margin: 0 8px 24px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Staffy</p>
+    <sc-for list="{{menu}}" as="m" hint-placeholder-count="6">
+      <a href="{{m.href}}" aria-current="{{m.current}}" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; margin-bottom: 4px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; font-size: 16px; font-weight: {{m.weight}}; background: {{m.bg}}; color: {{m.fg}};">
+        {{m.label}}
+        <span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: #B3261E; color: #FFFFFF; display: {{m.badgeShow}};">{{m.badge}}</span>
+      </a>
+    </sc-for>
+    <div style="margin-top: auto; padding: 12px; border-top: 1px solid #3A4278;">
+      <p style="margin: 0; font-size: 14px; font-weight: 600;">ผู้ดูแลระบบ</p>
+      <p style="margin: 2px 0 8px; font-size: 14px; color: #C9CDE8;">Admin</p>
+      <a href="Staffy-Account.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">บัญชีของฉัน</a>
+      <a href="Staffy-Login.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">ออกจากระบบ</a>
+    </div>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; padding: 32px 40px; box-sizing: border-box;">
+
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+      <div>
+        <h1 style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">บัญชีผู้ใช้</h1>
+        <p style="margin: 4px 0 0; font-size: 14px; color: #4F566E;">จัดการสิทธิ์และสถานะการเข้าสู่ระบบ · เฉพาะผู้ดูแลระบบ</p>
+      </div>
+      <a href="#" style="min-height: 44px; box-sizing: border-box; padding: 0 18px; border-radius: 10px; background: #3B4BC4; color: #FFFFFF; display: flex; align-items: center; font-size: 14px; font-weight: 600; text-decoration: none;">เพิ่มผู้ใช้</a>
+    </div>
+
+    <div style="margin-top: 24px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF; overflow: hidden;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">รายการผู้ใช้ระบบ</caption>
+        <thead>
+          <tr style="background: #F0F2F9; text-align: left;">
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">ชื่อผู้ใช้</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">พนักงานที่ผูกไว้</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">สิทธิ์</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">เปิดใช้งาน</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E; text-align: right;">รหัสผ่าน</th>
+          </tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{users}}" as="u" hint-placeholder-count="6">
+            <tr style="border-top: 1px solid #ECEEF6;">
+              <td style="padding: 10px 16px; font-size: 16px; font-weight: 600;">{{u.username}}</td>
+              <td style="padding: 10px 16px;">{{u.emp}}</td>
+              <td style="padding: 8px 16px;">
+                <form method="post">
+                  <input type="hidden" name="csrf" value="token">
+                  <label for="role-{{u.username}}" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">สิทธิ์ของ {{u.username}}</label>
+                  <select id="role-{{u.username}}" name="role" style="height: 44px; min-width: 130px; padding: 0 12px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 14px; color: #1B2033;">
+                    <sc-for list="{{u.opts}}" as="o" hint-placeholder-count="3">
+                      <option>{{o}}</option>
+                    </sc-for>
+                  </select>
+                </form>
+              </td>
+              <td style="padding: 8px 16px;">
+                <button type="button" role="switch" aria-checked="{{u.on}}" aria-label="เปิดใช้งาน {{u.username}}" style="width: 52px; height: 44px; padding: 0; border: 0; background: transparent; cursor: pointer; display: flex; align-items: center;">
+                  <span style="width: 44px; height: 26px; border-radius: 13px; background: {{u.track}}; display: block; position: relative;">
+                    <span style="position: absolute; top: 3px; left: {{u.knob}}; width: 20px; height: 20px; border-radius: 10px; background: #FFFFFF;"></span>
+                  </span>
+                </button>
+              </td>
+              <td style="padding: 8px 16px; text-align: right;">
+                <form method="post">
+                  <input type="hidden" name="csrf" value="token">
+                  <button type="submit" aria-label="ตั้งรหัสผ่านใหม่ให้ {{u.username}}" style="min-height: 44px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">ตั้งรหัสใหม่</button>
+                </form>
+              </td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+
+    <section aria-label="สิทธิ์ของแต่ละบทบาท" style="margin-top: 28px;">
+      <h2 style="margin: 0 0 12px; font-size: 18px; font-weight: 600;">สิทธิ์ของแต่ละบทบาท</h2>
+      <div style="display: flex; gap: 16px;">
+        <sc-for list="{{roles}}" as="r" hint-placeholder-count="3">
+          <div style="flex: 1; padding: 20px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF;">
+            <span style="display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 14px; font-weight: 600; background: {{r.bg}}; color: {{r.fg}};">{{r.name}}</span>
+            <ul style="margin: 12px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.8; color: #1B2033;">
+              <sc-for list="{{r.can}}" as="c" hint-placeholder-count="4">
+                <li>{{c}}</li>
+              </sc-for>
+            </ul>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const items = [
+      ['แดชบอร์ด', 'Staffy-Dashboard.dc.html'], ['พนักงาน', 'Staffy-Employees.dc.html'], ['การลา', 'Staffy-Leaves.dc.html'],
+      ['บัญชีผู้ใช้', 'Staffy-Users.dc.html'], ['บันทึกการใช้งาน', 'Staffy-Audit.dc.html'], ['สถานะระบบ', 'Staffy-Status.dc.html'], ['แผนก', 'Staffy-Departments.dc.html'], ['ข้อมูลบริษัท', 'Staffy-Company.dc.html']
+    ];
+    const cur = 3;
+    const menu = items.map(([label, href], i) => ({
+      label, href,
+      current: i === cur ? 'page' : 'false',
+      weight: i === cur ? 600 : 500,
+      bg: i === cur ? '#3B4BC4' : 'transparent',
+      fg: i === cur ? '#FFFFFF' : '#E4E6F6',
+      badge: '4',
+      badgeShow: label === 'การลา' && i !== cur ? 'inline-block' : 'none'
+    }));
+    const all = ['admin', 'hr', 'employee'];
+    const opts = (r) => [r, ...all.filter((x) => x !== r)];
+    const mk = (username, emp, role, on) => ({
+      username, emp, opts: opts(role), on: on ? 'true' : 'false',
+      track: on ? '#3B4BC4' : '#6B7189',
+      knob: on ? '21px' : '3px'
+    });
+    const users = [
+      mk('admin', 'ไม่ผูกพนักงาน', 'admin', true),
+      mk('hr.somying', 'สมหญิง ใจดี (EMP-0009)', 'hr', true),
+      mk('hr.wichai', 'วิชัย รักงาน (EMP-0014)', 'hr', true),
+      mk('kanya.r', 'กัญญา เรืองศรี (EMP-0131)', 'employee', true),
+      mk('thanakorn.p', 'ธนากร พิทักษ์ (EMP-0136)', 'employee', true),
+      mk('phanu.t', 'ภานุพงศ์ ทองดี (EMP-0128)', 'employee', false)
+    ];
+    const roles = [
+      { name: 'admin', bg: '#FDE3C8', fg: '#7A3A07', can: ['ทุกอย่างที่ HR ทำได้', 'จัดการบัญชีผู้ใช้และสิทธิ์', 'ลบพนักงาน', 'ดูบันทึกการใช้งานและสถานะระบบ'] },
+      { name: 'hr', bg: '#E0E4FA', fg: '#2B3699', can: ['เพิ่ม แก้ไข ลาออก พนักงาน', 'ดูเงินเดือน', 'นำเข้า/ส่งออก CSV', 'อนุมัติ/ปฏิเสธการลา'] },
+      { name: 'employee', bg: '#DDEFE4', fg: '#14573A', can: ['ดูและแก้ข้อมูลของตัวเอง', 'ขอลาและดูวันลาคงเหลือ', 'ดูรายชื่อพนักงาน (ไม่เห็นเงินเดือน)'] }
+    ];
+    return { menu, users, roles };
+  }
+}
+</script>
+</body>
+</html>

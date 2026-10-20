@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Staffy รายการพนักงาน</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 980px; box-sizing: border-box; display: flex; background: #F5F6FA; color: #1B2033; font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 240px; box-sizing: border-box; padding: 24px 16px; background: #232A5C; color: #F2F3FA; display: flex; flex-direction: column;">
+    <p style="margin: 0 8px 24px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Staffy</p>
+    <sc-for list="{{menu}}" as="m" hint-placeholder-count="5">
+      <a href="{{m.href}}" aria-current="{{m.current}}" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; margin-bottom: 4px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; font-size: 16px; font-weight: {{m.weight}}; background: {{m.bg}}; color: {{m.fg}};">
+        {{m.label}}
+        <span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: {{m.badgeBg}}; color: #FFFFFF; display: {{m.badgeShow}};">{{m.badge}}</span>
+      </a>
+    </sc-for>
+    <div style="margin-top: auto; padding: 12px; border-top: 1px solid #3A4278;">
+      <p style="margin: 0; font-size: 14px; font-weight: 600;">สมหญิง ใจดี</p>
+      <p style="margin: 2px 0 8px; font-size: 14px; color: #C9CDE8;">HR</p>
+      <a href="#" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">ออกจากระบบ</a>
+    </div>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; padding: 32px 40px; box-sizing: border-box;">
+
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+      <div>
+        <h1 style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">พนักงาน</h1>
+        <p style="margin: 4px 0 0; font-size: 14px; color: #4F566E;">ทั้งหมด 137 คน · ปฏิบัติงานอยู่ 128 คน</p>
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <a href="Staffy-Import-Upload.dc.html" style="min-height: 44px; box-sizing: border-box; padding: 0 16px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; display: flex; align-items: center; font-size: 14px; font-weight: 600; text-decoration: none;">นำเข้า CSV</a>
+        <a href="#" style="min-height: 44px; box-sizing: border-box; padding: 0 16px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; display: flex; align-items: center; font-size: 14px; font-weight: 600; text-decoration: none;">ส่งออก CSV</a>
+        <a href="Staffy-Emp-Form.dc.html" style="min-height: 44px; box-sizing: border-box; padding: 0 18px; border-radius: 10px; background: #3B4BC4; color: #FFFFFF; display: flex; align-items: center; font-size: 14px; font-weight: 600; text-decoration: none;">เพิ่มพนักงาน</a>
+      </div>
+    </div>
+
+    <div id="flash-ok" role="status" style="margin-top: 20px; padding: 12px 16px; border-radius: 12px; background: #E6F4EA; border: 1px solid #B5DFC2; color: #14532D; font-size: 14px; font-weight: 500;">บันทึกข้อมูลสุนิสา วงศ์ใหญ่ เรียบร้อยแล้ว</div>
+
+    <form method="get" style="margin-top: 20px; display: flex; gap: 12px; align-items: flex-end;">
+      <div style="flex: 1; min-width: 0;">
+        <label for="q" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">ค้นหา</label>
+        <input id="q" name="q" type="search" placeholder="ชื่อ รหัสพนักงาน หรืออีเมล" style="width: 100%; box-sizing: border-box; height: 44px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+      </div>
+      <div style="width: 200px;">
+        <label for="dept" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">แผนก</label>
+        <select id="dept" name="dept" style="width: 100%; box-sizing: border-box; height: 44px; padding: 0 12px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+          <option>ทุกแผนก</option><option>บัญชี</option><option>ขาย</option><option>ไอที</option>
+        </select>
+      </div>
+      <div style="width: 160px;">
+        <label for="status" style="display: block; margin-bottom: 6px; font-size: 14px; font-weight: 600;">สถานะ</label>
+        <select id="status" name="status" style="width: 100%; box-sizing: border-box; height: 44px; padding: 0 12px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; font-family: inherit; font-size: 16px; color: #1B2033;">
+          <option>ปฏิบัติงาน</option><option>ลาออก</option><option>ทั้งหมด</option>
+        </select>
+      </div>
+      <button type="submit" style="height: 44px; padding: 0 20px; border: 0; border-radius: 10px; background: #232A5C; color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">ค้นหา</button>
+    </form>
+
+    <div style="margin-top: 20px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF; overflow: hidden;">
+      <table id="employees-table" style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">รายการพนักงาน</caption>
+        <thead>
+          <tr style="background: #F0F2F9; text-align: left;">
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">พนักงาน</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">รหัส</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">แผนก</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">ตำแหน่ง</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">วันเริ่มงาน ↓</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">สถานะ</th>
+            <th scope="col" style="padding: 12px 16px;"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">จัดการ</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+            <tr style="border-top: 1px solid #ECEEF6;">
+              <td style="padding: 10px 16px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span aria-hidden="true" style="flex: none; width: 36px; height: 36px; border-radius: 18px; background: {{r.bg}}; color: {{r.fg}}; display: flex; align-items: center; justify-content: center; font-weight: 600;">{{r.initial}}</span>
+                  <div>
+                    <p style="margin: 0; font-size: 16px; font-weight: 600;">{{r.name}}</p>
+                    <p style="margin: 0; font-size: 14px; color: #4F566E;">{{r.email}}</p>
+                  </div>
+                </div>
+              </td>
+              <td style="padding: 10px 16px; color: #4F566E;">{{r.code}}</td>
+              <td style="padding: 10px 16px;">{{r.dept}}</td>
+              <td style="padding: 10px 16px;">{{r.pos}}</td>
+              <td style="padding: 10px 16px; color: #4F566E;">{{r.hired}}</td>
+              <td style="padding: 10px 16px;">
+                <span style="display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 14px; font-weight: 600; background: {{r.stBg}}; color: {{r.stFg}};">{{r.status}}</span>
+              </td>
+              <td style="padding: 10px 8px; text-align: right;">
+                <a href="Staffy-Emp-Detail.dc.html" aria-label="ดูข้อมูล {{r.name}}" style="min-height: 44px; padding: 0 12px; display: inline-flex; align-items: center; color: #3B4BC4; font-size: 14px; font-weight: 600; text-decoration: none;">ดู</a>
+              </td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="pagination" style="margin-top: 16px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; color: #4F566E;">
+      <p style="margin: 0;">แสดง 1–20 จาก 137 คน</p>
+      <div style="display: flex; align-items: center; gap: 4px;">
+        <a href="#" style="min-height: 44px; padding: 0 14px; display: flex; align-items: center; color: #8A90A8; text-decoration: none;">ก่อนหน้า</a>
+        <a href="#" aria-current="page" style="width: 44px; height: 44px; border-radius: 10px; background: #232A5C; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-weight: 600; text-decoration: none;">1</a>
+        <a href="#" style="width: 44px; height: 44px; border-radius: 10px; color: #1B2033; display: flex; align-items: center; justify-content: center; text-decoration: none;">2</a>
+        <a href="#" style="width: 44px; height: 44px; border-radius: 10px; color: #1B2033; display: flex; align-items: center; justify-content: center; text-decoration: none;">3</a>
+        <a href="#" style="min-height: 44px; padding: 0 14px; display: flex; align-items: center; color: #3B4BC4; font-weight: 600; text-decoration: none;">ถัดไป</a>
+      </div>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":980}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const on = { stBg: '#E6F4EA', stFg: '#14532D', status: 'ปฏิบัติงาน' };
+    const off = { stBg: '#ECEEF6', stFg: '#4F566E', status: 'ลาออก' };
+    const a = { bg: '#E0E4FA', fg: '#2B3699' };
+    const b = { bg: '#FDE3C8', fg: '#7A3A07' };
+    const c = { bg: '#DDEFE4', fg: '#14573A' };
+    const rows = [
+      { name: 'สุนิสา วงศ์ใหญ่', initial: 'ส', email: 'sunisa.w@example.co.th', code: 'EMP-0137', dept: 'บัญชี', pos: 'เจ้าหน้าที่บัญชี', hired: '3 ก.ย. 2569', ...a, ...on },
+      { name: 'ธนากร พิทักษ์', initial: 'ธ', email: 'thanakorn.p@example.co.th', code: 'EMP-0136', dept: 'ไอที', pos: 'นักพัฒนา', hired: '1 ก.ย. 2569', ...b, ...on },
+      { name: 'พิมพ์ชนก อรุณ', initial: 'พ', email: 'pimchanok.a@example.co.th', code: 'EMP-0135', dept: 'ขาย', pos: 'ผู้แทนขาย', hired: '15 ส.ค. 2569', ...c, ...on },
+      { name: 'วิทยา สุขสม', initial: 'ว', email: 'witthaya.s@example.co.th', code: 'EMP-0134', dept: 'ขาย', pos: 'หัวหน้าทีมขาย', hired: '2 ส.ค. 2569', ...a, ...on },
+      { name: 'กัญญา เรืองศรี', initial: 'ก', email: 'kanya.r@example.co.th', code: 'EMP-0131', dept: 'บัญชี', pos: 'ผู้จัดการบัญชี', hired: '10 มิ.ย. 2569', ...b, ...on },
+      { name: 'ภานุพงศ์ ทองดี', initial: 'ภ', email: 'phanu.t@example.co.th', code: 'EMP-0128', dept: 'ไอที', pos: 'ผู้ดูแลระบบ', hired: '4 พ.ค. 2569', ...c, ...off },
+      { name: 'อรทัย มีชัย', initial: 'อ', email: 'orathai.m@example.co.th', code: 'EMP-0127', dept: 'ขาย', pos: 'ผู้แทนขาย', hired: '20 เม.ย. 2569', ...a, ...on },
+      { name: 'ชัยวัฒน์ บุญมา', initial: 'ช', email: 'chaiwat.b@example.co.th', code: 'EMP-0125', dept: 'ไอที', pos: 'นักพัฒนา', hired: '1 เม.ย. 2569', ...b, ...on }
+    ];
+    const items = [
+      ['แดชบอร์ด', '', 'Staffy-Dashboard.dc.html'], ['พนักงาน', 'page', 'Staffy-Employees.dc.html'], ['การลา', '4', 'Staffy-Leaves.dc.html'], ['บัญชีผู้ใช้', '', 'Staffy-Users.dc.html'], ['บันทึกการใช้งาน', '', 'Staffy-Audit.dc.html'], ['สถานะระบบ', '', 'Staffy-Status.dc.html'], ['แผนก', '', 'Staffy-Departments.dc.html'], ['ข้อมูลบริษัท', '', 'Staffy-Company.dc.html']
+    ];
+    const menu = items.map(([label, x, href]) => {
+      const cur = x === 'page';
+      const badge = !cur && x ? x : '';
+      return {
+        label,
+        href,
+        current: cur ? 'page' : 'false',
+        weight: cur ? 600 : 500,
+        bg: cur ? '#3B4BC4' : 'transparent',
+        fg: cur ? '#FFFFFF' : '#E4E6F6',
+        badge,
+        badgeShow: badge ? 'inline-block' : 'none',
+        badgeBg: '#D0584E'
+      };
+    });
+    return { rows, menu };
+  }
+}
+</script>
+</body>
+</html>

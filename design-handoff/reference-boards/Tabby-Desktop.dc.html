@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Tabby เดสก์ท็อป รายการหนี้</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 800px; box-sizing: border-box; display: flex; background: #FBF6EF; color: #2B2118; font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 232px; box-sizing: border-box; padding: 24px 16px; background: #2B2118; color: #FBF6EF;">
+    <p style="margin: 0 8px 28px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Tabby</p>
+    <a href="Tabby-Desktop.dc.html" aria-current="page" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; margin-bottom: 4px; border-radius: 12px; display: flex; align-items: center; background: {{accent}}; color: #2B2118; font-size: 16px; font-weight: 600; text-decoration: none;">รายการหนี้</a>
+    <a href="Tabby-Desktop-Test.dc.html" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; border-radius: 12px; display: flex; align-items: center; color: #E8D9C5; font-size: 16px; font-weight: 500; text-decoration: none;">ทดสอบระบบ</a>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; padding: 32px 40px; box-sizing: border-box;">
+
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <h1 style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">รายการหนี้</h1>
+      <a href="Tabby-Desktop-Form.dc.html" style="min-height: 48px; box-sizing: border-box; padding: 0 22px 0 18px; border-radius: 24px; background: {{accent}}; color: #2B2118; display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; text-decoration: none;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg>
+        เพิ่มรายการ
+      </a>
+    </div>
+
+    <section aria-label="สรุป" style="margin-top: 24px; display: flex; gap: 16px;">
+      <sc-for list="{{cards}}" as="c" hint-placeholder-count="3">
+        <div style="flex: 1; padding: 20px 24px; border-radius: 20px; background: {{c.bg}}; color: {{c.fg}};">
+          <p style="margin: 0; font-size: 14px; color: {{c.sub}};">{{c.label}}</p>
+          <p style="margin: 4px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 32px; font-weight: 600;">{{c.value}}</p>
+        </div>
+      </sc-for>
+    </section>
+
+    <div style="margin-top: 24px; display: flex; align-items: center; justify-content: space-between;">
+      <div role="group" aria-label="กรองรายการ" style="padding: 4px; border-radius: 26px; background: #F0E7DA; display: flex; gap: 4px;">
+        <button type="button" aria-pressed="false" style="min-height: 44px; padding: 0 20px; border: 0; border-radius: 22px; background: transparent; color: #6B5B4B; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer;">ทั้งหมด 15</button>
+        <button type="button" aria-pressed="true" style="min-height: 44px; padding: 0 20px; border: 0; border-radius: 22px; background: #FFFFFF; color: #2B2118; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">ยังไม่จ่าย 10</button>
+        <button type="button" aria-pressed="false" style="min-height: 44px; padding: 0 20px; border: 0; border-radius: 22px; background: transparent; color: #6B5B4B; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer;">จ่ายแล้ว 5</button>
+      </div>
+      <label for="s" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">ค้นหาชื่อเพื่อน</label>
+      <input id="s" type="search" placeholder="ค้นหาชื่อเพื่อน" style="width: 260px; box-sizing: border-box; height: 44px; padding: 0 16px; border: 1.5px solid #D9CBB6; border-radius: 22px; background: #FFFFFF; color: #2B2118; font-family: inherit; font-size: 14px;">
+    </div>
+
+    <div style="margin-top: 16px; border-radius: 20px; background: #FFFFFF; overflow: hidden;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">รายการหนี้</caption>
+        <thead>
+          <tr style="background: #F6EEE2; text-align: left;">
+            <th scope="col" style="padding: 12px 20px; font-weight: 600; color: #6B5B4B;">เพื่อน</th>
+            <th scope="col" style="padding: 12px 20px; font-weight: 600; color: #6B5B4B;">โน้ต</th>
+            <th scope="col" style="padding: 12px 20px; font-weight: 600; color: #6B5B4B; text-align: right;">จำนวน</th>
+            <th scope="col" style="padding: 12px 20px; font-weight: 600; color: #6B5B4B;">วันที่</th>
+            <th scope="col" style="padding: 12px 20px; font-weight: 600; color: #6B5B4B;">สถานะ</th>
+            <th scope="col" style="padding: 12px 12px;"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">จัดการ</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{rows}}" as="r" hint-placeholder-count="8">
+            <tr style="border-top: 1px solid #F3EBDF;">
+              <td style="padding: 8px 20px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span aria-hidden="true" style="flex: none; width: 36px; height: 36px; border-radius: 18px; background: {{r.bg}}; color: {{r.fg}}; display: flex; align-items: center; justify-content: center; font-weight: 600;">{{r.initial}}</span>
+                  <span style="font-size: 16px; font-weight: 600;">{{r.name}}</span>
+                </div>
+              </td>
+              <td style="padding: 8px 20px; color: #6B5B4B;">{{r.note}}</td>
+              <td style="padding: 8px 20px; text-align: right; font-size: 16px; font-weight: 600;">{{r.amount}}</td>
+              <td style="padding: 8px 20px; color: #6B5B4B;">{{r.date}}</td>
+              <td style="padding: 8px 20px;"><span style="display: inline-block; padding: 2px 10px; border-radius: 12px; font-weight: 600; background: {{r.stBg}}; color: {{r.stFg}};">{{r.status}}</span></td>
+              <td style="padding: 4px 12px; text-align: right; white-space: nowrap;">
+                <button type="button" style="min-height: 44px; padding: 0 12px; border: 0; background: transparent; color: #1F5B36; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">{{r.payLabel}}</button>
+                <a href="Tabby-Desktop-Form.dc.html" style="min-height: 44px; padding: 0 12px; display: inline-flex; align-items: center; color: #2B2118; font-size: 14px; font-weight: 600; text-decoration: none;">แก้ไข</a>
+                <button type="button" style="min-height: 44px; padding: 0 12px; border: 0; background: transparent; color: #B3261E; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">ลบ</button>
+              </td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top: 16px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; color: #6B5B4B;">
+      <p style="margin: 0;">แสดง 1–10 จาก 10 รายการ (หน้าละ 20)</p>
+      <div style="display: flex; align-items: center; gap: 4px;">
+        <span style="min-height: 44px; padding: 0 14px; display: flex; align-items: center; color: #8C7A66;">ก่อนหน้า</span>
+        <a href="#" aria-current="page" style="width: 44px; height: 44px; border-radius: 12px; background: #2B2118; color: #FBF6EF; display: flex; align-items: center; justify-content: center; font-weight: 600; text-decoration: none;">1</a>
+        <span style="min-height: 44px; padding: 0 14px; display: flex; align-items: center; color: #8C7A66;">ถัดไป</span>
+      </div>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#E2762B","options":["#E2762B","#E0A030","#D0584E"]},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const A = { bg: '#FDE3C8', fg: '#7A3A07' };
+    const B = { bg: '#E3E0F5', fg: '#3B2F82' };
+    const C = { bg: '#DDEBDD', fg: '#1F5B36' };
+    const D = { bg: '#F8DCE2', fg: '#8A2142' };
+    const un = { status: 'ยังไม่จ่าย', stBg: '#FDE3C8', stFg: '#7A3A07', payLabel: 'จ่ายแล้ว' };
+    const paid = { status: 'จ่ายแล้ว', stBg: '#DDEBDD', stFg: '#1F5B36', payLabel: 'ยกเลิกจ่าย' };
+    return {
+      accent: this.props.accent ?? '#E2762B',
+      cards: [
+        { label: 'ยอดค้างรวม', value: '฿12,345', bg: '#2B2118', fg: '#FBF6EF', sub: '#E8D9C5' },
+        { label: 'เพื่อนที่ติดเงิน', value: '7 คน', bg: '#FFFFFF', fg: '#2B2118', sub: '#6B5B4B' },
+        { label: 'รายการค้างจ่าย', value: '10 รายการ', bg: '#FFFFFF', fg: '#2B2118', sub: '#6B5B4B' }
+      ],
+      rows: [
+        { name: 'ต้น', initial: 'ต', note: 'ค่าข้าวเที่ยง', amount: '฿180', date: '20 ต.ค. 2569', ...A, ...un },
+        { name: 'แพรว', initial: 'พ', note: 'ค่าแท็กซี่กลับบ้าน', amount: '฿280', date: '20 ต.ค. 2569', ...B, ...un },
+        { name: 'มีน', initial: 'ม', note: 'ค่าสุกี้ 4 คน', amount: '฿650', date: '17 ต.ค. 2569', ...C, ...un },
+        { name: 'โอ๊ต', initial: 'โ', note: 'ตั๋วหนัง 2 ที่นั่ง', amount: '฿420', date: '16 ต.ค. 2569', ...D, ...un },
+        { name: 'ฟ้า', initial: 'ฟ', note: 'ค่าน้ำมันไปเขาใหญ่', amount: '฿500', date: '15 ต.ค. 2569', ...A, ...un },
+        { name: 'ปุ๊', initial: 'ป', note: 'ค่าเช่าเครื่องเสียงงานเลี้ยง', amount: '฿1,200', date: '2 ต.ค. 2569', ...B, ...un },
+        { name: 'ต้น', initial: 'ต', note: 'ค่ากาแฟ', amount: '฿95', date: '30 ก.ย. 2569', ...A, ...paid },
+        { name: 'มีน', initial: 'ม', note: 'ค่าไฟหอ', amount: '฿340', date: '28 ก.ย. 2569', ...C, ...paid }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

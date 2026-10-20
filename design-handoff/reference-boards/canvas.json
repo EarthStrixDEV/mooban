@@ -1,0 +1,382 @@
+{
+  "v": 3,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-20T10:00:00Z"
+  },
+  "title": "UI Tabby, Mooban, Staffy",
+  "launch": {
+    "view": "canvas"
+  },
+  "pages": [],
+  "boards": {
+    "Main.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Tabby มือถือ: รายการหนี้"
+    },
+    "Tabby-Add.dc.html": {
+      "x": 470,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Tabby มือถือ: เพิ่มรายการ"
+    },
+    "Tabby-Delete.dc.html": {
+      "x": 940,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Tabby มือถือ: ยืนยันลบ"
+    },
+    "Tabby-Empty.dc.html": {
+      "x": 1410,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Tabby มือถือ: ยังไม่มีรายการ"
+    },
+    "Tabby-Test.dc.html": {
+      "x": 1880,
+      "y": 0,
+      "w": 390,
+      "h": 844,
+      "title": "Tabby มือถือ: /test"
+    },
+    "Tabby-Desktop.dc.html": {
+      "x": 0,
+      "y": 960,
+      "w": 1280,
+      "h": 800,
+      "expand": "fill",
+      "title": "Tabby เดสก์ท็อป: รายการหนี้"
+    },
+    "Tabby-Desktop-Form.dc.html": {
+      "x": 1360,
+      "y": 960,
+      "w": 1280,
+      "h": 800,
+      "expand": "fill",
+      "title": "Tabby เดสก์ท็อป: ฟอร์มแก้ไข"
+    },
+    "Tabby-Desktop-Test.dc.html": {
+      "x": 2720,
+      "y": 960,
+      "w": 1280,
+      "h": 800,
+      "expand": "fill",
+      "title": "Tabby เดสก์ท็อป: /test"
+    },
+    "Mooban-Feed.dc.html": {
+      "x": 0,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Mooban มือถือ: ฟีด"
+    },
+    "Mooban-Compose.dc.html": {
+      "x": 470,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Mooban มือถือ: โพสต์"
+    },
+    "Mooban-Gallery.dc.html": {
+      "x": 940,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Mooban มือถือ: แกลเลอรี"
+    },
+    "Mooban-Lightbox.dc.html": {
+      "x": 1410,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Mooban มือถือ: ดูรูป"
+    },
+    "Mooban-Profile.dc.html": {
+      "x": 1880,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Mooban มือถือ: โปรไฟล์"
+    },
+    "Mooban-Signup.dc.html": {
+      "x": 2350,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Mooban มือถือ: ตั้งชื่อ handle"
+    },
+    "Mooban-Test.dc.html": {
+      "x": 2820,
+      "y": 2300,
+      "w": 390,
+      "h": 844,
+      "title": "Mooban มือถือ: /test"
+    },
+    "Mooban-Desktop-Feed.dc.html": {
+      "x": 0,
+      "y": 3260,
+      "w": 1280,
+      "h": 860,
+      "expand": "fill",
+      "title": "Mooban เดสก์ท็อป: ฟีด"
+    },
+    "Mooban-Desktop-Gallery.dc.html": {
+      "x": 1360,
+      "y": 3260,
+      "w": 1280,
+      "h": 860,
+      "expand": "fill",
+      "title": "Mooban เดสก์ท็อป: แกลเลอรี"
+    },
+    "Mooban-Desktop-Profile.dc.html": {
+      "x": 2720,
+      "y": 3260,
+      "w": 1280,
+      "h": 860,
+      "expand": "fill",
+      "title": "Mooban เดสก์ท็อป: โปรไฟล์"
+    },
+    "Mooban-Desktop-Test.dc.html": {
+      "x": 4080,
+      "y": 3260,
+      "w": 1280,
+      "h": 860,
+      "expand": "fill",
+      "title": "Mooban เดสก์ท็อป: /test"
+    },
+    "Staffy-Login.dc.html": {
+      "x": 0,
+      "y": 4560,
+      "w": 1280,
+      "h": 720,
+      "expand": "fill",
+      "title": "Staffy: เข้าสู่ระบบ"
+    },
+    "Staffy-Setup.dc.html": {
+      "x": 1360,
+      "y": 4560,
+      "w": 1280,
+      "h": 900,
+      "expand": "fill",
+      "title": "Staffy: ตั้งค่าครั้งแรก"
+    },
+    "Staffy-Dashboard.dc.html": {
+      "x": 2720,
+      "y": 4560,
+      "w": 1280,
+      "h": 900,
+      "expand": "fill",
+      "title": "Staffy: แดชบอร์ด"
+    },
+    "Staffy-Employees.dc.html": {
+      "x": 4080,
+      "y": 4560,
+      "w": 1280,
+      "h": 980,
+      "expand": "fill",
+      "title": "Staffy: รายการพนักงาน"
+    },
+    "Staffy-Emp-Form.dc.html": {
+      "x": 0,
+      "y": 5660,
+      "w": 1280,
+      "h": 900,
+      "expand": "fill",
+      "title": "Staffy: ฟอร์มพนักงาน"
+    },
+    "Staffy-Emp-Detail.dc.html": {
+      "x": 1360,
+      "y": 5660,
+      "w": 1280,
+      "h": 900,
+      "expand": "fill",
+      "title": "Staffy: รายละเอียดพนักงาน"
+    },
+    "Staffy-Import-Upload.dc.html": {
+      "x": 2720,
+      "y": 5660,
+      "w": 1280,
+      "h": 900,
+      "expand": "fill",
+      "title": "Staffy: นำเข้า CSV"
+    },
+    "Staffy-Import.dc.html": {
+      "x": 4080,
+      "y": 5660,
+      "w": 1280,
+      "h": 980,
+      "expand": "fill",
+      "title": "Staffy: ผลการนำเข้า"
+    },
+    "Staffy-Leaves.dc.html": {
+      "x": 0,
+      "y": 6760,
+      "w": 1280,
+      "h": 900,
+      "expand": "fill",
+      "title": "Staffy: รายการลา"
+    },
+    "Staffy-Leave-New.dc.html": {
+      "x": 1360,
+      "y": 6760,
+      "w": 1280,
+      "h": 900,
+      "expand": "fill",
+      "title": "Staffy: ขอลา"
+    },
+    "Staffy-Account.dc.html": {
+      "x": 2720,
+      "y": 6760,
+      "w": 1280,
+      "h": 900,
+      "expand": "fill",
+      "title": "Staffy: บัญชีของฉัน"
+    },
+    "Staffy-Users.dc.html": {
+      "x": 4080,
+      "y": 6760,
+      "w": 1280,
+      "h": 900,
+      "expand": "fill",
+      "title": "Staffy: ผู้ใช้ระบบ"
+    },
+    "Staffy-Audit.dc.html": {
+      "x": 0,
+      "y": 7860,
+      "w": 1280,
+      "h": 900,
+      "expand": "fill",
+      "title": "Staffy: Audit log"
+    },
+    "Staffy-Status.dc.html": {
+      "x": 1360,
+      "y": 7860,
+      "w": 1280,
+      "h": 900,
+      "expand": "fill",
+      "title": "Staffy: สถานะระบบ"
+    },
+    "Staffy-403.dc.html": {
+      "x": 2720,
+      "y": 7860,
+      "w": 1280,
+      "h": 900,
+      "expand": "fill",
+      "title": "Staffy: 403"
+    },
+    "Staffy-404.dc.html": {
+      "x": 4080,
+      "y": 7860,
+      "w": 1280,
+      "h": 900,
+      "expand": "fill",
+      "title": "Staffy: 404"
+    },
+    "Staffy-Departments.dc.html": {
+      "x": 0,
+      "y": 8960,
+      "w": 1280,
+      "h": 900,
+      "expand": "fill",
+      "title": "Staffy: แผนก"
+    },
+    "Staffy-Company.dc.html": {
+      "x": 1360,
+      "y": 8960,
+      "w": 1280,
+      "h": 1100,
+      "expand": "fill",
+      "title": "Staffy: ข้อมูลบริษัท"
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "Tabby-Add.dc.html",
+    "Tabby-Delete.dc.html",
+    "Tabby-Empty.dc.html",
+    "Tabby-Test.dc.html",
+    "Tabby-Desktop.dc.html",
+    "Tabby-Desktop-Form.dc.html",
+    "Tabby-Desktop-Test.dc.html",
+    "Mooban-Feed.dc.html",
+    "Mooban-Compose.dc.html",
+    "Mooban-Gallery.dc.html",
+    "Mooban-Lightbox.dc.html",
+    "Mooban-Profile.dc.html",
+    "Mooban-Signup.dc.html",
+    "Mooban-Test.dc.html",
+    "Mooban-Desktop-Feed.dc.html",
+    "Mooban-Desktop-Gallery.dc.html",
+    "Mooban-Desktop-Profile.dc.html",
+    "Mooban-Desktop-Test.dc.html",
+    "Staffy-Login.dc.html",
+    "Staffy-Setup.dc.html",
+    "Staffy-Dashboard.dc.html",
+    "Staffy-Employees.dc.html",
+    "Staffy-Emp-Form.dc.html",
+    "Staffy-Emp-Detail.dc.html",
+    "Staffy-Import-Upload.dc.html",
+    "Staffy-Import.dc.html",
+    "Staffy-Leaves.dc.html",
+    "Staffy-Leave-New.dc.html",
+    "Staffy-Account.dc.html",
+    "Staffy-Users.dc.html",
+    "Staffy-Audit.dc.html",
+    "Staffy-Status.dc.html",
+    "Staffy-403.dc.html",
+    "Staffy-404.dc.html",
+    "Staffy-Departments.dc.html",
+    "Staffy-Company.dc.html"
+  ],
+  "notes": {
+    "t-tabby": {
+      "x": 0,
+      "y": -200,
+      "text": "Tabby: สมุดจดหนี้เพื่อน",
+      "kind": "title1",
+      "maxW": 2270
+    },
+    "t-tabby-d": {
+      "x": 0,
+      "y": 860,
+      "text": "Tabby เดสก์ท็อป",
+      "kind": "title2",
+      "maxW": 4000
+    },
+    "t-mooban": {
+      "x": 0,
+      "y": 2100,
+      "text": "Mooban: โซเชียลหมู่บ้าน",
+      "kind": "title1",
+      "maxW": 3210
+    },
+    "t-mooban-d": {
+      "x": 0,
+      "y": 3160,
+      "text": "Mooban เดสก์ท็อป",
+      "kind": "title2",
+      "maxW": 5360
+    },
+    "t-staffy": {
+      "x": 0,
+      "y": 4360,
+      "text": "Staffy: จัดการพนักงาน",
+      "kind": "title1",
+      "maxW": 5360
+    },
+    "t-staffy-set": {
+      "x": 0,
+      "y": 8760,
+      "text": "Staffy ตั้งค่า",
+      "kind": "title2",
+      "maxW": 2640
+    }
+  },
+  "designSystems": []
+}

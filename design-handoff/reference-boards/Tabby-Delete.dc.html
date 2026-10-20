@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Tabby ลบรายการ</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; background: #FBF6EF; color: #2B2118; font-family: 'Noto Sans Thai', system-ui, sans-serif; display: flex; flex-direction: column;">
+
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 20px 12px 0 20px;">
+    <h1 style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Tabby</h1>
+  </header>
+
+  <section aria-label="ยอดค้างรวม" style="margin: 16px 20px 0; padding: 20px; border-radius: 24px; background: #2B2118; color: #FBF6EF;">
+    <p style="margin: 0; font-size: 14px; color: #E8D9C5;">ยอดค้างรวม</p>
+    <p style="margin: 4px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 40px; font-weight: 600; line-height: 1.2;">฿12,345</p>
+  </section>
+
+  <main style="flex: 1; min-height: 0; overflow: hidden; padding: 4px 20px 0;">
+    <section style="margin-top: 16px;">
+      <h2 style="margin: 0 0 8px 4px; font-size: 14px; font-weight: 600; color: #6B5B4B;">วันนี้</h2>
+      <ul style="margin: 0; padding: 0; list-style: none; border-radius: 24px; background: #FFFFFF; overflow: hidden;">
+        <sc-for list="{{rows}}" as="row" hint-placeholder-count="4">
+          <li style="display: flex; align-items: center; gap: 12px; min-height: 72px; box-sizing: border-box; padding: 0 16px; border-top: {{row.divider}}; background: {{row.hl}};">
+            <span aria-hidden="true" style="flex: none; width: 44px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600; background: {{row.bg}}; color: {{row.fg}};">{{row.initial}}</span>
+            <div style="flex: 1; min-width: 0;">
+              <p style="margin: 0; font-size: 16px; font-weight: 600;">{{row.name}}</p>
+              <p style="margin: 0; font-size: 14px; color: #6B5B4B;">{{row.note}}</p>
+            </div>
+            <p style="margin: 0; flex: none; font-size: 16px; font-weight: 600;">{{row.amount}}</p>
+          </li>
+        </sc-for>
+      </ul>
+    </section>
+  </main>
+
+  <div style="position: absolute; inset: 0; background: rgba(43,33,24,0.6);"></div>
+
+  <div role="dialog" aria-modal="true" aria-labelledby="del-title" style="position: absolute; left: 0; right: 0; bottom: 0; box-sizing: border-box; padding: 12px 20px 28px; border-radius: 28px 28px 0 0; background: #FFFFFF;">
+    <div aria-hidden="true" style="width: 40px; height: 4px; border-radius: 2px; background: #D9CBB6; margin: 0 auto 20px;"></div>
+    <h2 id="del-title" style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 20px; font-weight: 600;">ลบรายการของแพรว?</h2>
+    <p style="margin: 8px 0 0; font-size: 16px; line-height: 1.6; color: #6B5B4B;">ค่าแท็กซี่กลับบ้าน ฿280 จะหายไปจากสมุด และกู้คืนไม่ได้</p>
+    <button type="button" style="margin-top: 24px; width: 100%; height: 56px; border: 0; border-radius: 28px; background: #B3261E; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">ลบรายการ</button>
+    <a href="Main.dc.html" style="margin-top: 8px; min-height: 56px; display: flex; align-items: center; justify-content: center; border-radius: 28px; background: #F0E7DA; color: #2B2118; font-size: 16px; font-weight: 600; text-decoration: none;">ยกเลิก</a>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const line = '1px solid #F3EBDF';
+    const none = '0 solid transparent';
+    return {
+      rows: [
+        { name: 'ต้น', note: 'ค่าข้าวเที่ยง', amount: '฿180', initial: 'ต', bg: '#FDE3C8', fg: '#7A3A07', divider: none, hl: '#FFFFFF' },
+        { name: 'แพรว', note: 'ค่าแท็กซี่กลับบ้าน', amount: '฿280', initial: 'พ', bg: '#E3E0F5', fg: '#3B2F82', divider: line, hl: '#FDF1E4' },
+        { name: 'มีน', note: 'ค่าสุกี้ 4 คน', amount: '฿650', initial: 'ม', bg: '#DDEBDD', fg: '#1F5B36', divider: line, hl: '#FFFFFF' },
+        { name: 'โอ๊ต', note: 'ตั๋วหนัง 2 ที่นั่ง', amount: '฿420', initial: 'โ', bg: '#F8DCE2', fg: '#8A2142', divider: line, hl: '#FFFFFF' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

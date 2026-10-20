@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Staffy สถานะระบบ</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; box-sizing: border-box; display: flex; background: #F5F6FA; color: #1B2033; font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 240px; box-sizing: border-box; padding: 24px 16px; background: #232A5C; color: #F2F3FA; display: flex; flex-direction: column;">
+    <p style="margin: 0 8px 24px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Staffy</p>
+    <sc-for list="{{menu}}" as="m" hint-placeholder-count="6">
+      <a href="{{m.href}}" aria-current="{{m.current}}" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; margin-bottom: 4px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; font-size: 16px; font-weight: {{m.weight}}; background: {{m.bg}}; color: {{m.fg}};">
+        {{m.label}}
+        <span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: #B3261E; color: #FFFFFF; display: {{m.badgeShow}};">{{m.badge}}</span>
+      </a>
+    </sc-for>
+    <div style="margin-top: auto; padding: 12px; border-top: 1px solid #3A4278;">
+      <p style="margin: 0; font-size: 14px; font-weight: 600;">ผู้ดูแลระบบ</p>
+      <p style="margin: 2px 0 8px; font-size: 14px; color: #C9CDE8;">Admin</p>
+      <a href="Staffy-Account.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">บัญชีของฉัน</a>
+      <a href="Staffy-Login.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">ออกจากระบบ</a>
+    </div>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; padding: 32px 40px; box-sizing: border-box;">
+
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+      <div>
+        <h1 style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">สถานะระบบ</h1>
+        <p style="margin: 4px 0 0; font-size: 14px; color: #4F566E;">งานประจำวัน (cron) ทำงานทุกวัน 06:00 น. · เฉพาะผู้ดูแลระบบ</p>
+      </div>
+      <form method="post" action="/admin/status/run">
+        <input type="hidden" name="csrf" value="token">
+        <button type="submit" style="min-height: 44px; padding: 0 18px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">รันทันที</button>
+      </form>
+    </div>
+
+    <div style="margin-top: 24px; display: flex; gap: 16px; align-items: stretch;">
+
+      <section aria-label="สถานะงานล่าสุด" style="flex: none; width: 320px; box-sizing: border-box; padding: 24px; border-radius: 16px; background: #E6F4EA; border: 1px solid #B5DFC2;">
+        <p style="margin: 0; font-size: 14px; font-weight: 600; color: #14532D;">รันล่าสุด</p>
+        <p style="margin: 8px 0 0; display: flex; align-items: center; gap: 8px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600; color: #14532D;">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+          สำเร็จ
+        </p>
+        <p style="margin: 12px 0 0; font-size: 14px; color: #14532D;">วันนี้ 06:00 · ใช้เวลา 4.2 วินาที</p>
+        <p style="margin: 4px 0 0; font-size: 14px; color: #14532D;">ตรวจ 128 คน · ส่งอีเมลแจ้ง 3 ฉบับ</p>
+        <p style="margin: 12px 0 0; font-size: 14px; color: #14532D;">รันครั้งถัดไป พรุ่งนี้ 06:00 น.</p>
+      </section>
+
+      <section aria-label="ผลการรัน 14 วัน" style="flex: 1; min-width: 0; padding: 24px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF;">
+        <h2 style="margin: 0; font-size: 16px; font-weight: 600;">จำนวนแถวที่ประมวลผล 14 วันล่าสุด</h2>
+        <svg viewBox="0 0 532 90" width="100%" height="110" role="img" aria-label="กราฟแท่ง 14 วัน ทุกวันสำเร็จ ยกเว้นวันที่ 13 ต.ค. ที่ล้มเหลว" style="margin-top: 16px; display: block;">
+          <rect x="0" y="8" width="28" height="64" rx="4" fill="#3B4BC4"></rect>
+          <rect x="38" y="8" width="28" height="64" rx="4" fill="#3B4BC4"></rect>
+          <rect x="76" y="9" width="28" height="63" rx="4" fill="#3B4BC4"></rect>
+          <rect x="114" y="9" width="28" height="63" rx="4" fill="#3B4BC4"></rect>
+          <rect x="152" y="10" width="28" height="62" rx="4" fill="#3B4BC4"></rect>
+          <rect x="190" y="10" width="28" height="62" rx="4" fill="#3B4BC4"></rect>
+          <rect x="228" y="10" width="28" height="62" rx="4" fill="#3B4BC4"></rect>
+          <rect x="266" y="56" width="28" height="16" rx="4" fill="#B3261E"></rect>
+          <rect x="304" y="10" width="28" height="62" rx="4" fill="#3B4BC4"></rect>
+          <rect x="342" y="10" width="28" height="62" rx="4" fill="#3B4BC4"></rect>
+          <rect x="380" y="8" width="28" height="64" rx="4" fill="#3B4BC4"></rect>
+          <rect x="418" y="8" width="28" height="64" rx="4" fill="#3B4BC4"></rect>
+          <rect x="456" y="8" width="28" height="64" rx="4" fill="#3B4BC4"></rect>
+          <rect x="494" y="8" width="28" height="64" rx="4" fill="#3B4BC4"></rect>
+          <line x1="0" y1="73" x2="532" y2="73" stroke="#C5CADB" stroke-width="1"></line>
+          <text x="0" y="86" font-size="11" fill="#4F566E" font-family="Noto Sans Thai, sans-serif">7 ต.ค.</text>
+          <text x="494" y="86" font-size="11" fill="#4F566E" font-family="Noto Sans Thai, sans-serif">20 ต.ค.</text>
+        </svg>
+        <p style="margin: 8px 0 0; font-size: 14px; color: #4F566E;">แท่งสีแดง คือรอบที่ล้มเหลว (13 ต.ค. ส่งอีเมลไม่สำเร็จ)</p>
+      </section>
+
+    </div>
+
+    <div style="margin-top: 24px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF; overflow: hidden;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">ประวัติการรันงานประจำวัน</caption>
+        <thead>
+          <tr style="background: #F0F2F9; text-align: left;">
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">เริ่ม</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">จบ</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">สถานะ</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">แถวที่ประมวลผล</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">อีเมลที่ส่ง</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">หมายเหตุ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{runs}}" as="r" hint-placeholder-count="6">
+            <tr style="border-top: 1px solid #ECEEF6;">
+              <td style="padding: 12px 16px; white-space: nowrap;">{{r.start}}</td>
+              <td style="padding: 12px 16px; white-space: nowrap; color: #4F566E;">{{r.end}}</td>
+              <td style="padding: 12px 16px;"><span style="display: inline-block; padding: 2px 10px; border-radius: 12px; font-weight: 600; background: {{r.bg}}; color: {{r.fg}};">{{r.status}}</span></td>
+              <td style="padding: 12px 16px;">{{r.rows}}</td>
+              <td style="padding: 12px 16px;">{{r.mail}}</td>
+              <td style="padding: 12px 16px; color: #4F566E;">{{r.note}}</td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const items = [
+      ['แดชบอร์ด', 'Staffy-Dashboard.dc.html'], ['พนักงาน', 'Staffy-Employees.dc.html'], ['การลา', 'Staffy-Leaves.dc.html'],
+      ['บัญชีผู้ใช้', 'Staffy-Users.dc.html'], ['บันทึกการใช้งาน', 'Staffy-Audit.dc.html'], ['สถานะระบบ', 'Staffy-Status.dc.html'], ['แผนก', 'Staffy-Departments.dc.html'], ['ข้อมูลบริษัท', 'Staffy-Company.dc.html']
+    ];
+    const cur = 5;
+    const menu = items.map(([label, href], i) => ({
+      label, href,
+      current: i === cur ? 'page' : 'false',
+      weight: i === cur ? 600 : 500,
+      bg: i === cur ? '#3B4BC4' : 'transparent',
+      fg: i === cur ? '#FFFFFF' : '#E4E6F6',
+      badge: '4',
+      badgeShow: label === 'การลา' && i !== cur ? 'inline-block' : 'none'
+    }));
+    const ok = { status: 'สำเร็จ', bg: '#E6F4EA', fg: '#14532D' };
+    const bad = { status: 'ล้มเหลว', bg: '#FDECEA', fg: '#8E1B12' };
+    const runs = [
+      { start: '20 ต.ค. 2569 06:00:01', end: '06:00:05', rows: 128, mail: '3 ฉบับ', note: 'สัญญาใกล้หมด 2 · วันเกิดเดือนนี้ 1', ...ok },
+      { start: '19 ต.ค. 2569 06:00:01', end: '06:00:04', rows: 128, mail: '1 ฉบับ', note: '-', ...ok },
+      { start: '18 ต.ค. 2569 06:00:02', end: '06:00:06', rows: 128, mail: '0 ฉบับ', note: '-', ...ok },
+      { start: '17 ต.ค. 2569 06:00:01', end: '06:00:04', rows: 127, mail: '2 ฉบับ', note: '-', ...ok },
+      { start: '16 ต.ค. 2569 06:00:01', end: '06:00:05', rows: 127, mail: '0 ฉบับ', note: '-', ...ok },
+      { start: '13 ต.ค. 2569 06:00:02', end: '06:00:09', rows: 0, mail: '0 ฉบับ', note: 'เชื่อมต่อเซิร์ฟเวอร์อีเมลไม่ได้ (timeout)', ...bad }
+    ];
+    return { menu, runs };
+  }
+}
+</script>
+</body>
+</html>

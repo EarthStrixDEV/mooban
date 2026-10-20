@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Mooban ตั้งชื่อเล่น</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+:root{--bg:#F3F6F1;--card:#FFFFFF;--ink:#17261D;--sub:#55665B;--line:#E1E8DF;--brand:#1F7A4D;--brandsoft:#DDEFE4;--chip:#E9EFE7;--onbrand:#FFFFFF;--err:#B3261E}
+@media (prefers-color-scheme: dark){:root{--bg:#0F1712;--card:#18231C;--ink:#EAF2EC;--sub:#A6B8AB;--line:#263329;--brand:#5CC48D;--brandsoft:#1E3A2B;--chip:#202D24;--onbrand:#0F1712;--err:#FF8A80}}
+</style>
+</helmet>
+<div style="position: relative; width: 390px; height: 844px; box-sizing: border-box; overflow: hidden; background: var(--bg); color: var(--ink); font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <div aria-hidden="true" style="padding: 16px 20px 0;">
+    <p style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 22px; font-weight: 600; color: var(--brand);">Mooban</p>
+    <sc-for list="{{ghosts}}" as="g" hint-placeholder-count="3">
+      <div style="margin-top: 12px; padding: 16px; border-radius: 20px; background: var(--card); border: 1px solid var(--line);">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="width: 40px; height: 40px; border-radius: 20px; background: var(--chip);"></span>
+          <span style="width: 120px; height: 12px; border-radius: 6px; background: var(--chip);"></span>
+        </div>
+        <span style="display: block; margin-top: 14px; width: 90%; height: 12px; border-radius: 6px; background: var(--chip);"></span>
+        <span style="display: block; margin-top: 8px; width: 60%; height: 12px; border-radius: 6px; background: var(--chip);"></span>
+      </div>
+    </sc-for>
+  </div>
+
+  <div aria-hidden="true" style="position: absolute; inset: 0; background: rgba(0,0,0,0.55);"></div>
+
+  <section role="dialog" aria-modal="true" aria-labelledby="su-title" style="position: absolute; left: 0; right: 0; bottom: 0; box-sizing: border-box; padding: 12px 20px 28px; border-radius: 28px 28px 0 0; background: var(--card);">
+    <div aria-hidden="true" style="margin: 0 auto 16px; width: 40px; height: 4px; border-radius: 2px; background: var(--line);"></div>
+    <h2 id="su-title" style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">เข้าหมู่บ้านครั้งแรก</h2>
+    <p style="margin: 6px 0 0; font-size: 16px; line-height: 1.6; color: var(--sub);">ตั้งชื่อเล่นสำหรับให้คนอื่นเรียก ไม่ต้องสมัครด้วยอีเมลหรือรหัสผ่าน</p>
+
+    <form style="margin-top: 20px;">
+      <label for="handle" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600;">ชื่อเล่น (handle)</label>
+      <div style="display: flex; align-items: center; height: 52px; box-sizing: border-box; border: 2px solid var(--err); border-radius: 16px; background: var(--bg); overflow: hidden;">
+        <span aria-hidden="true" style="padding: 0 4px 0 16px; font-size: 16px; color: var(--sub);">@</span>
+        <input id="handle" name="handle" type="text" value="somchai" autocomplete="off" autocapitalize="none" spellcheck="false" aria-invalid="true" aria-describedby="handle-msg handle-rules" style="flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: transparent; color: var(--ink); font-family: inherit; font-size: 16px;">
+      </div>
+      <p id="handle-msg" role="alert" style="margin: 8px 0 0; font-size: 14px; font-weight: 500; color: var(--err);">ชื่อนี้มีคนใช้แล้ว ลองชื่อด้านล่างแทนได้เลย</p>
+      <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+        <sc-for list="{{suggest}}" as="s" hint-placeholder-count="3">
+          <button type="button" style="min-height: 44px; padding: 0 16px; border: 0; border-radius: 22px; background: var(--brandsoft); color: var(--ink); font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer;">@{{s}}</button>
+        </sc-for>
+      </div>
+      <ul id="handle-rules" style="margin: 14px 0 0; padding: 0; list-style: none; font-size: 14px; color: var(--sub);">
+        <li style="display: flex; align-items: center; gap: 8px; min-height: 28px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--brand);"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+          ยาว 3–20 ตัวอักษร
+        </li>
+        <li style="display: flex; align-items: center; gap: 8px; min-height: 28px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--brand);"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+          ใช้ได้เฉพาะ a-z, 0-9 และ _
+        </li>
+      </ul>
+
+      <button type="submit" disabled style="margin-top: 16px; width: 100%; height: 56px; border: 0; border-radius: 28px; background: var(--chip); color: var(--sub); font-family: inherit; font-size: 16px; font-weight: 600; cursor: not-allowed;">เข้าหมู่บ้าน</button>
+    </form>
+
+    <p style="margin: 14px 0 0; font-size: 14px; line-height: 1.6; color: var(--sub);">ระบบจะเก็บโทเคนไว้ในเครื่องนี้เท่านั้น ถ้าล้างข้อมูลเบราว์เซอร์หรือเปลี่ยนเครื่อง ต้องตั้งชื่อใหม่</p>
+  </section>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      ghosts: [1, 2, 3],
+      suggest: ['somchai_2', 'somchai99', 'somchai_th']
+    };
+  }
+}
+</script>
+</body>
+</html>

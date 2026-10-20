@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Tabby เดสก์ท็อป ทดสอบระบบ</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 800px; box-sizing: border-box; display: flex; background: #FBF6EF; color: #2B2118; font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 232px; box-sizing: border-box; padding: 24px 16px; background: #2B2118; color: #FBF6EF;">
+    <p style="margin: 0 8px 28px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Tabby</p>
+    <a href="Tabby-Desktop.dc.html" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; margin-bottom: 4px; border-radius: 12px; display: flex; align-items: center; color: #E8D9C5; font-size: 16px; font-weight: 500; text-decoration: none;">รายการหนี้</a>
+    <a href="Tabby-Desktop-Test.dc.html" aria-current="page" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; border-radius: 12px; display: flex; align-items: center; background: {{accent}}; color: #2B2118; font-size: 16px; font-weight: 600; text-decoration: none;">ทดสอบระบบ</a>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; padding: 32px 40px; box-sizing: border-box;">
+    <h1 style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">ทดสอบระบบ</h1>
+    <p style="margin: 4px 0 0; font-size: 14px; color: #6B5B4B;">วัดแบนด์วิดท์ แคช และการรับโหลดของโฮสติ้งนี้</p>
+
+    <div style="margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
+
+      <section aria-labelledby="bw" style="padding: 24px; border-radius: 24px; background: #FFFFFF;">
+        <h2 id="bw" style="margin: 0; font-size: 18px; font-weight: 600;">Bandwidth</h2>
+        <label for="size" style="display: block; margin: 16px 0 8px; font-size: 14px; font-weight: 600;">ขนาดไฟล์ดาวน์โหลด</label>
+        <select id="size" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #D9CBB6; border-radius: 14px; background: #FFFFFF; color: #2B2118; font-family: inherit; font-size: 16px;">
+          <option>1 MB</option><option selected>10 MB</option><option>50 MB</option>
+        </select>
+        <div style="margin-top: 20px; display: flex; gap: 24px;">
+          <div>
+            <p style="margin: 0; font-size: 14px; color: #6B5B4B;">ดาวน์โหลด</p>
+            <p style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 44px; font-weight: 600; line-height: 1.15;">48.2 <span style="font-size: 16px; font-weight: 500; color: #6B5B4B;">Mbps</span></p>
+          </div>
+          <div>
+            <p style="margin: 0; font-size: 14px; color: #6B5B4B;">อัปโหลด</p>
+            <p style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 44px; font-weight: 600; line-height: 1.15;">21.7 <span style="font-size: 16px; font-weight: 500; color: #6B5B4B;">Mbps</span></p>
+          </div>
+        </div>
+        <div role="progressbar" aria-label="ความคืบหน้าดาวน์โหลด" aria-valuemin="0" aria-valuemax="100" aria-valuenow="64" style="margin-top: 16px; height: 10px; border-radius: 5px; background: #F0E7DA; overflow: hidden;">
+          <div style="width: 64%; height: 100%; background: {{accent}};"></div>
+        </div>
+        <div style="display: flex; gap: 12px; margin-top: 20px;">
+          <button type="button" style="flex: 1; height: 48px; border: 0; border-radius: 24px; background: {{accent}}; color: #2B2118; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">เริ่มดาวน์โหลด</button>
+          <button type="button" style="flex: 1; height: 48px; border: 0; border-radius: 24px; background: #F0E7DA; color: #2B2118; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">ทดสอบอัปโหลด</button>
+        </div>
+      </section>
+
+      <section aria-labelledby="ch" style="padding: 24px; border-radius: 24px; background: #FFFFFF;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <h2 id="ch" style="margin: 0; font-size: 18px; font-weight: 600;">Caching</h2>
+          <button type="button" style="min-height: 44px; padding: 0 18px; border: 0; border-radius: 22px; background: #F0E7DA; color: #2B2118; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">ตรวจใหม่</button>
+        </div>
+        <ul style="margin: 8px 0 0; padding: 0; list-style: none;">
+          <sc-for list="{{checks}}" as="c" hint-placeholder-count="4">
+            <li style="display: flex; align-items: center; gap: 12px; min-height: 56px; border-top: {{c.divider}};">
+              <span style="flex: none; min-width: 60px; box-sizing: border-box; text-align: center; padding: 2px 10px; border-radius: 12px; font-size: 14px; font-weight: 600; background: {{c.bg}}; color: {{c.fg}};">{{c.result}}</span>
+              <div style="flex: 1; min-width: 0;">
+                <p style="margin: 0; font-size: 14px; font-weight: 600;">{{c.name}}</p>
+                <p style="margin: 0; font-size: 14px; color: #6B5B4B;">{{c.detail}}</p>
+              </div>
+            </li>
+          </sc-for>
+        </ul>
+      </section>
+
+      <section aria-labelledby="api" style="grid-column: 1 / span 2; padding: 24px; border-radius: 24px; background: #FFFFFF;">
+        <h2 id="api" style="margin: 0; font-size: 18px; font-weight: 600;">API Request</h2>
+        <div style="display: flex; gap: 32px; margin-top: 16px;">
+          <div style="width: 300px; flex: none;">
+            <label for="reqs" style="display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600;">จำนวนคำขอ</label>
+            <input id="reqs" type="text" inputmode="numeric" value="200" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #D9CBB6; border-radius: 14px; background: #FFFFFF; color: #2B2118; font-family: inherit; font-size: 16px;">
+            <label for="conc" style="display: block; margin: 16px 0 8px; font-size: 14px; font-weight: 600;">ส่งพร้อมกัน</label>
+            <input id="conc" type="text" inputmode="numeric" value="10" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #D9CBB6; border-radius: 14px; background: #FFFFFF; color: #2B2118; font-family: inherit; font-size: 16px;">
+            <button type="button" style="margin-top: 20px; width: 100%; height: 48px; border: 0; border-radius: 24px; background: {{accent}}; color: #2B2118; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">เริ่มทดสอบ</button>
+          </div>
+          <div style="flex: 1; min-width: 0;">
+            <dl style="margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+              <sc-for list="{{stats}}" as="s" hint-placeholder-count="4">
+                <div style="padding: 12px 16px; border-radius: 16px; background: #FBF6EF;">
+                  <dt style="font-size: 14px; color: #6B5B4B;">{{s.label}}</dt>
+                  <dd style="margin: 2px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">{{s.value}}</dd>
+                </div>
+              </sc-for>
+            </dl>
+            <p style="margin: 20px 0 8px; font-size: 14px; font-weight: 600;">การกระจายเวลาตอบสนอง (มิลลิวินาที)</p>
+            <div role="img" aria-label="กราฟแท่งการกระจายเวลาตอบสนอง ส่วนใหญ่อยู่ที่ 20 ถึง 40 มิลลิวินาที" style="height: 120px; display: flex; align-items: flex-end; gap: 8px;">
+              <sc-for list="{{bars}}" as="b" hint-placeholder-count="10">
+                <div style="flex: 1; height: {{b.h}}px; border-radius: 6px 6px 0 0; background: {{b.color}};"></div>
+              </sc-for>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 12px; color: #6B5B4B;"><span>0</span><span>50</span><span>100+</span></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#E2762B","options":["#E2762B","#E0A030","#D0584E"]},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const line = '1px solid #F3EBDF';
+    const none = '0 solid transparent';
+    const ok = { result: 'ผ่าน', bg: '#DDEBDD', fg: '#1F5B36' };
+    const bad = { result: 'ไม่ผ่าน', bg: '#FDECEA', fg: '#8E1B12' };
+    const hs = [12, 30, 62, 94, 108, 70, 40, 22, 12, 6];
+    return {
+      accent: this.props.accent ?? '#E2762B',
+      checks: [
+        { name: 'ETag', detail: 'พบ "a1b2c3" ในคำตอบ', divider: none, ...ok },
+        { name: 'Cache-Control', detail: 'public, max-age=3600', divider: line, ...ok },
+        { name: 'ส่งซ้ำด้วย If-None-Match', detail: 'ได้ 304 Not Modified', divider: line, ...ok },
+        { name: 'ไฟล์ static (CSS/JS)', detail: 'ไม่มี Expires หรือ max-age', divider: line, ...bad }
+      ],
+      stats: [
+        { label: 'เฉลี่ย', value: '31 ms' },
+        { label: 'มัธยฐาน', value: '27 ms' },
+        { label: 'p95', value: '74 ms' },
+        { label: 'อัตราผิดพลาด', value: '0.5%' }
+      ],
+      bars: hs.map((h, i) => ({ h, color: i >= 8 ? '#D0584E' : '#E2762B' }))
+    };
+  }
+}
+</script>
+</body>
+</html>

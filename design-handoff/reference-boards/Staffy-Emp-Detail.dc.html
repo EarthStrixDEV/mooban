@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Staffy รายละเอียดพนักงาน</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="position: relative; width: 100%; min-height: 900px; box-sizing: border-box; display: flex; background: #F5F6FA; color: #1B2033; font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 240px; box-sizing: border-box; padding: 24px 16px; background: #232A5C; color: #F2F3FA; display: flex; flex-direction: column;">
+    <p style="margin: 0 8px 24px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Staffy</p>
+    <sc-for list="{{menu}}" as="m" hint-placeholder-count="6">
+      <a href="{{m.href}}" aria-current="{{m.current}}" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; margin-bottom: 4px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; font-size: 16px; font-weight: {{m.weight}}; background: {{m.bg}}; color: {{m.fg}};">
+        {{m.label}}
+        <span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: #D0584E; color: #FFFFFF; display: {{m.badgeShow}};">{{m.badge}}</span>
+      </a>
+    </sc-for>
+    <div style="margin-top: auto; padding: 12px; border-top: 1px solid #3A4278;">
+      <p style="margin: 0; font-size: 14px; font-weight: 600;">สมหญิง ใจดี</p>
+      <p style="margin: 2px 0 8px; font-size: 14px; color: #C9CDE8;">HR</p>
+      <a href="Staffy-Login.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">ออกจากระบบ</a>
+    </div>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; padding: 32px 40px; box-sizing: border-box; max-width: 1040px;">
+
+    <a href="Staffy-Employees.dc.html" style="min-height: 44px; display: inline-flex; align-items: center; color: #3B4BC4; font-size: 14px; font-weight: 600; text-decoration: none;">← กลับไปรายการพนักงาน</a>
+
+    <header style="margin-top: 4px; display: flex; align-items: center; gap: 20px; padding: 24px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF;">
+      <span aria-hidden="true" style="flex: none; width: 72px; height: 72px; border-radius: 36px; background: #E0E4FA; color: #2B3699; display: flex; align-items: center; justify-content: center; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">ส</span>
+      <div style="flex: 1; min-width: 0;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <h1 style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 26px; font-weight: 600;">สุนิสา วงศ์ใหญ่</h1>
+          <span style="padding: 2px 10px; border-radius: 12px; font-size: 14px; font-weight: 600; background: #E6F4EA; color: #14532D;">ปฏิบัติงาน</span>
+        </div>
+        <p style="margin: 4px 0 0; font-size: 14px; color: #4F566E;">EMP-0137 · เจ้าหน้าที่บัญชี · แผนกบัญชี</p>
+      </div>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;">
+        <a href="Staffy-Emp-Form.dc.html" style="min-height: 44px; box-sizing: border-box; padding: 0 16px; border-radius: 10px; background: #3B4BC4; color: #FFFFFF; display: flex; align-items: center; font-size: 14px; font-weight: 600; text-decoration: none;">แก้ไข</a>
+        <a href="/employees/137/card.pdf" style="min-height: 44px; box-sizing: border-box; padding: 0 16px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; display: flex; align-items: center; font-size: 14px; font-weight: 600; text-decoration: none;">พิมพ์บัตร PDF</a>
+        <button type="button" style="min-height: 44px; padding: 0 16px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">ลาออก</button>
+        <button type="button" style="min-height: 44px; padding: 0 16px; border: 1.5px solid #E5A9A3; border-radius: 10px; background: #FFFFFF; color: #8E1B12; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">ลบ (admin)</button>
+      </div>
+    </header>
+
+    <div role="tablist" aria-label="หมวดข้อมูล" style="margin-top: 20px; display: flex; gap: 4px; border-bottom: 1px solid #D5D9E8;">
+      <a href="#general" role="tab" aria-selected="true" style="min-height: 44px; box-sizing: border-box; padding: 0 18px; display: flex; align-items: center; font-size: 16px; font-weight: 600; color: #3B4BC4; border-bottom: 3px solid #3B4BC4; text-decoration: none;">ข้อมูลทั่วไป</a>
+      <a href="#employment" role="tab" aria-selected="false" style="min-height: 44px; box-sizing: border-box; padding: 0 18px; display: flex; align-items: center; font-size: 16px; font-weight: 500; color: #4F566E; text-decoration: none;">การจ้างงาน</a>
+      <a href="#leaves" role="tab" aria-selected="false" style="min-height: 44px; box-sizing: border-box; padding: 0 18px; display: flex; align-items: center; font-size: 16px; font-weight: 500; color: #4F566E; text-decoration: none;">ประวัติการลา</a>
+    </div>
+
+    <div style="margin-top: 20px; display: flex; gap: 16px; align-items: flex-start;">
+
+      <section id="general" aria-label="ข้อมูลทั่วไป" style="flex: 1; min-width: 0; padding: 24px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF;">
+        <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600;">ข้อมูลทั่วไป</h2>
+        <dl style="margin: 0; display: grid; grid-template-columns: 140px 1fr; row-gap: 14px; font-size: 16px;">
+          <sc-for list="{{general}}" as="g" hint-placeholder-count="5">
+            <dt style="color: #4F566E; font-size: 14px;">{{g.k}}</dt>
+            <dd style="margin: 0;">{{g.v}}</dd>
+          </sc-for>
+        </dl>
+      </section>
+
+      <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 16px;">
+        <section id="employment" aria-label="การจ้างงาน" style="padding: 24px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF;">
+          <h2 style="margin: 0 0 16px; font-size: 18px; font-weight: 600;">การจ้างงาน</h2>
+          <dl style="margin: 0; display: grid; grid-template-columns: 140px 1fr; row-gap: 14px; font-size: 16px;">
+            <sc-for list="{{employment}}" as="g" hint-placeholder-count="5">
+              <dt style="color: #4F566E; font-size: 14px;">{{g.k}}</dt>
+              <dd style="margin: 0;">{{g.v}}</dd>
+            </sc-for>
+          </dl>
+        </section>
+
+        <section id="leaves" aria-label="ประวัติการลา" style="border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF; overflow: hidden;">
+          <h2 style="margin: 0; padding: 20px 24px 12px; font-size: 18px; font-weight: 600;">ประวัติการลา</h2>
+          <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+            <thead>
+              <tr style="background: #F0F2F9; text-align: left;">
+                <th scope="col" style="padding: 10px 24px; font-weight: 600; color: #4F566E;">ประเภท</th>
+                <th scope="col" style="padding: 10px 12px; font-weight: 600; color: #4F566E;">ช่วงวัน</th>
+                <th scope="col" style="padding: 10px 24px; font-weight: 600; color: #4F566E;">สถานะ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{leaves}}" as="l" hint-placeholder-count="3">
+                <tr style="border-top: 1px solid #ECEEF6;">
+                  <td style="padding: 10px 24px;">{{l.type}}</td>
+                  <td style="padding: 10px 12px; color: #4F566E;">{{l.range}}</td>
+                  <td style="padding: 10px 24px;"><span style="padding: 2px 10px; border-radius: 12px; font-weight: 600; background: {{l.bg}}; color: {{l.fg}};">{{l.status}}</span></td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div style="position: absolute; inset: 0; background: rgba(20, 24, 50, 0.55); display: flex; align-items: center; justify-content: center; padding: 24px;">
+    <form method="post" action="/employees/137/resign" role="dialog" aria-modal="true" aria-labelledby="resign-title" style="width: 100%; max-width: 460px; box-sizing: border-box; padding: 28px; border-radius: 20px; background: #FFFFFF; box-shadow: 0 20px 50px rgba(0,0,0,0.3);">
+      <input type="hidden" name="csrf" value="token">
+      <h2 id="resign-title" style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 22px; font-weight: 600;">บันทึกการลาออกของสุนิสา?</h2>
+      <p style="margin: 8px 0 0; font-size: 16px; line-height: 1.6; color: #4F566E;">สถานะจะเปลี่ยนเป็น "ลาออก" ข้อมูลทั้งหมดยังอยู่ และย้อนกลับได้โดย HR</p>
+      <label for="resign_date" style="display: block; margin: 20px 0 6px; font-size: 14px; font-weight: 600;">วันที่ลาออก</label>
+      <input id="resign_date" name="resign_date" type="date" value="2026-10-31" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+      <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end;">
+        <button type="button" style="min-height: 48px; padding: 0 20px; border: 1.5px solid #C5CADB; border-radius: 10px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">ยกเลิก</button>
+        <button type="submit" style="min-height: 48px; padding: 0 22px; border: 0; border-radius: 10px; background: #B3261E; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">ยืนยันลาออก</button>
+      </div>
+    </form>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const items = [
+      ['แดชบอร์ด', 'Staffy-Dashboard.dc.html', '', ''],
+      ['พนักงาน', 'Staffy-Employees.dc.html', 'page', ''],
+      ['การลา', 'Staffy-Leaves.dc.html', '', '4'],
+      ['บัญชีผู้ใช้', 'Staffy-Users.dc.html', '', ''],
+      ['บันทึกการใช้งาน', 'Staffy-Audit.dc.html', '', ''],
+      ['สถานะระบบ', 'Staffy-Status.dc.html', '', ''],
+      ['แผนก', 'Staffy-Departments.dc.html', '', ''],
+      ['ข้อมูลบริษัท', 'Staffy-Company.dc.html', '', '']
+    ];
+    const ok = { bg: '#E6F4EA', fg: '#14532D' };
+    const wait = { bg: '#FFF4DB', fg: '#6B4A00' };
+    const no = { bg: '#FDECEA', fg: '#8E1B12' };
+    return {
+      menu: items.map(([label, href, cur, badge]) => ({
+        label, href,
+        current: cur ? 'page' : 'false',
+        weight: cur ? 600 : 500,
+        bg: cur ? '#3B4BC4' : 'transparent',
+        fg: cur ? '#FFFFFF' : '#E4E6F6',
+        badge,
+        badgeShow: badge ? 'inline-block' : 'none'
+      })),
+      general: [
+        { k: 'ชื่อ-นามสกุล', v: 'สุนิสา วงศ์ใหญ่' },
+        { k: 'วันเกิด', v: '28 ต.ค. 2537' },
+        { k: 'เลขบัตร ปชช.', v: 'x-xxxx-xxxxx-12-3' },
+        { k: 'อีเมล', v: 'sunisa.w@example.co.th' },
+        { k: 'เบอร์โทร', v: '081-234-5678' },
+        { k: 'ที่อยู่', v: '99/1 ถ.สุขุมวิท ต.ทุ่งสุขลา อ.ศรีราชา จ.ชลบุรี' }
+      ],
+      employment: [
+        { k: 'รหัส', v: 'EMP-0137' },
+        { k: 'แผนก', v: 'บัญชี' },
+        { k: 'ตำแหน่ง', v: 'เจ้าหน้าที่บัญชี' },
+        { k: 'วันเริ่มงาน', v: '3 ก.ย. 2569' },
+        { k: 'สิ้นสุดสัญญา', v: '12 พ.ย. 2569' },
+        { k: 'เงินเดือน', v: '28,000 บาท' }
+      ],
+      leaves: [
+        { type: 'ลาพักร้อน', range: '27–31 ต.ค. 2569', status: 'รออนุมัติ', ...wait },
+        { type: 'ลาป่วย', range: '14 ก.ย. 2569', status: 'อนุมัติแล้ว', ...ok },
+        { type: 'ลากิจ', range: '2 ก.ย. 2569', status: 'ปฏิเสธ', ...no }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

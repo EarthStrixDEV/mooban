@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Staffy ตั้งค่าครั้งแรก</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding: 40px; background: #F5F6FA; color: #1B2033; font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+  <form method="post" action="/setup" style="width: 100%; max-width: 480px; box-sizing: border-box; padding: 40px; border-radius: 20px; background: #FFFFFF; border: 1px solid #E1E4EF;">
+    <p style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 20px; font-weight: 600; color: #3B4BC4;">Staffy</p>
+    <h1 style="margin: 8px 0 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">ตั้งค่าครั้งแรก</h1>
+    <p style="margin: 8px 0 0; font-size: 16px; line-height: 1.6; color: #4F566E;">สร้างบัญชีผู้ดูแลระบบคนแรก หน้านี้จะใช้ได้แค่ครั้งเดียว หลังจากนั้นจะเข้าสู่ระบบตามปกติ</p>
+
+    <input type="hidden" name="csrf" value="token">
+
+    <label for="username" style="display: block; margin: 24px 0 8px; font-size: 14px; font-weight: 600;">ชื่อผู้ใช้</label>
+    <input id="username" name="username" type="text" value="admin" autocomplete="username" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 12px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+
+    <label for="fullname" style="display: block; margin: 20px 0 8px; font-size: 14px; font-weight: 600;">ชื่อ-นามสกุล</label>
+    <input id="fullname" name="full_name" type="text" placeholder="เช่น สมหญิง ใจดี" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 12px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+
+    <label for="email" style="display: block; margin: 20px 0 8px; font-size: 14px; font-weight: 600;">อีเมล <span style="font-weight: 400; color: #4F566E;">(ใช้รับรายงานประจำวัน)</span></label>
+    <input id="email" name="email" type="email" placeholder="admin@example.co.th" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 12px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+
+    <label for="pw" style="display: block; margin: 20px 0 8px; font-size: 14px; font-weight: 600;">รหัสผ่าน</label>
+    <input id="pw" name="password" type="password" value="Staffy2026" autocomplete="new-password" aria-describedby="pw-hint" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 12px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+    <div style="display: flex; gap: 6px; margin-top: 10px;" aria-hidden="true">
+      <span style="flex: 1; height: 6px; border-radius: 3px; background: #2E7D4F;"></span>
+      <span style="flex: 1; height: 6px; border-radius: 3px; background: #2E7D4F;"></span>
+      <span style="flex: 1; height: 6px; border-radius: 3px; background: #2E7D4F;"></span>
+      <span style="flex: 1; height: 6px; border-radius: 3px; background: #E1E4EF;"></span>
+    </div>
+    <p id="pw-hint" style="margin: 8px 0 0; font-size: 14px; color: #4F566E;">ความแข็งแรง: ดี · ต้องยาวอย่างน้อย 10 ตัวอักษร มีทั้งตัวอักษรและตัวเลข</p>
+
+    <label for="pw2" style="display: block; margin: 20px 0 8px; font-size: 14px; font-weight: 600;">ยืนยันรหัสผ่าน</label>
+    <input id="pw2" name="password_confirm" type="password" autocomplete="new-password" style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border: 1.5px solid #C5CADB; border-radius: 12px; background: #FFFFFF; color: #1B2033; font-family: inherit; font-size: 16px;">
+
+    <button type="submit" style="margin-top: 28px; width: 100%; height: 52px; border: 0; border-radius: 12px; background: #3B4BC4; color: #FFFFFF; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer;">สร้างผู้ดูแลระบบ</button>
+  </form>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

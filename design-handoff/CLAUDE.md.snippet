@@ -1,0 +1,13 @@
+## UI / Design handoff
+
+- UI design source of truth: `design-handoff/` (README.md, DESIGN-<app>.md, tokens/, reference-boards/).
+- Apps: Tabby, Mooban, Staffy (Staffy name is provisional; keep it in one constant).
+- Implement UI as plain HTML + CSS classes using the CSS variables in `design-handoff/tokens/<app>.css`. No build step. No inline styles. No UI frameworks.
+- `reference-boards/*.dc.html` are design references only: take values/copy/structure from them, never copy the `<x-dc>` format or `support.js`.
+- All UI copy is Thai and is specified in the DESIGN-<app>.md files; do not translate or reword it.
+- Token names are unprefixed and defined in DESIGN-<app>.md §2 (same as tokens/<app>.css).
+- Mooban: CSP is `'self'` — system fonts only, no external fonts/scripts/CDN. Dark mode via `prefers-color-scheme`.
+- Staffy: server-rendered; keep the test hooks from the spec (#flash-ok, #flash-error, .field-error[data-field], #login-error[data-reason], #dashboard data attrs, #employees-table, #pagination, #import-summary).
+- Accessibility floor: real <button>/<a>/<label for>, 44px minimum targets, 4.5:1 contrast, visible focus, no emoji icons.
+- Do one screen at a time; compare against the matching reference board before moving on.
+- Sample data in boards is placeholder; bind to the real API/DB per the Spec docs.

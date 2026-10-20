@@ -1,0 +1,81 @@
+/* Staffy tokens — generated from DESIGN-staffy-1.md §2 (canonical). Edit the spec and this together. */
+:root {
+  /* พื้นผิว */
+  --bg: #F5F6FA;            /* พื้นหลังหน้า */
+  --surface: #FFFFFF;       /* การ์ด ตาราง ฟอร์ม */
+  --surface-tint: #F0F2FB;  /* กลุ่มข้อมูลอ่อนไหว (เงินเดือน) */
+  --surface-tint-border: #C9CDE8;
+
+  /* ตัวอักษร */
+  --ink: #1B2033;
+  --muted: #4F566E;         /* คำอธิบาย, label รอง (ตัดกับ --bg ≥ 4.5:1) */
+  --faint: #8A90A8;         /* เฉพาะ disabled เช่น "ก่อนหน้า" ที่ปิดอยู่ */
+
+  /* เส้นขอบ */
+  --border: #E1E4EF;        /* การ์ด */
+  --border-input: #C5CADB;  /* input, ปุ่ม secondary */
+  --border-row: #ECEEF6;    /* เส้นคั่นแถวตาราง/รายการ */
+  --border-tab: #D5D9E8;
+  --border-dashed: #9AA1C8; /* dropzone */
+  --th-bg: #F0F2F9;         /* หัวตาราง */
+
+  /* แบรนด์ */
+  --nav: #232A5C;           /* sidebar */
+  --nav-ink: #E4E6F6;
+  --nav-ink-muted: #C9CDE8;
+  --nav-line: #3A4278;
+  --primary: #3B4BC4;
+  --primary-ink: #FFFFFF;
+  --primary-soft: #E0E4FA;  /* avatar/ชิป */
+  --primary-soft-ink: #2B3699;
+
+  /* semantic: ทุกชุดคือ bg / ink / border (ink บน bg ≥ 4.5:1) */
+  --success-bg: #E6F4EA;  --success-ink: #14532D;  --success-border: #B5DFC2;
+  --warn-bg:    #FFF4DB;  --warn-ink:    #6B4A00;  --warn-border:    #F0D58A;
+  --danger-bg:  #FDECEA;  --danger-ink:  #8E1B12;  --danger-border:  #F3B8B2;
+  --danger:     #B3261E;  /* ขอบ input ผิด, ข้อความ error, ปุ่มยืนยันลบ */
+  --danger-outline: #E5A9A3; /* ขอบปุ่ม "ลบ" แบบ outline */
+  --neutral-bg: #ECEEF6;  --neutral-ink: #4F566E;  /* badge "ลาออก", "ยกเลิก", "เหลืออีกนาน" */
+  --badge-alert: #D0584E; /* ตัวเลขบน sidebar (ตัวอักษรขาว 12px/600 — ใช้ #B3261E ถ้าต้องการ contrast สูงกว่า) */
+  --meter-on: #2E7D4F;    /* แถบความแข็งแรงรหัสผ่าน (ช่องที่เต็ม) */
+  --stat-active: #232A5C; --stat-alert: #B3261E; --stat-warn: #8A5A00; --stat-ok: #14573A;
+  --overlay: rgba(20, 24, 50, 0.55);
+
+  /* avatar: คู่ bg/ink วนตามลำดับหรือ hash ของชื่อ */
+  --av1-bg: #E0E4FA; --av1-ink: #2B3699;
+  --av2-bg: #FDE3C8; --av2-ink: #7A3A07;
+  --av3-bg: #DDEFE4; --av3-ink: #14573A;
+
+  /* ตัวอักษร */
+  --font-body: 'Noto Sans Thai', 'Sarabun', system-ui, 'Leelawadee UI', Tahoma, sans-serif;
+  --font-head: 'Prompt', 'Noto Sans Thai', system-ui, sans-serif;
+  --font-mono: ui-monospace, Menlo, Consolas, monospace;
+  --fs-xs: 12px;   /* badge บน sidebar */
+  --fs-sm: 14px;   /* label, คำอธิบาย, ปุ่มเล็ก, ตาราง */
+  --fs-base: 16px; /* เนื้อหา, input, ปุ่มหลักในฟอร์ม */
+  --fs-h3: 18px;   /* หัวข้อการ์ด/section (600) */
+  --fs-h2: 22px;   /* หัวข้อ dialog (Prompt 600) */
+  --fs-h1: 28px;   /* หัวข้อหน้า (Prompt 600); หน้า detail ใช้ 26px */
+  --fs-stat: 40px; /* ตัวเลขใน stat card (Prompt 600, line-height 1.1) */
+  --fs-display: 36px; /* หัวข้อบนแผงซ้ายหน้า login */
+  --lh-body: 1.6;  /* ภาษาไทยต้องการ line-height สูงกว่าละติน */
+
+  /* รัศมี */
+  --r-sm: 10px;    /* ปุ่ม, input, ลิงก์เมนู */
+  --r-md: 12px;    /* banner, input หน้า login/setup, ปุ่มหน้า login */
+  --r-lg: 16px;    /* การ์ด, ตาราง, fieldset */
+  --r-xl: 20px;    /* card หน้า setup, dialog */
+  --r-pill: 12px;  /* badge */
+
+  /* ระยะ (4px base) */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px;
+  --sp-6: 24px; --sp-8: 32px; --sp-10: 40px; --sp-14: 56px;
+
+  /* ขนาดโครง */
+  --sidebar-w: 240px;
+  --main-pad-y: 32px; --main-pad-x: 40px;
+  --tap: 44px;     /* ขนาดคลิกขั้นต่ำ */
+  --control-h: 48px; /* ความสูง input / ปุ่มหลักในฟอร์ม */
+  --shadow-dialog: 0 20px 50px rgba(0, 0, 0, 0.3);
+  --focus: 0 0 0 3px rgba(59, 75, 196, 0.45); /* ใช้กับ :focus-visible ทุก element */
+}

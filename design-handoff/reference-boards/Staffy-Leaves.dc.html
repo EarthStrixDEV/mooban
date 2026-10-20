@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<title>Staffy การลา</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Prompt:wght@500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 100%; min-height: 900px; box-sizing: border-box; display: flex; background: #F5F6FA; color: #1B2033; font-family: 'Noto Sans Thai', system-ui, sans-serif;">
+
+  <nav aria-label="เมนูหลัก" style="flex: none; width: 240px; box-sizing: border-box; padding: 24px 16px; background: #232A5C; color: #F2F3FA; display: flex; flex-direction: column;">
+    <p style="margin: 0 8px 24px; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 24px; font-weight: 600;">Staffy</p>
+    <sc-for list="{{menu}}" as="m" hint-placeholder-count="6">
+      <a href="{{m.href}}" aria-current="{{m.current}}" style="min-height: 44px; box-sizing: border-box; padding: 0 12px; margin-bottom: 4px; border-radius: 10px; display: flex; align-items: center; justify-content: space-between; text-decoration: none; font-size: 16px; font-weight: {{m.weight}}; background: {{m.bg}}; color: {{m.fg}};">
+        {{m.label}}
+        <span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: #B3261E; color: #FFFFFF; display: {{m.badgeShow}};">{{m.badge}}</span>
+      </a>
+    </sc-for>
+    <div style="margin-top: auto; padding: 12px; border-top: 1px solid #3A4278;">
+      <p style="margin: 0; font-size: 14px; font-weight: 600;">สมหญิง ใจดี</p>
+      <p style="margin: 2px 0 8px; font-size: 14px; color: #C9CDE8;">HR</p>
+      <a href="Staffy-Account.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">บัญชีของฉัน</a>
+      <a href="Staffy-Login.dc.html" style="min-height: 44px; display: flex; align-items: center; font-size: 14px; color: #E4E6F6;">ออกจากระบบ</a>
+    </div>
+  </nav>
+
+  <main style="flex: 1; min-width: 0; padding: 32px 40px; box-sizing: border-box;">
+
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px;">
+      <div>
+        <h1 style="margin: 0; font-family: 'Prompt', 'Noto Sans Thai', sans-serif; font-size: 28px; font-weight: 600;">การลา</h1>
+        <p style="margin: 4px 0 0; font-size: 14px; color: #4F566E;">คำขอลาของพนักงานทั้งหมด</p>
+      </div>
+      <a href="Staffy-Leave-New.dc.html" style="min-height: 44px; box-sizing: border-box; padding: 0 18px; border-radius: 10px; background: #3B4BC4; color: #FFFFFF; display: flex; align-items: center; font-size: 14px; font-weight: 600; text-decoration: none;">ขอลาใหม่</a>
+    </div>
+
+    <div role="tablist" aria-label="กรองตามสถานะ" style="margin-top: 24px; display: flex; gap: 4px; border-bottom: 1px solid #D9DCEB;">
+      <sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+        <a href="#" role="tab" aria-selected="{{t.sel}}" style="min-height: 44px; box-sizing: border-box; padding: 0 18px; display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: {{t.weight}}; color: {{t.fg}}; text-decoration: none; border-bottom: 3px solid {{t.line}}; margin-bottom: -1px;">
+          {{t.label}}
+          <span style="font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: {{t.cbg}}; color: {{t.cfg}};">{{t.count}}</span>
+        </a>
+      </sc-for>
+    </div>
+
+    <div style="margin-top: 20px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E1E4EF; overflow: hidden;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <caption style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">รายการคำขอลา</caption>
+        <thead>
+          <tr style="background: #F0F2F9; text-align: left;">
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">พนักงาน</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">ประเภท</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">ช่วงวันที่ลา</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">จำนวนวัน</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E;">สถานะ</th>
+            <th scope="col" style="padding: 12px 16px; font-weight: 600; color: #4F566E; text-align: right;">การดำเนินการ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{rows}}" as="r" hint-placeholder-count="7">
+            <tr style="border-top: 1px solid #ECEEF6;">
+              <td style="padding: 10px 16px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span aria-hidden="true" style="flex: none; width: 36px; height: 36px; border-radius: 18px; background: {{r.bg}}; color: {{r.fg}}; display: flex; align-items: center; justify-content: center; font-weight: 600;">{{r.initial}}</span>
+                  <div>
+                    <p style="margin: 0; font-size: 16px; font-weight: 600;">{{r.name}}</p>
+                    <p style="margin: 0; font-size: 14px; color: #4F566E;">{{r.dept}}</p>
+                  </div>
+                </div>
+              </td>
+              <td style="padding: 10px 16px;">{{r.type}}</td>
+              <td style="padding: 10px 16px; color: #4F566E;">{{r.range}}</td>
+              <td style="padding: 10px 16px;">{{r.days}} วัน</td>
+              <td style="padding: 10px 16px;"><span style="display: inline-block; padding: 2px 10px; border-radius: 12px; font-weight: 600; background: {{r.stBg}}; color: {{r.stFg}};">{{r.status}}</span></td>
+              <td style="padding: 8px 16px; text-align: right;">
+                <form method="post" style="display: {{r.actions}}; gap: 8px; justify-content: flex-end;">
+                  <input type="hidden" name="csrf" value="token">
+                  <button type="submit" name="action" value="approve" aria-label="อนุมัติคำขอของ {{r.name}}" style="min-height: 44px; padding: 0 16px; border: 0; border-radius: 10px; background: #14532D; color: #FFFFFF; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">อนุมัติ</button>
+                  <button type="submit" name="action" value="reject" aria-label="ปฏิเสธคำขอของ {{r.name}}" style="min-height: 44px; padding: 0 16px; border: 1.5px solid #8E1B12; border-radius: 10px; background: #FFFFFF; color: #8E1B12; font-family: inherit; font-size: 14px; font-weight: 600; cursor: pointer;">ปฏิเสธ</button>
+                </form>
+                <span style="display: {{r.noActions}}; color: #4F566E;">-</span>
+              </td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin: 16px 0 0; font-size: 14px; color: #4F566E;">แสดง 1–7 จาก 4 รออนุมัติ · เฉพาะ HR และผู้ดูแลที่อนุมัติหรือปฏิเสธได้</p>
+
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const items = [
+      ['แดชบอร์ด', 'Staffy-Dashboard.dc.html'], ['พนักงาน', 'Staffy-Employees.dc.html'], ['การลา', 'Staffy-Leaves.dc.html'],
+      ['บัญชีผู้ใช้', 'Staffy-Users.dc.html'], ['บันทึกการใช้งาน', 'Staffy-Audit.dc.html'], ['สถานะระบบ', 'Staffy-Status.dc.html'], ['แผนก', 'Staffy-Departments.dc.html'], ['ข้อมูลบริษัท', 'Staffy-Company.dc.html']
+    ];
+    const cur = 2;
+    const menu = items.map(([label, href], i) => ({
+      label, href,
+      current: i === cur ? 'page' : 'false',
+      weight: i === cur ? 600 : 500,
+      bg: i === cur ? '#3B4BC4' : 'transparent',
+      fg: i === cur ? '#FFFFFF' : '#E4E6F6',
+      badge: '4',
+      badgeShow: label === 'การลา' && i !== cur ? 'inline-block' : 'none'
+    }));
+    const tabDefs = [['รออนุมัติ', 4, true], ['อนุมัติแล้ว', 21, false], ['ปฏิเสธ', 3, false], ['ยกเลิก', 2, false]];
+    const tabs = tabDefs.map(([label, count, sel]) => ({
+      label, count, sel: sel ? 'true' : 'false',
+      weight: sel ? 600 : 500,
+      fg: sel ? '#3B4BC4' : '#4F566E',
+      line: sel ? '#3B4BC4' : 'transparent',
+      cbg: sel ? '#E0E4FA' : '#ECEEF6',
+      cfg: sel ? '#2B3699' : '#4F566E'
+    }));
+    const pend = { status: 'รออนุมัติ', stBg: '#FFF4DB', stFg: '#6B4A00', actions: 'flex', noActions: 'none' };
+    const a = { bg: '#E0E4FA', fg: '#2B3699' };
+    const b = { bg: '#FDE3C8', fg: '#7A3A07' };
+    const c = { bg: '#DDEFE4', fg: '#14573A' };
+    const rows = [
+      { name: 'ธนากร พิทักษ์', initial: 'ธ', dept: 'ไอที', type: 'พักร้อน', range: '27–29 ต.ค. 2569', days: 3, ...b, ...pend },
+      { name: 'พิมพ์ชนก อรุณ', initial: 'พ', dept: 'ขาย', type: 'ลากิจ', range: '23 ต.ค. 2569', days: 1, ...c, ...pend },
+      { name: 'กัญญา เรืองศรี', initial: 'ก', dept: 'บัญชี', type: 'ลาป่วย', range: '21–22 ต.ค. 2569', days: 2, ...b, ...pend },
+      { name: 'อรทัย มีชัย', initial: 'อ', dept: 'ขาย', type: 'พักร้อน', range: '4–8 พ.ย. 2569', days: 5, ...a, ...pend }
+    ];
+    return { menu, tabs, rows };
+  }
+}
+</script>
+</body>
+</html>
