@@ -10,6 +10,12 @@ final class Http
         self::$start = $t;
     }
 
+    /** Milliseconds since the request started (for Server-Timing). */
+    public static function elapsedMs(): float
+    {
+        return (microtime(true) - self::$start) * 1000;
+    }
+
     /** Headers every /api/* response carries (also usable before streaming). */
     public static function commonHeaders(): void
     {

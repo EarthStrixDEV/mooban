@@ -6,6 +6,21 @@ final class RateLimit
     /** Fixed one-minute UTC window per bucket; over the limit -> 429 with Retry-After. */
     public static function hit(string $bucket, int $limit): void
     {
+        if (self::count($bucket) > $limit) {
+            $retry = self::retryAfter();
+            Http::error(429, 'rate_limited', ['retry_after' => $retry], ['Retry-After' => (string) $retry]);
+        }
+    }
+
+    /** Seconds left in the current minute window (at least 1). */
+    public static function retryAfter(): int
+    {
+        return max(1, 60 - (time() % 60));
+    }
+
+    /** Count one hit in the current window and return the window's total. */
+    public static function count(string $bucket): int
+    {
         $pdo = Db::pdo();
         $now = time();
         $window = gmdate('Y-m-d H:i:00', $now - ($now % 60));
@@ -24,11 +39,6 @@ final class RateLimit
 
         $sel = $pdo->prepare('SELECT hits FROM rate_limits WHERE bucket = ? AND window_start = ?');
         $sel->execute([$bucket, $window]);
-        $hits = (int) $sel->fetchColumn();
-
-        if ($hits > $limit) {
-            $retry = max(1, 60 - ($now % 60));
-            Http::error(429, 'rate_limited', ['retry_after' => $retry], ['Retry-After' => (string) $retry]);
-        }
+        return (int) $sel->fetchColumn();
     }
 }

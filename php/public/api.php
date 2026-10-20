@@ -15,6 +15,7 @@ try {
     Likes::register();
     Comments::register();
     ImagesApi::register();
+    Tools::register();
 
     Router::dispatch(
         $_SERVER['REQUEST_METHOD'] ?? 'GET',
