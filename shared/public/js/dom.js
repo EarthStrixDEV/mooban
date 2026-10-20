@@ -5,7 +5,7 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 function append(el, child) {
   if (child === null || child === undefined || child === false) return;
   if (Array.isArray(child)) { child.forEach((c) => append(el, c)); return; }
-  el.append(typeof child === 'string' || typeof child === 'number' ? document.createTextNode(String(child)) : child);
+  el.appendChild(typeof child === 'string' || typeof child === 'number' ? document.createTextNode(String(child)) : child);
 }
 
 export function h(tag, attrs, ...children) {
@@ -14,8 +14,11 @@ export function h(tag, attrs, ...children) {
     if (v === null || v === undefined || v === false) continue;
     if (k === 'class') el.className = v;
     else if (k === 'dataset') Object.assign(el.dataset, v);
-    else if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.slice(2).toLowerCase(), v);
-    else if (v === true) el.setAttribute(k, '');
+    else if (k.startsWith('on')) {
+      if (typeof v === 'function') el.addEventListener(k.slice(2).toLowerCase(), v);
+    } else if (k === 'style') {
+      if (typeof v === 'object') Object.assign(el.style, v);
+    } else if (v === true) el.setAttribute(k, '');
     else el.setAttribute(k, String(v));
   }
   children.forEach((c) => append(el, c));
