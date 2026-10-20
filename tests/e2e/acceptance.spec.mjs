@@ -131,6 +131,10 @@ function scanContrast(rootSel) {
 
   // Backdrop colour behind `el`: composite the rgba layers up the parent chain until an opaque one.
   // Returns null when an image/gradient sits in between (text on media: not measurable here).
+  // Text may only be skipped (background-image in the chain) inside these media areas: tile badges
+  // sit on photos, the lightbox stage holds the photo, the profile banner is a decorative gradient.
+  const MEDIA_ALLOWED = '.tile, .post__img, .lightbox__stage, .profile__banner';
+  const skippedOutside = [];
   const backdrop = (el) => {
     const layers = [];
     let opaque = false;
@@ -158,7 +162,11 @@ function scanContrast(rootSel) {
 
   const measure = (el, fg, text, cs) => {
     const bg = backdrop(el);
-    if (!bg) { skippedMedia += 1; return; }
+    if (!bg) {
+      skippedMedia += 1;
+      if (!el.closest(MEDIA_ALLOWED)) skippedOutside.push(`${describe(el)} "${text.slice(0, 30)}"`);
+      return;
+    }
     const o = opacityOf(el);
     const fgc = over([fg[0], fg[1], fg[2], fg[3] * o], bg);
     const size = parseFloat(cs.fontSize);
@@ -192,7 +200,26 @@ function scanContrast(rootSel) {
       measure(el, rgba(ph.color), `placeholder:${el.getAttribute('placeholder')}`, ph);
     }
   }
-  return { scanned, skippedMedia, fails };
+  return { scanned, skippedMedia, skippedOutside, fails };
+}
+
+// Contrast scan that also fails when text was skipped outside the allowed media areas.
+async function scan(page, rootSel) {
+  const c = await page.evaluate(scanContrast, rootSel);
+  expect(c.skippedOutside, 'text skipped for a background-image outside the allowed media areas').toEqual([]);
+  return c;
+}
+
+// Desktop projects measure their own scheme (desktop = light, desktop-dark = dark). The mobile
+// projects measure both, flipping the emulated scheme in place, so mobile-only UI (top bar, bottom
+// nav, sheets, mobile lightbox) is covered in light and dark.
+async function eachScheme(page, testInfo, fn) {
+  if (!testInfo.project.name.startsWith('mobile')) { await fn(testInfo.project.name === 'desktop-dark' ? 'dark' : 'light'); return; }
+  for (const scheme of ['light', 'dark']) {
+    await page.emulateMedia({ colorScheme: scheme });
+    await settle(page);
+    await fn(scheme);
+  }
 }
 
 // Fonts ready and every finite animation/transition done: a colour read mid-fade is not a verdict.
@@ -237,11 +264,11 @@ test.describe('overlays', () => {
     expect(seen).toBeGreaterThan(3);
     expect(bad).toEqual([]);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-    if (projectIs(testInfo, 'desktop', 'desktop-dark')) {
-      const c = await page.evaluate(scanContrast, '[data-testid=signup-dialog]');
+    await eachScheme(page, testInfo, async (scheme) => {
+      const c = await scan(page, '[data-testid=signup-dialog]');
       expect(c.scanned).toBeGreaterThan(5);
-      expect(c.fails).toEqual([]);
-    }
+      expect(c.fails, `signup ${scheme}`).toEqual([]);
+    });
   });
 
   test('signup dialog: taken-name state (chips, error text) meets targets and contrast', async ({ page }, testInfo) => {
@@ -251,13 +278,13 @@ test.describe('overlays', () => {
     await expect(page.getByTestId('signup-suggest').getByRole('button').first()).toBeVisible();
     const { bad } = await page.evaluate(scanTargets, '[data-testid=signup-dialog]');
     expect(bad).toEqual([]);
-    if (projectIs(testInfo, 'desktop', 'desktop-dark')) {
-      const c = await page.evaluate(scanContrast, '[data-testid=signup-dialog]');
-      expect(c.fails).toEqual([]);
-    }
+    await eachScheme(page, testInfo, async (scheme) => {
+      const c = await scan(page, '[data-testid=signup-dialog]');
+      expect(c.fails, `signup taken ${scheme}`).toEqual([]);
+    });
   });
 
-  test('composer overlay (narrow screens)', async ({ page }) => {
+  test('composer overlay (narrow screens)', async ({ page }, testInfo) => {
     test.skip(!isNarrow(page), 'composer overlay exists below 720 px only');
     await setup(page);
     await page.goto('/');
@@ -270,6 +297,15 @@ test.describe('overlays', () => {
     expect(seen).toBeGreaterThan(2);
     expect(bad).toEqual([]);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+    await eachScheme(page, testInfo, async (scheme) => {
+      for (const n of [265, 280]) {
+        await page.getByTestId('composer-input').fill('x'.repeat(n));
+        await settle(page);
+        const c = await scan(page, '[role=dialog]');
+        expect(c.scanned).toBeGreaterThan(2);
+        expect(c.fails, `composer overlay ${scheme} at ${n}`).toEqual([]);
+      }
+    });
   });
 
   test('lightbox: targets and contrast (owner tools included)', async ({ page }, testInfo) => {
@@ -284,10 +320,11 @@ test.describe('overlays', () => {
     expect(seen).toBeGreaterThan(2);
     expect(bad).toEqual([]);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-    if (projectIs(testInfo, 'desktop', 'desktop-dark')) {
-      const c = await page.evaluate(scanContrast, '[data-testid=lightbox]');
-      expect(c.fails).toEqual([]);
-    }
+    await eachScheme(page, testInfo, async (scheme) => {
+      const c = await scan(page, '[data-testid=lightbox]');
+      expect(c.scanned).toBeGreaterThan(3);
+      expect(c.fails, `lightbox ${scheme}`).toEqual([]);
+    });
   });
 
   test('post menu and delete confirm: targets and contrast', async ({ page }, testInfo) => {
@@ -300,20 +337,20 @@ test.describe('overlays', () => {
     let r = await page.evaluate(scanTargets, '.postmenu');
     expect(r.seen).toBeGreaterThan(2);
     expect(r.bad).toEqual([]);
-    if (projectIs(testInfo, 'desktop', 'desktop-dark')) {
-      const c = await page.evaluate(scanContrast, '.postmenu');
-      expect(c.fails).toEqual([]);
-    }
+    await eachScheme(page, testInfo, async (scheme) => {
+      const c = await scan(page, '.postmenu');
+      expect(c.fails, `menu ${scheme}`).toEqual([]);
+    });
     await card.getByRole('menuitem', { name: /ลบ/ }).click();
     const confirm = page.getByTestId('confirm-dialog');
     await expect(confirm).toBeVisible();
     await confirm.evaluate((el) => Promise.all(el.getAnimations().map((a) => a.finished)));
     r = await page.evaluate(scanTargets, '[data-testid=confirm-dialog]');
     expect(r.bad).toEqual([]);
-    if (projectIs(testInfo, 'desktop', 'desktop-dark')) {
-      const c = await page.evaluate(scanContrast, '[data-testid=confirm-dialog]');
-      expect(c.fails).toEqual([]);
-    }
+    await eachScheme(page, testInfo, async (scheme) => {
+      const c = await scan(page, '[data-testid=confirm-dialog]');
+      expect(c.fails, `confirm ${scheme}`).toEqual([]);
+    });
     await page.getByTestId('confirm-cancel').click();
   });
 });
@@ -323,20 +360,20 @@ test.describe('overlays', () => {
 
 for (const route of ROUTES) {
   test(`contrast >= 4.5 (3 for large text) on ${route.path}`, async ({ page }, testInfo) => {
-    test.skip(!projectIs(testInfo, 'desktop', 'desktop-dark'), 'measured in light (desktop) and dark (desktop-dark)');
     const me = await setup(page);
     await visit(page, route, me);
-    await settle(page);
-    const scheme = await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches);
-    expect(scheme).toBe(testInfo.project.name === 'desktop-dark');
-    const { scanned, fails } = await page.evaluate(scanContrast, null);
-    expect(scanned).toBeGreaterThan(5);
-    expect(fails).toEqual([]);
+    await eachScheme(page, testInfo, async (scheme) => {
+      await settle(page);
+      expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches)).toBe(scheme === 'dark');
+      const { scanned, fails } = await scan(page, null);
+      expect(scanned).toBeGreaterThan(5);
+      expect(fails, `${route.path} ${scheme}`).toEqual([]);
+    });
   });
 }
 
-test('contrast: composer counter (warn, error), liked card, open comments', async ({ page }, testInfo) => {
-  test.skip(!projectIs(testInfo, 'desktop', 'desktop-dark'), 'measured in light (desktop) and dark (desktop-dark)');
+test('contrast: composer counter (warn, error)', async ({ page }, testInfo) => {
+  test.skip(!projectIs(testInfo, 'desktop', 'desktop-dark'), 'inline composer is desktop; the overlay counter is covered in the overlays block');
   await setup(page);
   await page.goto('/');
   const input = page.getByTestId('composer-input');
@@ -345,17 +382,26 @@ test('contrast: composer counter (warn, error), liked card, open comments', asyn
     await input.fill('x'.repeat(n));
     await expect(page.getByTestId('composer-count')).toBeVisible();
     await settle(page);
-    const c = await page.evaluate(scanContrast, '[data-testid=composer]');
+    const c = await scan(page, '[data-testid=composer]');
     expect(c.fails, `composer at ${n} chars`).toEqual([]);
   }
+});
+
+test('contrast: liked card and open comments', async ({ page }, testInfo) => {
+  await setup(page);
+  await page.goto('/');
+  await expect(page.getByTestId('post-card').nth(1)).toBeVisible();
   const card = page.getByTestId('post-card').nth(1);
   await card.getByTestId('like-btn').click();
   await expect(card.getByTestId('like-btn')).toHaveAttribute('aria-pressed', 'true');
   await card.getByTestId('comment-toggle').click();
   await expect(card.locator('.thread')).toBeVisible();
-  await settle(page);
-  const c = await page.evaluate(scanContrast, '[data-testid=post-card]:nth-of-type(2)');
-  expect(c.fails).toEqual([]);
+  await eachScheme(page, testInfo, async (scheme) => {
+    await settle(page);
+    const c = await scan(page, '[data-testid=post-card]:nth-of-type(2)');
+    expect(c.scanned).toBeGreaterThan(5);
+    expect(c.fails, `liked card ${scheme}`).toEqual([]);
+  });
   await card.getByTestId('like-btn').click();
 });
 
@@ -365,7 +411,7 @@ test('contrast: hover states of nav, buttons, chips and links', async ({ page },
   const hovered = async (sel) => {
     await page.locator(sel).first().hover();
     await settle(page);
-    const c = await page.evaluate(scanContrast, sel);
+    const c = await scan(page, sel);
     expect(c.scanned, sel).toBeGreaterThan(0);
     expect(c.fails, `hover ${sel}`).toEqual([]);
   };
@@ -381,7 +427,6 @@ test('contrast: hover states of nav, buttons, chips and links', async ({ page },
 });
 
 test('contrast: live pill and toast', async ({ page }, testInfo) => {
-  test.skip(!projectIs(testInfo, 'desktop', 'desktop-dark'), 'measured in light (desktop) and dark (desktop-dark)');
   await setup(page);
   const other = await createUser();
   await page.goto('/');
@@ -389,17 +434,21 @@ test('contrast: live pill and toast', async ({ page }, testInfo) => {
   await expect(page.locator('html[data-sse="open"]')).toHaveCount(1, { timeout: 10_000 });
   await page.request.post('/api/posts', { headers: auth(other), data: { body: `pill-${other.handle}` } });
   await expect(page.getByTestId('live-pill')).toBeVisible({ timeout: 5000 });
-  await page.evaluate(async () => {
-    const { toast } = await import('/js/ui/toast.js');
-    toast('บันทึกแล้ว');
-    toast('มีบางอย่างผิดพลาด', { error: true });
+  await eachScheme(page, testInfo, async (scheme) => {
+    await page.evaluate(async () => {
+      const { toast } = await import('/js/ui/toast.js');
+      toast('บันทึกแล้ว');
+      toast('มีบางอย่างผิดพลาด', { error: true });
+    });
+    await expect(page.locator('.toast--error')).toHaveCount(1);
+    await settle(page); // let the entrance fade finish: mid-fade opacity would read as low contrast
+    for (const sel of ['[data-testid=live-pill]', '.toasts']) {
+      const c = await scan(page, sel);
+      expect(c.scanned, sel).toBeGreaterThan(0);
+      expect(c.fails, `${sel} ${scheme}`).toEqual([]);
+    }
+    await page.locator('.toast__close').evaluateAll((els) => els.forEach((e) => e.click()));
   });
-  await expect(page.getByTestId('toast')).toHaveCount(2);
-  await settle(page); // let the entrance fade finish: mid-fade opacity would read as low contrast
-  for (const sel of ['[data-testid=live-pill]', '[data-testid=toast]']) {
-    const c = await page.evaluate(scanContrast, sel);
-    expect(c.fails).toEqual([]);
-  }
 });
 
 // ---------------------------------------------------------------------------------------------
@@ -518,6 +567,7 @@ test('live pill never covers the wordmark or the gallery icon (narrow screens)',
   expect(after.y).toBeGreaterThanOrEqual(0);
   expect(after.x).toBeGreaterThanOrEqual(0);
   expect(after.x + after.width).toBeLessThanOrEqual(page.viewportSize().width);
+  expect(after.y + after.height).toBeLessThanOrEqual(page.viewportSize().height);
 });
 
 // ---------------------------------------------------------------------------------------------
