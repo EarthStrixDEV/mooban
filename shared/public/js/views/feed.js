@@ -4,8 +4,10 @@ import { getToken, state, on } from '../store.js';
 import { renderPostCard, applyOwnership } from '../ui/post-card.js';
 import { infiniteList } from '../ui/infinite.js';
 import { mountRail } from '../ui/rail.js';
+import { mountComposer, openComposerOverlay } from '../ui/composer.js';
 
 const PAGE = 20;
+const DESKTOP = '(min-width: 720px)';
 
 export async function mount(main, rail) {
   const ctrl = new AbortController();
@@ -32,6 +34,29 @@ export async function mount(main, rail) {
     },
   });
 
+  // A post of my own goes straight to the top; its id is remembered so the SSE echo is skipped.
+  const onPosted = (post) => {
+    list.prepend(post);
+    window.scrollTo({ top: 0 });
+  };
+  feed.addEventListener('mooban:post-deleted', (e) => list.remove(e.detail.id));
+
+  // Inline composer on desktop, compact bar (-> full-screen dialog) below 720px.
+  const slot = main.querySelector('#composer-slot');
+  const mq = window.matchMedia(DESKTOP);
+  let composer = null;
+  const mountForViewport = () => {
+    composer?.destroy();
+    composer = mountComposer(slot, { variant: mq.matches ? 'inline' : 'compact', onPosted });
+  };
+  mountForViewport();
+  mq.addEventListener('change', mountForViewport);
+  const onCompose = () => {
+    if (mq.matches) composer.focus();
+    else openComposerOverlay({ onPosted });
+  };
+  document.addEventListener('mooban:compose', onCompose);
+
   // The feed never waits for /api/me: api() sends the stored token, so liked_by_me is right already.
   const offMe = on('me', (me) => {
     if (!me || !fetchedWithToken) list.reload();
@@ -40,6 +65,9 @@ export async function mount(main, rail) {
   const offRail = mountRail(rail);
 
   return () => {
+    mq.removeEventListener('change', mountForViewport);
+    document.removeEventListener('mooban:compose', onCompose);
+    composer.destroy();
     offMe();
     ctrl.abort();
     list.destroy();

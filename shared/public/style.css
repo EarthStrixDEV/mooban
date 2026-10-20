@@ -626,6 +626,205 @@ main > h1 { margin-bottom: var(--s-4); }
 .rail-grid__tile { display: block; aspect-ratio: 1 / 1; border-radius: 10px; background: var(--chip); overflow: hidden; }
 .rail-grid__tile img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
+/* ---------- buttons, confirm dialog ---------- */
+.btn--secondary { background: var(--chip); color: var(--ink); }
+.btn--secondary:hover { background: var(--line); }
+.btn--danger { background: var(--err); color: var(--onbrand); }
+.btn--danger:hover { background: var(--err); filter: brightness(0.92); }
+.btn--danger:focus-visible { outline-color: var(--ink); }
+
+.sheet--confirm { z-index: 55; }
+.sheet--confirm .sheet__title { font-size: 20px; }
+.confirm__actions { display: flex; flex-direction: column-reverse; gap: var(--s-2); margin-top: var(--s-5); }
+.confirm__actions .btn { width: 100%; }
+@media (min-width: 720px) {
+  .confirm__actions { flex-direction: row; justify-content: flex-end; }
+  .confirm__actions .btn { width: auto; min-width: 96px; }
+}
+
+/* ---------- composer (DESIGN 4.3) ---------- */
+.composer.card { margin-top: 0; }
+.composer__row { display: flex; gap: var(--s-3); }
+.composer__fields { flex: 1; min-width: 0; }
+.composer__input {
+  display: block;
+  width: 100%;
+  min-height: 56px;
+  padding: var(--s-2) 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.6;
+  resize: none;
+}
+.composer__input::placeholder { color: var(--sub); opacity: 1; }
+
+.composer__preview {
+  margin-top: var(--s-2);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--chip);
+  overflow: hidden;
+}
+.composer__preview[hidden] { display: none; }
+.composer__frame { position: relative; height: 200px; }
+.composer__frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.composer__uploading { display: flex; align-items: center; justify-content: center; height: 100%; font-size: 14px; color: var(--sub); }
+.composer__remove {
+  position: absolute;
+  top: var(--s-2);
+  right: var(--s-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tap);
+  height: var(--tap);
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-pill);
+  background: var(--media-badge);
+  color: #fff;
+  cursor: pointer;
+}
+.composer__remove:focus-visible { outline-color: #fff; }
+.composer__caption { padding: var(--s-2) var(--s-3); font-size: 14px; color: var(--sub); }
+.composer__error { margin-top: var(--s-2); font-size: 14px; color: var(--err); }
+.composer__error:empty { display: none; }
+
+.composer__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+  margin-top: var(--s-3);
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--line);
+}
+.composer__attach {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--tap);
+  height: var(--tap);
+  border-radius: var(--r-pill);
+  background: var(--brandsoft);
+  color: var(--brand-strong);
+  cursor: pointer;
+}
+.composer__attach:hover { background: var(--chip); }
+.composer__attach:has(input:focus-visible) { outline: 3px solid var(--brand); outline-offset: 2px; }
+.composer__count { margin-left: auto; padding-right: var(--s-2); font-size: 14px; font-weight: 500; color: var(--sub); }
+.composer__count--warn { color: var(--warn); }
+.composer__count--err { color: var(--err); }
+.composer__submit { flex: none; padding: 0 22px; }
+
+.composer-compact {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  width: 100%;
+  min-height: 64px;
+  padding: 0 var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--card);
+  color: var(--sub);
+  font-size: 16px;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* mobile full-screen composer */
+.compose {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-dialog);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--ink);
+  animation: fade-in 160ms ease-out;
+}
+.compose:focus { outline: none; }
+.compose__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) var(--s-4) var(--s-2) var(--s-2);
+}
+.compose__cancel {
+  min-height: var(--tap);
+  padding: 0 var(--s-3);
+  border: 0;
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--sub);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.compose__main { flex: 1; min-height: 0; overflow-y: auto; padding: var(--s-2) var(--s-5) 0; }
+.compose .composer__input { min-height: 110px; font-size: 18px; }
+.compose .composer__bar {
+  margin-top: 0;
+  padding: var(--s-2) var(--s-3) calc(24px + env(safe-area-inset-bottom, 0px)) var(--s-5);
+  background: var(--card);
+}
+
+/* ---------- own-post menu and inline editor (DESIGN 4.4, 6.7) ---------- */
+.post__menu-slot { position: relative; margin-right: calc(var(--s-2) * -1); }
+.postmenu { position: relative; }
+.menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: var(--z-pill);
+  min-width: 180px;
+  padding: var(--s-1);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--card);
+  box-shadow: var(--shadow-pill);
+}
+.menuitem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0 var(--s-4);
+  border: 0;
+  border-radius: var(--r-sm);
+  background: transparent;
+  color: var(--ink);
+  font-size: 16px;
+  text-align: left;
+  cursor: pointer;
+}
+.menuitem:hover, .menuitem:focus-visible { background: var(--chip); }
+.menuitem:focus-visible { outline-offset: -3px; }
+.menuitem--danger { color: var(--err); }
+
+.post__edit { margin-top: var(--s-3); }
+.post__edit-input {
+  display: block;
+  width: 100%;
+  min-height: 96px;
+  padding: var(--s-3) var(--s-4);
+  border: 2px solid var(--field-border);
+  border-radius: var(--r-input);
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  line-height: 1.6;
+  resize: vertical;
+}
+.post__edit-bar { display: flex; align-items: center; gap: var(--s-2); margin-top: var(--s-3); }
+.post__edit-bar .composer__count { margin: 0 auto 0 0; padding: 0; }
+
 /* ---------- motion (DESIGN 7.4) ---------- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

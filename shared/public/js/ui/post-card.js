@@ -1,9 +1,10 @@
 import { h } from '../dom.js';
 import { state } from '../store.js';
 import { timeAgo, avatarColor, firstGrapheme } from '../util.js';
+import { syncPostMenu } from './post-menu.js';
 
-// Post card (DESIGN 4.4). Like/comment buttons go into .post__actions and the owner menu
-// into .post__menu-slot (Tasks 16-17); this module renders no interactive controls for them.
+// Post card (DESIGN 4.4). Like/comment buttons go into .post__actions (Task 17); the owner menu
+// (ui/post-menu.js) is mounted into .post__menu-slot by applyOwnership.
 export function renderPostCard(post, { me = state.me, compact = false } = {}) {
   const { author, image } = post;
   const nameId = `p${post.id}-name`;
@@ -42,6 +43,7 @@ export function applyOwnership(el, me = state.me) {
   el.classList.toggle('post--own', own);
   const av = el.querySelector('.avatar');
   av.className = `avatar ${own ? 'avatar--me' : `avatar--${avatarColor(handle)}`}`;
+  syncPostMenu(el, own);
 }
 
 function renderImage(post, image) {

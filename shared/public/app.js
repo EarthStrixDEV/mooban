@@ -44,6 +44,10 @@ export function syncNav(route = currentRoute) {
   if (route.name === 'feed' || route.name === 'gallery' || route.name === 'test') current = route.name;
   else if (route.name === 'profile' && me && route.params.handle.toLowerCase() === me.toLowerCase()) current = 'profile';
 
+  // DESIGN 3.3: the sidenav button composes in place on the feed and links home elsewhere.
+  const post = document.querySelector('.sidenav__post');
+  if (post) post.textContent = route.name === 'feed' ? 'โพสต์' : 'โพสต์ใหม่';
+
   const href = profileHref();
   for (const a of document.querySelectorAll('[data-nav]')) {
     if (a.dataset.nav === current) a.setAttribute('aria-current', 'page');
@@ -100,6 +104,15 @@ document.addEventListener('click', async (e) => {
   if (!a || state.me) return;
   e.preventDefault();
   if (await openSignup({ reason: 'write' }) && state.me) navigate(profileHref());
+}, true);
+
+// On the feed the sidenav "โพสต์" button opens the composer (the feed view listens) instead of navigating.
+document.addEventListener('click', (e) => {
+  if (e.defaultPrevented || e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
+  const a = e.target instanceof Element ? e.target.closest('a[data-compose]') : null;
+  if (!a || currentRoute.name !== 'feed') return;
+  e.preventDefault();
+  document.dispatchEvent(new CustomEvent('mooban:compose'));
 }, true);
 
 on('me', () => syncNav());
