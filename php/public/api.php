@@ -16,6 +16,8 @@ try {
     Comments::register();
     ImagesApi::register();
     Tools::register();
+    Stream::register();
+    TestEmit::register();
 
     Router::dispatch(
         $_SERVER['REQUEST_METHOD'] ?? 'GET',
