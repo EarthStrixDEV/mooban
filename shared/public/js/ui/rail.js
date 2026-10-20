@@ -2,6 +2,7 @@ import { h } from '../dom.js';
 import { api } from '../api.js';
 import { state, on } from '../store.js';
 import { sse } from '../sse.js';
+import { imageLabel } from '../util.js';
 
 const WIDE = '(min-width: 1100px)';
 
@@ -45,7 +46,7 @@ export function mountRail(rail, { images: withImages = true } = {}) {
     } catch { return; }
     if (ctrl.signal.aborted || !images.length) return;
     const tiles = images.map((img) => {
-      const label = img.alt || `รูปจาก @${img.author.handle}`;
+      const label = imageLabel(img);
       return h('li', null,
         h('a', { class: 'rail-grid__tile', href: '/gallery', 'aria-label': `เปิดรูป ${label}` },
           h('img', { src: img.thumb_url, alt: '', width: img.width, height: img.height, loading: 'lazy', decoding: 'async' })));

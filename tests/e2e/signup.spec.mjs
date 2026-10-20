@@ -368,6 +368,9 @@ test.describe('toast', () => {
     await page.clock.install();
     await page.goto('/');
     await expect(page.locator('#main h1')).toBeAttached();
+    // install() alone lets the fake clock tick with real time, so a slow expect() poll could push a
+    // toast past its 4 s. Pause it: from here time moves only through clock.runFor().
+    await page.clock.pauseAt(new Date(Date.now() + 1000));
   });
 
   test('roles, close button and auto-hide (4 s, errors 6 s)', async ({ page }) => {

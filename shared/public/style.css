@@ -75,6 +75,8 @@ h1:focus, main:focus { outline: none; }
 a { color: var(--brand); }
 button { font: inherit; color: inherit; }
 img { max-width: 100%; }
+/* The browser default (#757575, faded) misses 4.5:1 on the dark cards. */
+::placeholder { color: var(--sub); opacity: 1; }
 svg {
   flex: none;
   fill: none;
@@ -541,7 +543,11 @@ main > h1 { margin-bottom: var(--s-4); }
 .post__head { display: flex; align-items: center; gap: var(--s-3); }
 .post__who { flex: 1; min-width: 0; }
 .post__name { font-size: 16px; font-weight: 600; }
-.post__name a { color: inherit; text-decoration: none; }
+.post__name a {
+  /* 44 px hit box without moving the layout: padding grows the box, the negative margin gives it back. */
+  display: inline-block; min-width: var(--tap); padding: 12px 8px; margin: -12px -8px;
+  color: inherit; text-decoration: none;
+}
 .post__name a:hover { text-decoration: underline; }
 .meta { font-size: 14px; color: var(--sub); }
 .post__menu-slot:empty { display: none; }
@@ -663,7 +669,6 @@ main > h1 { margin-bottom: var(--s-4); }
   line-height: 1.6;
   resize: none;
 }
-.composer__input::placeholder { color: var(--sub); opacity: 1; }
 
 .composer__preview {
   margin-top: var(--s-2);
@@ -949,19 +954,16 @@ main > h1 { margin-bottom: var(--s-4); }
 /* ---------- live pill + connection dot (DESIGN 4.7, 5.1) ---------- */
 /* The wrapper has no height, so showing or hiding the button never moves the feed (CLS 0). */
 .live-pill-wrap {
-  position: fixed;
+  /* Sticky, not fixed: it starts right under the top bar (never over the wordmark or the gallery
+     button) and sticks 12 px from the top once the bar has scrolled away. */
+  position: sticky;
   top: calc(12px + env(safe-area-inset-top, 0px));
-  left: 0;
-  right: 0;
   z-index: var(--z-pill);
   display: flex;
   justify-content: center;
   align-items: flex-start;
   height: 0;
   pointer-events: none;
-}
-@media (min-width: 720px) {
-  .live-pill-wrap { position: sticky; top: 12px; left: auto; right: auto; }
 }
 .live-pill {
   pointer-events: auto;
@@ -1441,7 +1443,22 @@ body[data-route="profile"] .rail { padding-top: var(--s-6); }
 }
 .tform { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--s-3); }
 .tcheck { display: flex; align-items: center; gap: var(--s-2); min-height: var(--tap); font-size: 15px; }
-.tcheck__box { width: 22px; height: 22px; accent-color: var(--brand); }
+.tcheck__box {
+  /* 44x44 hit box (DESIGN 8.3) drawing a 22 px box; the negative margin keeps the old layout. */
+  appearance: none; -webkit-appearance: none;
+  display: grid; place-items: center; flex: none;
+  width: var(--tap); height: var(--tap); margin: -11px; background: transparent; cursor: pointer;
+}
+.tcheck__box::before {
+  content: ''; grid-area: 1 / 1; width: 22px; height: 22px; box-sizing: border-box;
+  border: 2px solid var(--field-border); border-radius: 6px; background: var(--card);
+}
+.tcheck__box:checked::before { background: var(--brand); border-color: var(--brand); }
+.tcheck__box::after {
+  content: ''; grid-area: 1 / 1; width: 6px; height: 11px; margin-top: -2px;
+  border: solid var(--onbrand); border-width: 0 2.5px 2.5px 0; transform: rotate(45deg) scale(0);
+}
+.tcheck__box:checked::after { transform: rotate(45deg) scale(1); }
 
 .tpill {
   display: inline-flex; align-items: center; align-self: flex-start; min-height: 32px; padding: 0 var(--s-3);
