@@ -44,6 +44,11 @@ function onKeydown(e) {
   else if (!e.shiftKey && (active === last || outside)) { e.preventDefault(); first.focus(); }
 }
 
+/** Closes every open dialog, top first, so each onClose runs. Called on every route render. */
+export function closeAllDialogs() {
+  for (const entry of [...stack].reverse()) entry.close();
+}
+
 /**
  * openDialog(el, { labelledBy, onClose, dismissible = true (boolean or () => boolean), initialFocus, scrim = 'sheet' }) -> close()
  * `scrim` picks the backdrop variant: 'sheet' (--scrim-sheet) or 'lightbox' (--scrim).

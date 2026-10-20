@@ -4,6 +4,7 @@ import { toast } from './js/ui/toast.js';
 import { GENERIC_ERROR } from './js/ui/errors.js';
 import { api } from './js/api.js';
 import { openSignup } from './js/ui/signup.js';
+import { closeAllDialogs } from './js/ui/dialog.js';
 import { sse } from './js/sse.js';
 
 const SITE = 'Mooban';
@@ -65,6 +66,8 @@ async function render(route) {
   currentRoute = route;
   const first = renders++ === 0;
 
+  // Overlays (lightbox, composer, signup, confirm) never outlive the route they were opened on.
+  closeAllDialogs();
   if (cleanup) {
     try { cleanup(); } catch { /* a failing cleanup must not block navigation */ }
     cleanup = null;

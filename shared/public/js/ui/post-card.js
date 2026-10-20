@@ -70,6 +70,17 @@ function renderImage(post, image) {
   return h('figure', { class: 'post__img' }, open);
 }
 
+// The lightbox can edit an alt or delete the image after the card was drawn.
+export function setCardImageAlt(el, alt) {
+  const label = alt || `รูปจาก @${el.dataset.author}`;
+  el.querySelector('.post__img-open')?.setAttribute('aria-label', `เปิดรูป ${label}`);
+  el.querySelector('.post__img img')?.setAttribute('alt', label);
+}
+
+export function removeCardImage(el) {
+  el.querySelector('.post__img')?.remove();
+}
+
 // Replaces text and counts in place; the image and author never change on update.
 export function updatePostCard(el, post) {
   const body = el.querySelector('.post__body');

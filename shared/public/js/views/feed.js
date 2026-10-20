@@ -1,7 +1,8 @@
 import { h } from '../dom.js';
 import { api } from '../api.js';
 import { getToken, state, on } from '../store.js';
-import { renderPostCard, applyOwnership, updatePostCard } from '../ui/post-card.js';
+import { renderPostCard, applyOwnership, updatePostCard, setCardImageAlt, removeCardImage } from '../ui/post-card.js';
+import { openLightbox, imageFromPost } from '../ui/lightbox.js';
 import { infiniteList } from '../ui/infinite.js';
 import { mountRail } from '../ui/rail.js';
 import { livePill } from '../ui/live-pill.js';
@@ -60,6 +61,33 @@ export async function mount(main, rail) {
     window.scrollTo({ top: 0 });
   };
   feed.addEventListener('mooban:post-deleted', (e) => list.remove(e.detail.id));
+
+  // A post image opens the lightbox on the images of the loaded posts, starting at the clicked one.
+  feed.addEventListener('mooban:open-image', (e) => {
+    const { image, post } = e.detail;
+    const posts = list.items.filter((p) => p.image);
+    const images = posts.map(imageFromPost);
+    let index = images.findIndex((x) => x.id === image.id);
+    if (index < 0) { images.splice(0, images.length, imageFromPost({ ...post, image })); index = 0; }
+    const withImage = (id) => list.items.filter((p) => p.image?.id === id);
+    openLightbox(images, index, {
+      returnFocus: e.target instanceof Element ? e.target.closest('.post__img-open') : null,
+      onDeleted(id) {
+        for (const p of withImage(id)) {
+          p.image = null;
+          const card = cardOf(feed, p.id);
+          if (card) removeCardImage(card);
+        }
+      },
+      onAltSaved(updated) {
+        for (const p of withImage(updated.id)) {
+          p.image.alt = updated.alt;
+          const card = cardOf(feed, p.id);
+          if (card) setCardImageAlt(card, updated.alt);
+        }
+      },
+    });
+  });
 
   // Inline composer on desktop, compact bar (-> full-screen dialog) below 720px.
   const slot = main.querySelector('#composer-slot');
