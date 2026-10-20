@@ -1,23 +1,15 @@
 import { h } from '../dom.js';
 import { api } from '../api.js';
 import { getToken, state, on } from '../store.js';
-import { renderPostCard } from '../ui/post-card.js';
+import { renderPostCard, applyOwnership } from '../ui/post-card.js';
 import { infiniteList } from '../ui/infinite.js';
 import { mountRail } from '../ui/rail.js';
 
 const PAGE = 20;
-// A returning user's first page waits briefly for /api/me so own posts and liked_by_me are right
-// without a second fetch; the 'me' listener below covers the slower case and fresh signups.
-const ME_WAIT_MS = 1000;
 
 export async function mount(main, rail) {
   const ctrl = new AbortController();
-  let resolveMe = null;
-  const meReady = getToken() && !state.me
-    ? new Promise((res) => { resolveMe = res; })
-    : null;
-  const meTimer = meReady ? setTimeout(() => resolveMe(), ME_WAIT_MS) : null;
-  let fetchedAnonymously = false;
+  let fetchedWithToken = false;
 
   const feed = h('div', { class: 'feed', 'data-testid': 'feed' });
   main.append(
@@ -32,8 +24,7 @@ export async function mount(main, rail) {
     idOf: (post) => post.id,
     render: (post) => renderPostCard(post, { me: state.me }),
     async load(cursor) {
-      if (cursor === null && meReady) await meReady;
-      if (cursor === null) fetchedAnonymously = !state.me;
+      if (cursor === null) fetchedWithToken = !!getToken();
       const q = new URLSearchParams({ limit: String(PAGE) });
       if (cursor !== null) q.set('before', cursor);
       const res = await api('GET', `/api/posts?${q}`, { signal: ctrl.signal });
@@ -41,14 +32,14 @@ export async function mount(main, rail) {
     },
   });
 
-  const offMe = on('me', () => {
-    resolveMe?.();
-    if (fetchedAnonymously && state.me) list.reload();
+  // The feed never waits for /api/me: api() sends the stored token, so liked_by_me is right already.
+  const offMe = on('me', (me) => {
+    if (!me || !fetchedWithToken) list.reload();
+    else for (const card of feed.querySelectorAll('.post[data-author]')) applyOwnership(card, me);
   });
   const offRail = mountRail(rail);
 
   return () => {
-    clearTimeout(meTimer);
     offMe();
     ctrl.abort();
     list.destroy();

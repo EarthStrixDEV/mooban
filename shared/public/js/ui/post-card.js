@@ -6,17 +6,17 @@ import { timeAgo, avatarColor, firstGrapheme } from '../util.js';
 // into .post__menu-slot (Tasks 16-17); this module renders no interactive controls for them.
 export function renderPostCard(post, { me = state.me, compact = false } = {}) {
   const { author, image } = post;
-  const own = !!me && author.handle === me.handle;
   const nameId = `p${post.id}-name`;
 
   const el = h('article', {
-    class: `post${own ? ' post--own' : ''}${compact ? ' post--compact' : ''}`,
+    class: `post${compact ? ' post--compact' : ''}`,
     'data-testid': 'post-card',
+    'data-author': author.handle,
     'data-id': post.id,
     'aria-labelledby': nameId,
   },
   h('header', { class: 'post__head' },
-    h('span', { class: `avatar ${own ? 'avatar--me' : `avatar--${avatarColor(author.handle)}`}`, 'aria-hidden': 'true' },
+    h('span', { class: 'avatar', 'aria-hidden': 'true' },
       firstGrapheme(author.display_name)),
     h('div', { class: 'post__who' },
       h('p', { id: nameId, class: 'post__name' },
@@ -29,9 +29,19 @@ export function renderPostCard(post, { me = state.me, compact = false } = {}) {
   h('p', { class: 'post__body' }),
   h('div', { class: 'post__actions' }));
 
+  applyOwnership(el, me);
   if (image) el.querySelector('.post__actions').before(renderImage(post, image));
   updatePostCard(el, post);
   return el;
+}
+
+// Own vs other styling depends on `me`, which can arrive after the card was rendered.
+export function applyOwnership(el, me = state.me) {
+  const handle = el.dataset.author;
+  const own = !!me && handle === me.handle;
+  el.classList.toggle('post--own', own);
+  const av = el.querySelector('.avatar');
+  av.className = `avatar ${own ? 'avatar--me' : `avatar--${avatarColor(handle)}`}`;
 }
 
 function renderImage(post, image) {

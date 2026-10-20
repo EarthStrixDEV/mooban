@@ -238,16 +238,32 @@ test('mobile feed has a composer slot and no rail', async ({ page }, testInfo) =
   await expect(page.locator('.topbar__gallery')).toBeVisible();
 });
 
-test('own post uses the brandsoft avatar after /api/me resolves', async ({ page }) => {
+test('feed starts before /api/me resolves; own styling applies after, with no second fetch', async ({ page }) => {
   const user = await createUser();
   await page.addInitScript((t) => { localStorage.setItem('mb_token', t); }, user.token);
   const api = await pwRequest.newContext({ baseURL: BASE, extraHTTPHeaders: { Authorization: `Bearer ${user.token}` } });
   const { id } = await (await api.post('/api/posts', { data: { body: 'โพสต์ของฉัน' } })).json();
   try {
+    let meResolved = false;
+    let feedGets = 0;
+    await page.route(/\/api\/me$/, async (route) => {
+      await new Promise((r) => setTimeout(r, 2000));
+      meResolved = true;
+      await route.continue();
+    });
+    page.on('request', (r) => {
+      if (r.method() === 'GET' && /\/api\/posts\?/.test(r.url())) feedGets += 1;
+    });
     await page.goto('/');
     const card = page.locator(`[data-testid=post-card][data-id="${id}"]`);
-    await expect(card.locator('.avatar')).toHaveClass(/avatar--me/);
+    await expect(card).toBeVisible();
+    expect(meResolved).toBe(false); // cards rendered while /api/me is still pending
+    await expect(card.locator('.avatar')).not.toHaveClass(/avatar--me/);
+    await expect(card.locator('.avatar')).toHaveClass(/avatar--me/, { timeout: 6000 });
     await expect(card.locator('.avatar')).toHaveText(Array.from(user.display_name)[0]);
+    await page.waitForTimeout(500);
+    expect(feedGets).toBe(1);
+    await expect(page.locator('[data-testid=post-card]')).toHaveCount(20);
   } finally {
     await api.delete(`/api/posts/${id}`);
     await api.dispose();
