@@ -508,6 +508,124 @@ body[data-route="test"] .toasts { bottom: calc(var(--s-4) + env(safe-area-inset-
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 @keyframes sheet-up { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
 
+/* ---------- feed: post card, skeleton, states (DESIGN 4.4, 4.8, 4.15) ---------- */
+main > h1 { margin-bottom: var(--s-4); }
+.feed { min-width: 0; }
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-weight: 600;
+  line-height: 1;
+  user-select: none;
+}
+/* fixed pastel pairs, same in both themes (DESIGN 2.2 / 7.2) */
+.avatar--0 { background: #DDEFE4; color: #14573A; }
+.avatar--1 { background: #FBE6C8; color: #7A4A07; }
+.avatar--2 { background: #E3E0F5; color: #3B2F82; }
+.avatar--3 { background: #F8DCE2; color: #8A2142; }
+.avatar--me { background: var(--brandsoft); color: var(--brand-strong); }
+
+.post {
+  margin-top: var(--s-3);
+  padding: var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--card);
+}
+.post__head { display: flex; align-items: center; gap: var(--s-3); }
+.post__who { flex: 1; min-width: 0; }
+.post__name { font-size: 16px; font-weight: 600; }
+.post__name a { color: inherit; text-decoration: none; }
+.post__name a:hover { text-decoration: underline; }
+.meta { font-size: 14px; color: var(--sub); }
+.post__menu-slot:empty { display: none; }
+.post__body {
+  margin-top: var(--s-3);
+  font-size: 16px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.post__body[hidden] { display: none; }
+.post__img { margin: var(--s-3) 0 0; }
+.post__img-open {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  background: var(--chip);
+  cursor: zoom-in;
+  overflow: hidden;
+}
+.post__img-open img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 520px;
+  object-fit: cover;
+  border-radius: 16px;
+}
+.post__actions { display: flex; gap: var(--s-1); margin: var(--s-2) 0 0 -12px; }
+.post__actions:empty { display: none; }
+@media (min-width: 720px) {
+  .post { padding: var(--s-5); }
+  .avatar { width: 44px; height: 44px; }
+}
+
+.post--skeleton .post__head { gap: var(--s-3); }
+.sk { display: block; background: var(--chip); border-radius: 7px; }
+.sk--avatar { flex: none; width: 40px; height: 40px; border-radius: 50%; }
+.sk--name { width: 140px; max-width: 100%; height: 14px; }
+.sk--meta { width: 90px; max-width: 100%; height: 12px; margin-top: var(--s-2); }
+.sk--line { width: 100%; height: 14px; margin-top: var(--s-3); }
+.sk--short { width: 70%; margin-top: var(--s-2); }
+@media (min-width: 720px) { .sk--avatar { width: 44px; height: 44px; } }
+@media (prefers-reduced-motion: no-preference) {
+  .sk {
+    background: linear-gradient(90deg, var(--chip) 0%, var(--line) 50%, var(--chip) 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s linear infinite;
+  }
+}
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+.card--empty p { color: var(--sub); }
+.list__end { padding: var(--s-6) 0 var(--s-2); text-align: center; font-size: 14px; color: var(--sub); }
+.list__sentinel { height: 1px; }
+
+/* ---------- right rail (DESIGN 5.1.1) ---------- */
+.rail-card {
+  margin-top: var(--s-4);
+  padding: var(--s-5);
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: var(--card);
+}
+.rail-card:first-child { margin-top: 0; }
+.rail-card__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--s-3); }
+.rail-card__title { font-size: 16px; font-weight: 600; }
+.rail-card__more {
+  display: flex;
+  align-items: center;
+  min-height: var(--tap);
+  color: var(--brand);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.rail-card__more:hover { text-decoration: underline; }
+.rail-card__status { margin-top: var(--s-2); font-size: 14px; color: var(--sub); }
+.rail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 0; padding: 0; list-style: none; }
+.rail-grid__tile { display: block; aspect-ratio: 1 / 1; border-radius: 10px; background: var(--chip); overflow: hidden; }
+.rail-grid__tile img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
 /* ---------- motion (DESIGN 7.4) ---------- */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
