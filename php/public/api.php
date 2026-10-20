@@ -18,6 +18,7 @@ try {
     Tools::register();
     Stream::register();
     TestEmit::register();
+    SeedApi::register();
 
     Router::dispatch(
         $_SERVER['REQUEST_METHOD'] ?? 'GET',

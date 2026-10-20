@@ -228,7 +228,7 @@ final class Images
      * Write both files into MEDIA_DIR/.tmp-<key>/ then rename to MEDIA_DIR/<key>/ so a reader
      * (or a crash) sees both files or neither. Removes the staging dir on any failure.
      */
-    private static function store(string $displayBytes, string $thumbBytes, string $ext): string
+    public static function store(string $displayBytes, string $thumbBytes, string $ext): string
     {
         $root = Media::dir();
         if (!is_dir($root) && !@mkdir($root, 0755, true) && !is_dir($root)) {

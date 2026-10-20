@@ -2,6 +2,7 @@
 # Assemble the PHP site into build/php:
 #   public_html/  = shared/public/* + php/public/* (incl. .htaccess files)
 #   src/          = php/src
+#   seed-texts.json = shared/seed-texts.json (beside config.php, outside the docroot)
 #   config.php    = created from dev values only when missing (never overwritten)
 # Existing public_html/media contents (uploads) are preserved.
 set -eu
@@ -16,6 +17,7 @@ mkdir -p "$OUT/src"
 cp -R "$ROOT/shared/public/." "$OUT/public_html/"
 cp -R "$ROOT/php/public/." "$OUT/public_html/"
 cp -R "$ROOT/php/src/." "$OUT/src/"
+cp "$ROOT/shared/seed-texts.json" "$OUT/seed-texts.json"
 
 if [ ! -f "$OUT/config.php" ]; then
   cat > "$OUT/config.php" <<'PHP'
