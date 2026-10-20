@@ -1,6 +1,6 @@
 import { h } from '../dom.js';
 import { state } from '../store.js';
-import { timeAgo, avatarColor, firstGrapheme } from '../util.js';
+import { timeAgo, avatarColor, firstGrapheme, imageLabel } from '../util.js';
 import { syncPostMenu } from './post-menu.js';
 import { likeButton, setLikeCount } from './like-button.js';
 import { commentsToggle, setCommentCount } from './comments.js';
@@ -53,7 +53,7 @@ export function applyOwnership(el, me = state.me) {
 }
 
 function renderImage(post, image) {
-  const alt = image.alt || `รูปจาก @${post.author.handle}`;
+  const alt = imageLabel(image, post.author.handle);
   const img = h('img', {
     src: image.display_url,
     alt,
@@ -72,7 +72,7 @@ function renderImage(post, image) {
 
 // The lightbox can edit an alt or delete the image after the card was drawn.
 export function setCardImageAlt(el, alt) {
-  const label = alt || `รูปจาก @${el.dataset.author}`;
+  const label = imageLabel({ alt }, el.dataset.author);
   el.querySelector('.post__img-open')?.setAttribute('aria-label', `เปิดรูป ${label}`);
   el.querySelector('.post__img img')?.setAttribute('alt', label);
 }

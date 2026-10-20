@@ -44,9 +44,12 @@ function onKeydown(e) {
   else if (!e.shiftKey && (active === last || outside)) { e.preventDefault(); first.focus(); }
 }
 
-/** Closes every open dialog, top first, so each onClose runs. Called on every route render. */
+/**
+ * Closes every open dialog, top first, so each onClose runs. Called on every route render.
+ * A dialog that is not dismissible right now (signup with a POST in flight) is left alone and closes itself when settled.
+ */
 export function closeAllDialogs() {
-  for (const entry of [...stack].reverse()) entry.close();
+  for (const entry of [...stack].reverse()) if (entry.canDismiss()) entry.close();
 }
 
 /**

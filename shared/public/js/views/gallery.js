@@ -77,7 +77,11 @@ export async function mount(main) {
       async load(cursor) {
         const q = new URLSearchParams({ limit: String(PAGE) });
         if (cursor !== null) q.set('before', cursor);
-        if (mine) q.set('user', state.me.handle);
+        if (mine) {
+          // Signed out meanwhile (stale token): there is no "mine" any more, so go back to everyone's.
+          if (!state.me) { queueMicrotask(() => choose('latest')); return { items: [], next: null }; }
+          q.set('user', state.me.handle);
+        }
         const res = await api('GET', `/api/images?${q}`, { signal: ctrl.signal });
         return { items: res.data, next: res.next_before ?? null };
       },
@@ -92,6 +96,10 @@ export async function mount(main) {
         openLightbox(images, Math.max(0, images.findIndex((x) => x.id === image.id)), {
           total: images.length,
           returnFocus: button,
+          // The clicked tile disappears when its image is deleted: land on the tile now shown, else the first one, else the title.
+          returnFocusFor: (image) => (image && grid.querySelector(`[data-id="${CSS.escape(String(image.id))}"] .tile__open`))
+            || grid.querySelector('.tile__open')
+            || main.querySelector('h1'),
           onDeleted(id) {
             m.remove(id);
             list.remove(id);

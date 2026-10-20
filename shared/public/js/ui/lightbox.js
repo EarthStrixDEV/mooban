@@ -3,7 +3,7 @@
 import { h, icon } from '../dom.js';
 import { api, ApiError } from '../api.js';
 import { state } from '../store.js';
-import { timeAgo } from '../util.js';
+import { timeAgo, imageLabel } from '../util.js';
 import { openDialog } from './dialog.js';
 import { toast } from './toast.js';
 import { reportApiError } from './errors.js';
@@ -18,8 +18,6 @@ const FORMATS = { webp: 'WebP', jpeg: 'JPEG', jpg: 'JPEG', png: 'PNG', gif: 'GIF
 
 let isOpen = false;
 let hintShown = false;
-
-export const imageLabel = (image) => image.alt || `รูปจาก @${image.author?.handle ?? ''}`;
 
 /** The lightbox needs author + time; an image embedded in a post has neither, so borrow the post's. */
 export function imageFromPost(post) {
@@ -44,10 +42,12 @@ function dimsText(image) {
 }
 
 /**
- * openLightbox(images, index, { total, returnFocus, onDeleted(id), onAltSaved(image) }) -> close()
+ * openLightbox(images, index, { total, returnFocus, returnFocusFor(image), onDeleted(id), onAltSaved(image) }) -> close()
+ * On close focus goes back to `returnFocus`; if that element is gone (its image was deleted),
+ * `returnFocusFor(image)` picks a new target for the image on screen (or the last one deleted), and <main> is the last resort.
  * `images` is the loaded sequence (each with author, created_at, display_url ...); `total` defaults to its length.
  */
-export function openLightbox(images, index = 0, { total, returnFocus, onDeleted, onAltSaved } = {}) {
+export function openLightbox(images, index = 0, { total, returnFocus, returnFocusFor, onDeleted, onAltSaved } = {}) {
   if (isOpen || !images.length) return () => {};
   isOpen = true;
 
@@ -57,6 +57,7 @@ export function openLightbox(images, index = 0, { total, returnFocus, onDeleted,
   let busy = false;
   let confirmTimer = 0;
   let hintTimer = 0;
+  let lastDeleted = null;
   let popped = false;
   let pushed = false;
   let close = () => {};
@@ -222,6 +223,7 @@ export function openLightbox(images, index = 0, { total, returnFocus, onDeleted,
       }
       busy = false;
       const slot = items.findIndex((x) => x.id === image.id);
+      lastDeleted = image;
       if (slot >= 0) items.splice(slot, 1);
       count -= 1;
       onDeleted?.(image.id);
@@ -313,7 +315,9 @@ export function openLightbox(images, index = 0, { total, returnFocus, onDeleted,
       document.removeEventListener('keydown', onKey);
       // Only undo our own entry; a route change has already left it behind.
       if (!popped && window.history.state?.lbk === token) window.history.back();
-      if (returnFocus?.isConnected) returnFocus.focus({ preventScroll: true });
+      const target = [returnFocus, returnFocusFor?.(items[at] ?? lastDeleted), document.getElementById('main')]
+        .find((el) => el?.isConnected && !el.closest('[inert]'));
+      target?.focus({ preventScroll: true });
     },
   });
 

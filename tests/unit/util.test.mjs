@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   codePointLength, timeAgo, joinedLabel, avatarColor, firstGrapheme,
-  formatBytes, median, percentile,
+  formatBytes, median, percentile, imageLabel,
 } from '../../shared/public/js/util.js';
 
 test('codePointLength trims then counts code points', () => {
@@ -61,4 +61,11 @@ test('median and percentile', () => {
   assert.equal(percentile(xs, 0.5), 5);
   assert.deepEqual(xs, [5, 1, 4, 2, 3, 6, 7, 8, 9, 10]); // no mutation
   assert.ok(Number.isNaN(percentile([], 0.5)));
+});
+
+test('imageLabel prefers alt, falls back to the author handle', () => {
+  assert.equal(imageLabel({ alt: 'แมว' }, 'mint'), 'แมว');
+  assert.equal(imageLabel({ alt: '' }, 'mint'), 'รูปจาก @mint');
+  assert.equal(imageLabel({ alt: null, author: { handle: 'ploy' } }), 'รูปจาก @ploy');
+  assert.equal(imageLabel({}), 'รูปจาก @');
 });

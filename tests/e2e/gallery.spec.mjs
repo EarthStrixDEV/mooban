@@ -305,3 +305,110 @@ test('every open dialog closes when the route changes', async ({ page }) => {
   await expect(page.locator('#probe')).toHaveCount(0);
   expect(await page.evaluate(() => window.__probeClosed)).toBe(true);
 });
+
+const focusInMain = (page) => page.evaluate(() => {
+  const a = document.activeElement;
+  return a !== document.body && !!a?.closest('main');
+});
+
+async function deleteOpenImage(page) {
+  const del = page.getByTestId('lightbox-delete');
+  await del.click();
+  await expect(del).toHaveText('ยืนยันลบ');
+  await del.click();
+}
+
+test('gallery: after deleting the open image, Esc leaves focus on a tile inside main, never on body', async ({ page }) => {
+  const { images } = await ownImages(page, 2);
+  await page.goto('/gallery');
+  await tile(page, images[1].id).locator('.tile__open').click();
+  await expect(lb(page)).toBeVisible();
+  await deleteOpenImage(page);
+  await expect(tile(page, images[1].id)).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  await expect(lb(page)).toHaveCount(0);
+  await expect.poll(() => focusInMain(page)).toBe(true);
+  // The image on screen when it closed (the other own one) gets the focus.
+  await expect(tile(page, images[0].id).locator('.tile__open')).toBeFocused();
+});
+
+test('gallery: deleting the only image of "ของฉัน" still lands focus inside main', async ({ page }) => {
+  const { images } = await ownImages(page, 1);
+  await page.goto('/gallery');
+  await page.getByTestId('gallery-sort-mine').click();
+  await tile(page, images[0].id).locator('.tile__open').click();
+  await deleteOpenImage(page);
+  await expect(lb(page)).toHaveCount(0); // the last image closes the lightbox itself
+  await expect.poll(() => focusInMain(page)).toBe(true);
+});
+
+test('feed: after deleting the open image, Esc leaves focus inside main, never on body', async ({ page }) => {
+  const { me, images } = await ownImages(page, 1);
+  const res = await page.request.post('/api/posts', { headers: auth(me), data: { body: `del-${me.handle}`, image_id: images[0].id } });
+  expect(res.status()).toBe(201);
+  const post = await res.json();
+  await page.goto('/');
+  const card = page.locator(`[data-testid=post-card][data-id="${post.id}"]`);
+  await card.locator('.post__img-open').click();
+  await expect(lb(page)).toBeVisible();
+  await deleteOpenImage(page);
+  await expect(card.locator('.post__img')).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  await expect(lb(page)).toHaveCount(0);
+  await expect.poll(() => focusInMain(page)).toBe(true);
+});
+
+test('route change from an open lightbox replaces its history entry: Back goes to /gallery with no lightbox', async ({ page }) => {
+  await signedInPage(page);
+  await page.goto('/gallery');
+  await tiles(page).first().locator('.tile__open').click();
+  await expect(lb(page)).toBeVisible();
+  await page.evaluate(async () => {
+    const { navigate } = await import('/js/router.js');
+    await navigate('/test');
+  });
+  await expect(lb(page)).toHaveCount(0);
+  await expect(page).toHaveURL(/\/test$/);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/gallery$/);
+  await expect(lb(page)).toHaveCount(0);
+  await expect(tiles(page).first()).toBeVisible();
+});
+
+test('closeAllDialogs leaves a dialog that is not dismissible right now; it closes once it is', async ({ page }) => {
+  await signedInPage(page);
+  await page.goto('/gallery');
+  await expect(tiles(page).first()).toBeVisible();
+  await page.evaluate(async () => {
+    const { openDialog } = await import('/js/ui/dialog.js');
+    const el = document.createElement('div');
+    el.id = 'busy';
+    el.textContent = 'busy';
+    window.__locked = true;
+    openDialog(el, { dismissible: () => !window.__locked });
+  });
+  await page.evaluate(async () => { const { navigate } = await import('/js/router.js'); await navigate('/test'); });
+  await expect(page.locator('#busy')).toHaveCount(1);
+  await page.evaluate(async () => {
+    window.__locked = false;
+    const { navigate } = await import('/js/router.js');
+    await navigate('/gallery');
+  });
+  await expect(page.locator('#busy')).toHaveCount(0);
+});
+
+test('"ของฉัน" falls back to "ล่าสุด" when the user disappears before the next page loads', async ({ page }) => {
+  const { me } = await ownImages(page, 1);
+  const mineImages = await (await page.request.get(`/api/images?user=${me.handle}`)).json();
+  await page.route(/\/api\/images\?.*user=/, async (route) => {
+    await new Promise((r) => setTimeout(r, 500));
+    await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ data: mineImages.data, next_before: 'more' }) });
+  });
+  await page.goto('/gallery');
+  await expect(tiles(page).first()).toBeVisible();
+  await page.getByTestId('gallery-sort-mine').click();
+  await page.evaluate(async () => { const { state } = await import('/js/store.js'); state.me = null; });
+  await expect(page.getByTestId('gallery-sort-latest')).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByTestId('gallery-sort-mine')).toHaveAttribute('aria-pressed', 'false');
+  await expect.poll(() => tiles(page).count()).toBeGreaterThan(1);
+});

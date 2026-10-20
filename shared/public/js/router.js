@@ -31,7 +31,9 @@ function run() {
 export function navigate(path, { replace = false } = {}) {
   const next = new URL(path, window.location.origin);
   const same = next.pathname + next.search === window.location.pathname + window.location.search;
-  if (replace || same) window.history.replaceState(null, '', next.pathname + next.search + next.hash);
+  // An open lightbox owns the current entry; replacing it keeps Back from landing on a dead duplicate.
+  const overLightbox = !!window.history.state?.lbk;
+  if (replace || same || overLightbox) window.history.replaceState(null, '', next.pathname + next.search + next.hash);
   else window.history.pushState(null, '', next.pathname + next.search + next.hash);
   return run();
 }

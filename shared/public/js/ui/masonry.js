@@ -1,8 +1,7 @@
 // JS masonry (DESIGN 4.9): one <ul> per column, each image goes into the column with the smallest
 // cumulative height (sum of h/w). CSS `columns` is avoided because loading more would move old tiles.
 import { h } from '../dom.js';
-
-export const tileLabel = (image) => image.alt || `รูปจาก @${image.author?.handle ?? ''}`;
+import { imageLabel } from '../util.js';
 
 /**
  * masonry(container, cols, { onOpen(image, button) })
@@ -34,7 +33,7 @@ export function masonry(container, cols, { onOpen } = {}) {
   }
 
   function tile(image) {
-    const label = tileLabel(image);
+    const label = imageLabel(image);
     const li = h('li', { class: 'tile', 'data-testid': 'gallery-tile', 'data-id': image.id },
       h('button', { type: 'button', class: 'tile__open', 'aria-label': `เปิดรูป ${label}` }),
       h('img', {
@@ -73,7 +72,7 @@ export function masonry(container, cols, { onOpen } = {}) {
       const item = items.find((x) => String(x.image.id) === String(image.id));
       if (!item) return;
       item.image = image;
-      const label = tileLabel(image);
+      const label = imageLabel(image);
       item.li.querySelector('.tile__open').setAttribute('aria-label', `เปิดรูป ${label}`);
       item.li.querySelector('img').setAttribute('alt', label);
     },

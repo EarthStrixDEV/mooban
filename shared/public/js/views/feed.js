@@ -67,11 +67,17 @@ export async function mount(main, rail) {
     const { image, post } = e.detail;
     const posts = list.items.filter((p) => p.image);
     const images = posts.map(imageFromPost);
+    const postOf = new Map(posts.map((p) => [p.image.id, p.id]));
     let index = images.findIndex((x) => x.id === image.id);
     if (index < 0) { images.splice(0, images.length, imageFromPost({ ...post, image })); index = 0; }
     const withImage = (id) => list.items.filter((p) => p.image?.id === id);
     openLightbox(images, index, {
       returnFocus: e.target instanceof Element ? e.target.closest('.post__img-open') : null,
+      // After a delete the clicked button is gone: use the image now shown, else the like button of the post that lost its image.
+      returnFocusFor(shown) {
+        const card = shown ? cardOf(feed, postOf.get(shown.id) ?? post.id) : null;
+        return card?.querySelector('.post__img-open') ?? card?.querySelector('[data-testid="like-btn"]') ?? document.querySelector('main h1');
+      },
       onDeleted(id) {
         for (const p of withImage(id)) {
           p.image = null;

@@ -4,6 +4,11 @@ export function codePointLength(s) {
   return [...String(s).trim()].length;
 }
 
+/** Accessible name of an image: its alt, or a fallback naming the author. */
+export function imageLabel(image, authorHandle) {
+  return image.alt || `รูปจาก @${authorHandle ?? image.author?.handle ?? ''}`;
+}
+
 export function timeAgo(iso, { long = false, now = Date.now() } = {}) {
   const sec = Math.max(0, Math.floor((now - Date.parse(iso)) / 1000));
   if (sec < 60) return 'เมื่อครู่';
