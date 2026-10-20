@@ -11,6 +11,7 @@ Http::commonHeaders();
 try {
     Ping::register();
     Users::register();
+    Posts::register();
 
     Router::dispatch(
         $_SERVER['REQUEST_METHOD'] ?? 'GET',

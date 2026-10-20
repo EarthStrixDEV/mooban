@@ -62,6 +62,16 @@ test('F1 signup validation', async () => {
   assert.equal(bad.json.error, 'invalid_json');
 });
 
+test('F1 display_name is trimmed with the JS trim set (R5)', async () => {
+  await resetRateLimits();
+  const r = await api('POST', '/api/users', {
+    body: { handle: uniq('tr'), display_name: ' เอิร์ธ　' },
+  });
+  assert.equal(r.status, 201);
+  assert.equal(r.json.user.display_name, 'เอิร์ธ');
+  await resetRateLimits();
+});
+
 test('GET /api/users/{handle}', async () => {
   const u = await createUser({ handle: uniq('Pro').toLowerCase() });
   const r = await api('GET', `/api/users/${u.handle.toUpperCase()}`);
