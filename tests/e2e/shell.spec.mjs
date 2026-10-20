@@ -60,7 +60,7 @@ test('no horizontal scroll at 360px', async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 800 });
   for (const p of ['/', '/gallery', '/test', '/nope']) {
     await page.goto(p);
-    await expect(page.locator('#main h1')).toBeAttached();
+    await expect(page.locator('h1')).toBeAttached();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(360);
   }
 });

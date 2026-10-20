@@ -44,7 +44,7 @@ function dispatch(type, ev) {
   } catch { return; } // malformed payload: ignore
   if (data === null || typeof data !== 'object') return;
   for (const fn of [...(handlers.get(type) ?? [])]) {
-    try { fn(data); } catch { /* one bad handler must not stop the others */ }
+    try { fn(data, ev.lastEventId); } catch { /* one bad handler must not stop the others */ }
   }
 }
 
