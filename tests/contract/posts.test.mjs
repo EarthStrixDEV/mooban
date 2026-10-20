@@ -109,7 +109,7 @@ test('F4 body validation counts code points after trim', async () => {
   assert.equal(emojiOver.json.fields.body, LONG_MSG);
 });
 
-test('image_id is rejected until images exist (Task 7 replaces this)', async () => {
+test('image_id of a missing image is rejected; null is ignored', async () => {
   const u = await createUser();
   const r = await api('POST', '/api/posts', { token: u.token, body: { body: 'x', image_id: 999999 } });
   assert.equal(r.status, 422);

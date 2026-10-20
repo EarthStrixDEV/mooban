@@ -111,6 +111,26 @@ final class Posts
         Http::json(200, $post);
     }
 
+    private const IMAGE_MISSING_MSG = 'ไม่พบรูปนี้';
+    private const IMAGE_USED_MSG = 'รูปนี้ถูกใช้กับโพสต์อื่นแล้ว';
+
+    /** Field error for an image_id the author may not attach, or null when it is theirs and free. */
+    private static function checkImage(PDO $pdo, mixed $raw, int $uid): ?string
+    {
+        if (!is_int($raw) || $raw < 1) {
+            return self::IMAGE_MISSING_MSG;
+        }
+        $st = $pdo->prepare('SELECT user_id FROM images WHERE id = ?');
+        $st->execute([$raw]);
+        $owner = $st->fetchColumn();
+        if ($owner === false || (int) $owner !== $uid) {
+            return self::IMAGE_MISSING_MSG;
+        }
+        $st = $pdo->prepare('SELECT 1 FROM posts WHERE image_id = ?');
+        $st->execute([$raw]);
+        return $st->fetchColumn() === false ? null : self::IMAGE_USED_MSG;
+    }
+
     /** @param array<string,string> $params */
     public static function create(array $params): never
     {
@@ -119,12 +139,18 @@ final class Posts
         RateLimit::hit("user:$uid:write", 30);
         $in = Http::body();
 
+        $pdo = Db::pdo();
         $fields = [];
-        // Task 7 replaces this with the real image lookup.
+        $imageId = null;
         if (array_key_exists('image_id', $in) && $in['image_id'] !== null) {
-            $fields['image_id'] = 'ไม่พบรูปนี้';
+            $msg = self::checkImage($pdo, $in['image_id'], $uid);
+            if ($msg === null) {
+                $imageId = (int) $in['image_id'];
+            } else {
+                $fields['image_id'] = $msg;
+            }
         }
-        [$body, $err] = Validate::postBody($in['body'] ?? null, false);
+        [$body, $err] = Validate::postBody($in['body'] ?? null, $imageId !== null);
         if ($err !== null) {
             $fields['body'] = $err;
         }
@@ -132,10 +158,21 @@ final class Posts
             Http::error(422, 'validation_failed', ['fields' => $fields]);
         }
 
-        $pdo = Db::pdo();
         $pdo->beginTransaction();
         try {
-            $pdo->prepare('INSERT INTO posts (user_id, body) VALUES (?, ?)')->execute([$uid, $body]);
+            try {
+                $pdo->prepare('INSERT INTO posts (user_id, body, image_id) VALUES (?, ?, ?)')
+                    ->execute([$uid, $body, $imageId]);
+            } catch (PDOException $e) {
+                // Lost a race: another request took the image (uq_image) or it was deleted (FK).
+                $code = (int) ($e->errorInfo[1] ?? 0);
+                if ($code === 1062 || $code === 1452) {
+                    $pdo->rollBack();
+                    Http::error(422, 'validation_failed', ['fields' => ['image_id' =>
+                        $code === 1062 ? self::IMAGE_USED_MSG : self::IMAGE_MISSING_MSG]]);
+                }
+                throw $e;
+            }
             $id = (int) $pdo->lastInsertId();
             $post = self::load($pdo, $id, $uid);
             Events::emit($pdo, 'post.created', ['post' => Json::postForEvent($post)]);

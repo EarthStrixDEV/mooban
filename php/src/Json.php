@@ -31,16 +31,14 @@ final class Json
     {
         $image = null;
         if ($row['img_id'] !== null) {
-            $ext = ((string) $row['img_format']) === 'webp' ? 'webp' : 'jpg';
-            $base = '/media/' . $row['img_key'] . '/';
-            $image = [
-                'id' => (int) $row['img_id'],
-                'thumb_url' => $base . 'thumb.' . $ext,
-                'display_url' => $base . 'display.' . $ext,
-                'width' => (int) $row['img_width'],
-                'height' => (int) $row['img_height'],
-                'alt' => $row['img_alt'] === null ? null : (string) $row['img_alt'],
-            ];
+            $image = self::postImage([
+                'id' => $row['img_id'],
+                'media_key' => $row['img_key'],
+                'format' => $row['img_format'],
+                'width' => $row['img_width'],
+                'height' => $row['img_height'],
+                'alt' => $row['img_alt'],
+            ]);
         }
         return [
             'id' => (int) $row['id'],
@@ -56,6 +54,49 @@ final class Json
             'created_at' => self::iso((string) $row['created_at']),
             'updated_at' => self::iso((string) $row['updated_at']),
         ];
+    }
+
+    /**
+     * Image as embedded in a post: {id, thumb_url, display_url, width, height, alt} (no author).
+     *
+     * @param array<string,mixed> $row images columns: id, media_key, format, width, height, alt
+     * @return array<string,mixed>
+     */
+    public static function postImage(array $row): array
+    {
+        $key = (string) $row['media_key'];
+        $format = (string) $row['format'];
+        return [
+            'id' => (int) $row['id'],
+            'thumb_url' => Media::url($key, $format, 'thumb'),
+            'display_url' => Media::url($key, $format, 'display'),
+            'width' => (int) $row['width'],
+            'height' => (int) $row['height'],
+            'alt' => $row['alt'] === null ? null : (string) $row['alt'],
+        ];
+    }
+
+    /**
+     * Image object for /api/images. $row = images columns + handle, display_name (joined users).
+     *
+     * @param array<string,mixed> $row
+     * @return array<string,mixed>
+     */
+    public static function image(array $row, bool $withAuthor = true): array
+    {
+        $out = self::postImage($row) + [
+            'format' => (string) $row['format'],
+            'bytes_thumb' => (int) $row['bytes_thumb'],
+            'bytes_display' => (int) $row['bytes_display'],
+            'created_at' => self::iso((string) $row['created_at']),
+        ];
+        if ($withAuthor) {
+            $out['author'] = [
+                'handle' => (string) $row['handle'],
+                'display_name' => (string) $row['display_name'],
+            ];
+        }
+        return $out;
     }
 
     /**
