@@ -53,7 +53,8 @@ export function mountApiCard() {
   const echoOut = h('div', { class: 'check__out', role: 'status', 'aria-live': 'polite', 'data-testid': 'test-echo-result' });
   const small = [];
 
-  const pingBtn = button('วัด ping', () => busy(small, async () => {
+  const quiet = (fn) => async () => { try { await fn(); } catch (e) { if (e?.name !== 'AbortError') throw e; } };
+  const pingBtn = button('วัด ping', quiet(() => busy(small, async () => {
     const plain = await timed('/api/ping', { signal: ctrl.signal });
     const withDb = await timed('/api/ping?db=1', { signal: ctrl.signal });
     const dbj = json(withDb);
@@ -64,9 +65,9 @@ export function mountApiCard() {
       ['db_ms', dbj.db_ms === undefined ? dash : `${dbj.db_ms} ms`],
       ['stack', json(plain).stack ?? dash],
     ]));
-  }), { variant: 'secondary', testid: 'test-ping-run' });
+  })), { variant: 'secondary', testid: 'test-ping-run' });
 
-  const echoBtn = button('เรียก /api/echo', () => busy(small, async () => {
+  const echoBtn = button('เรียก /api/echo', quiet(() => busy(small, async () => {
     const r = await timed('/api/echo?from=test', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ hello: 'mooban' }), signal: ctrl.signal,
     });
@@ -85,7 +86,7 @@ export function mountApiCard() {
       ['X-Forwarded-Proto', hdr('X-Forwarded-Proto')],
       ['X-Real-IP', hdr('X-Real-IP')],
     ]));
-  }), { variant: 'secondary', testid: 'test-echo-run' });
+  })), { variant: 'secondary', testid: 'test-echo-run' });
   small.push(pingBtn, echoBtn);
 
   // --- load test
@@ -109,6 +110,8 @@ export function mountApiCard() {
     await busy([start], async () => {
       const lat = [];
       const apps = [];
+      let ok = 0;
+      let lastPaint = 0;
       const errors = new Map();
       let next = 0;
       let done = 0;
@@ -117,15 +120,16 @@ export function mountApiCard() {
         while (next < n) {
           next += 1;
           const r = await timed(path, { signal: ctrl.signal });
-          if (r.status >= 200 && r.status < 300) {
+          // Every completed HTTP response counts toward latency; only network failures (status 0) do not.
+          if (r.status !== 0) {
             lat.push(r.ms);
             if (r.app !== null) apps.push(r.app);
-          } else {
-            const key = r.status === 0 ? 'network' : String(r.status);
-            errors.set(key, (errors.get(key) ?? 0) + 1);
           }
+          if (r.status >= 200 && r.status < 300) ok += 1;
+          else errors.set(r.status === 0 ? 'network' : String(r.status), (errors.get(r.status === 0 ? 'network' : String(r.status)) ?? 0) + 1);
           done += 1;
-          progress.textContent = `ส่งแล้ว ${done} / ${n}`;
+          const now = performance.now();
+          if (now - lastPaint >= 500) { lastPaint = now; progress.textContent = `ส่งแล้ว ${done} / ${n}`; }
         }
       };
       try {
@@ -136,13 +140,14 @@ export function mountApiCard() {
       }
       const wall = (performance.now() - t0) / 1000;
       progress.textContent = '';
-      paintLoad({ n, lat, apps, errors, wall });
+      if (!ctrl.signal.aborted) paintLoad({ n, ok, lat, apps, errors, wall });
     });
   }
 
   const ms = (v) => (Number.isFinite(v) ? `${fmt1(v)} ms` : dash);
 
-  function paintLoad({ n, lat, apps, errors, wall }) {
+  function paintLoad({ n, ok, lat, apps, errors, wall }) {
+    result.dataset.samples = String(lat.length);
     const errTotal = [...errors.values()].reduce((a, b) => a + b, 0);
     if (errors.has('403')) lmsg.show(forbiddenNote());
     const errList = errors.size
@@ -150,7 +155,7 @@ export function mountApiCard() {
       : h('span', null, 'ไม่มี');
     result.replaceChildren(
       tiles([
-        tile('สำเร็จ', `${lat.length} / ${n}`),
+        tile('สำเร็จ', `${ok} / ${n}`),
         tile('ข้อผิดพลาด', h('span', null, String(errTotal))),
         tile('เฉลี่ย', ms(lat.length ? lat.reduce((a, b) => a + b, 0) / lat.length : NaN)),
         tile('มัธยฐาน', ms(lat.length ? median(lat) : NaN)),
@@ -160,7 +165,7 @@ export function mountApiCard() {
         tile('Server-Timing (app) เฉลี่ย', ms(apps.length ? apps.reduce((a, b) => a + b, 0) / apps.length : NaN)),
       ]),
       kv([['error ตาม status', errList]]),
-      h('p', { class: 'tcard__sub' }, 'ความหน่วงคิดจากคำขอที่สำเร็จ (2xx) · p95 = ค่าลำดับที่ ceil(0.95 × N) หลังเรียงจากน้อยไปมาก'));
+      h('p', { class: 'tcard__sub' }, 'ความหน่วงคิดจากทุกคำขอที่ได้รับคำตอบ (ไม่นับข้อผิดพลาดเครือข่าย) · p95 = ค่าลำดับที่ ceil(0.95 × N) หลังเรียงจากน้อยไปมาก'));
     result.hidden = false;
   }
 
@@ -184,6 +189,7 @@ export function mountApiCard() {
 
 export function mountSeedCard() {
   const { root, body } = card('7. ข้อมูล seed');
+  const ctrl = new AbortController();
   const msg = note();
   const users = numberInput('seed-users', 20, 1, 100, 'test-seed-users');
   const posts = numberInput('seed-posts', 500, 0, 5000, 'test-seed-posts');
@@ -196,10 +202,12 @@ export function mountSeedCard() {
     msg.clear();
     await busy(buttons, async () => {
       try {
-        const r = await api(method, path, { auth: false, headers: tokenHeaders() });
+        const r = await api(method, path, { auth: false, headers: tokenHeaders(), signal: ctrl.signal });
+        if (ctrl.signal.aborted) return;
         out.replaceChildren(kv(labels.map(([key, label, unit]) => [`${label} (${key})`, r?.[key] === undefined ? dash : `${r[key]}${unit ?? ''}`])));
         out.hidden = false;
       } catch (err) {
+        if (err?.name === 'AbortError' || ctrl.signal.aborted) return;
         if (err instanceof ApiError && err.status === 403) msg.show(forbiddenNote());
         else if (err instanceof ApiError) msg.show(`ไม่สำเร็จ (${err.status} ${err.code})`);
         else msg.show('ไม่สำเร็จ (ข้อผิดพลาดเครือข่าย)');
@@ -234,5 +242,5 @@ export function mountSeedCard() {
     h('div', { class: 'trow' }, seedBtn, delBtn, orphBtn),
     msg.el, out);
 
-  return { root, destroy() {} };
+  return { root, destroy() { ctrl.abort(); } };
 }

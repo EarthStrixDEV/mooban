@@ -46,6 +46,7 @@ export function mountRealtimeCard() {
     closedNote, progress, msg.el, stats, chartHost,
     h('h3', { class: 'tcard__h3' }, 'บันทึกเหตุการณ์'), logEmpty, log);
 
+  const ctrl = new AbortController();
   let running = false;
   let gone = false;
   const paintStatus = (s = sse.status) => {
@@ -88,14 +89,16 @@ export function mountRealtimeCard() {
     let rounds = 0;
     try {
       for (let i = 0; i < ROUNDS && !gone; i += 1) {
+        if (gone) break;
         progress.textContent = `กำลังวัด… ${i + 1} / ${ROUNDS}`;
         const nonce = randomNonce();
         const pending = waitPing(nonce);
         const t0 = performance.now();
         try {
-          await api('POST', '/api/test/emit', { json: { nonce }, auth: false, headers: tokenHeaders() });
+          await api('POST', '/api/test/emit', { json: { nonce }, auth: false, headers: tokenHeaders(), signal: ctrl.signal });
         } catch (err) {
           waiters.delete(nonce);
+          if (gone || err?.name === 'AbortError') break;
           if (isForbidden(err)) msg.show(forbiddenNote());
           else msg.show(`ส่ง event ไม่สำเร็จ (${err instanceof ApiError ? `${err.status} ${err.code}` : 'network'})`);
           break;
@@ -107,8 +110,7 @@ export function mountRealtimeCard() {
       }
     } finally {
       running = false;
-      progress.textContent = '';
-      paintStatus();
+      if (!gone) { progress.textContent = ''; paintStatus(); }
     }
     if (gone || rounds === 0) return;
     paintResult(values, dropped, rounds);
@@ -146,8 +148,11 @@ export function mountRealtimeCard() {
     root,
     destroy() {
       gone = true;
+      ctrl.abort();
       offStatus();
       offs.forEach((off) => off());
+      // release anyone still waiting for a ping so the measuring loop exits now
+      for (const release of [...waiters.values()]) release(null);
       waiters.clear();
     },
   };

@@ -137,7 +137,9 @@ test('caching: browser cache and conditional request checks report results', asy
   await tid(page, 'test-cache-run-servertime').click();
   await expect(tid(page, 'test-cache-servertime')).toContainText('unix_ms');
   await tid(page, 'test-cache-run-appcache').click();
-  await expect(tid(page, 'test-cache-appcache')).toContainText(/HIT|MISS/);
+  const app = tid(page, 'test-cache-appcache');
+  await expect(app).toContainText('4. GET /api/stats', { timeout: 20_000 });
+  await expect(app).toContainText('✓ ผ่าน');
   await tid(page, 'test-cache-run-stats').click();
   await expect(tid(page, 'test-cache-stats')).toContainText('hit');
   await tid(page, 'test-cache-clear').click();
@@ -198,4 +200,49 @@ test('seed without a token shows the 403 message', async ({ page }) => {
   await open(page, { token: false });
   await tid(page, 'test-orphans-run').click();
   await expect(tid(page, 'test-orphans-run').locator('xpath=ancestor::section')).toContainText('Test token ไม่ถูกต้อง');
+});
+
+test('app-level cache: waiting 11 s expires the cache (MISS)', async ({ page }) => {
+  test.setTimeout(60_000);
+  await open(page);
+  await page.getByRole('button', { name: 'รอ 11 วินาทีแล้วตรวจอีกครั้ง' }).click();
+  await expect(tid(page, 'test-cache-appcache-wait')).toContainText('✓ ผ่าน', { timeout: 30_000 });
+});
+
+test('load test: every non-network response counts toward latency, 2xx counts as success', async ({ page }) => {
+  await open(page);
+  let i = 0;
+  await page.route('**/api/limited', (route) => {
+    const k = i % 5;
+    i += 1;
+    if (k === 0) return route.abort();
+    const ok = k === 1 || k === 3;
+    return route.fulfill({
+      status: ok ? 200 : 429, contentType: 'application/json', headers: { 'Server-Timing': 'app;dur=5' }, body: ok ? '{"ok":true}' : '{"error":"rate_limited"}',
+    });
+  });
+  await tid(page, 'test-load-endpoint').selectOption('/api/limited');
+  await tid(page, 'test-load-total').fill('15');
+  await tid(page, 'test-load-conc').fill('1');
+  await tid(page, 'test-load-start').click();
+  const res = tid(page, 'test-load-result');
+  await expect(res).toBeVisible();
+  await expect(res).toHaveAttribute('data-samples', '12'); // 15 sent - 3 network failures
+  await expect(res.getByText('สำเร็จ', { exact: true }).locator('xpath=following-sibling::dd')).toHaveText('6 / 15');
+  await expect(res).toContainText('429 × 6');
+  await expect(res).toContainText('network × 3');
+  await expect(res.getByText('Server-Timing (app) เฉลี่ย').locator('xpath=following-sibling::dd')).toHaveText('5.0 ms');
+});
+
+test('leaving the page mid-measurement stops cleanly (no errors, no late toast)', async ({ page }) => {
+  await open(page);
+  await expect(page.locator('html')).toHaveAttribute('data-sse', 'open');
+  await tid(page, 'test-sse-start').click();
+  await tid(page, 'test-load-total').fill('1000');
+  await tid(page, 'test-load-endpoint').selectOption('/api/slow?ms=200');
+  await tid(page, 'test-load-start').click();
+  await page.waitForTimeout(500);
+  await page.goto('/gallery');
+  await page.waitForTimeout(1500);
+  await expect(page.getByTestId('toast')).toHaveCount(0);
 });

@@ -1,6 +1,7 @@
 // Cards 4-5: Bandwidth and Caching (Tabby spec 6 and 7, adapted).
 import { h } from '../dom.js';
 import { api, ApiError } from '../api.js';
+import { requireUser, handleAuthError } from '../ui/signup.js';
 import { median, formatBytes } from '../util.js';
 import {
   card, button, note, table, kv, busy, fmt1, fmt0, forbiddenNote, tokenHeaders,
@@ -152,6 +153,12 @@ export function mountBandwidthCard() {
 
 // ---------------------------------------------------------------- 5. Caching
 
+/** Abortable delay. */
+const sleep = (ms, signal) => new Promise((resolve, reject) => {
+  const t = setTimeout(resolve, ms);
+  signal.addEventListener('abort', () => { clearTimeout(t); reject(new DOMException('aborted', 'AbortError')); }, { once: true });
+});
+
 const abs = (path) => new URL(path, location.href).href;
 
 /** Resource Timing entries for `path` made since the last clear; fetch() entries land a tick late. */
@@ -177,10 +184,10 @@ const CHECKS = [
     id: 'browser',
     title: 'Browser cache',
     how: 'เปิด /cache/static สองครั้งติดกัน ครั้งที่สองควรมาจาก cache (วัดจาก Resource Timing: transferSize = 0)',
-    async run() {
+    async run(signal) {
       performance.clearResourceTimings();
-      const a = await getText('/cache/static');
-      await getText('/cache/static');
+      const a = await getText('/cache/static', { signal });
+      await getText('/cache/static', { signal });
       const [e1, e2] = (await timingFor('/cache/static')).slice(-2);
       const known = !!e1 && !!e2;
       const hit = fromCache(e2);
@@ -199,12 +206,12 @@ const CHECKS = [
     id: 'conditional',
     title: 'Conditional request',
     how: 'ส่ง If-None-Match ด้วย ETag ของ /cache/static ควรได้ 304 และไม่มี body',
-    async run() {
-      const first = await fetch('/cache/static', { cache: 'reload' });
+    async run(signal) {
+      const first = await fetch('/cache/static', { cache: 'reload', signal });
       await first.arrayBuffer();
       const etag = first.headers.get('ETag');
       if (!etag) return { rows: [['ETag', '—']], verdict: verdict('fail', 'ไม่มี ETag ใน response') };
-      const res = await fetch('/cache/static', { headers: { 'If-None-Match': etag } });
+      const res = await fetch('/cache/static', { headers: { 'If-None-Match': etag }, signal });
       const text = await res.text();
       return {
         rows: [['If-None-Match', etag], ['สถานะ', String(res.status)], ['ขนาด body', `${text.length} B`]],
@@ -216,10 +223,10 @@ const CHECKS = [
     id: 'nostore',
     title: 'no-store',
     how: 'เปิด /cache/none สองครั้ง ทุกครั้งควรยิงไป server',
-    async run() {
+    async run(signal) {
       performance.clearResourceTimings();
-      const a = await getText('/cache/none');
-      await getText('/cache/none');
+      const a = await getText('/cache/none', { signal });
+      await getText('/cache/none', { signal });
       const [e1, e2] = (await timingFor('/cache/none')).slice(-2);
       const known = !!e1 && !!e2;
       const bothNet = known && !fromCache(e1) && !fromCache(e2);
@@ -237,9 +244,9 @@ const CHECKS = [
     id: 'servertime',
     title: 'Cache ฝั่ง server / proxy',
     how: 'เรียก /cache/time สองครั้งห่างกันไม่เกิน 1 วินาที (ข้าม browser cache) แล้วเทียบ unix_ms',
-    async run() {
-      const a = await (await fetch('/cache/time', { cache: 'no-store' })).json();
-      const b = await (await fetch('/cache/time', { cache: 'no-store' })).json();
+    async run(signal) {
+      const a = await (await fetch('/cache/time', { cache: 'no-store', signal })).json();
+      const b = await (await fetch('/cache/time', { cache: 'no-store', signal })).json();
       const same = a.unix_ms === b.unix_ms;
       return {
         rows: [['unix_ms ครั้งที่ 1', String(a.unix_ms)], ['unix_ms ครั้งที่ 2', String(b.unix_ms)], ['ต่างกัน', `${b.unix_ms - a.unix_ms} ms`]],
@@ -251,9 +258,9 @@ const CHECKS = [
     id: 'gzip',
     title: 'Compression',
     how: 'ดึง /cache/gzip (204,800 byte) ควรมี Content-Encoding เป็น gzip หรือ br และขนาดที่รับน้อยกว่า 25%',
-    async run() {
+    async run(signal) {
       performance.clearResourceTimings();
-      const { res, text } = await getText('/cache/gzip', { cache: 'reload' });
+      const { res, text } = await getText('/cache/gzip', { cache: 'reload', signal });
       const [e] = (await timingFor('/cache/gzip')).slice(-1);
       const enc = res.headers.get('Content-Encoding');
       const decoded = e?.decodedBodySize || text.length;
@@ -274,17 +281,60 @@ const CHECKS = [
   {
     id: 'appcache',
     title: 'App-level cache',
-    how: 'เรียก /api/stats สองครั้งใน 10 วินาที คาดหวัง MISS แล้ว HIT (ถ้าเริ่มที่ HIT แสดงว่า cache ยังไม่หมดอายุ)',
-    async run() {
-      const a = await fetch('/api/stats', { cache: 'no-store' });
-      await a.arrayBuffer();
-      const b = await fetch('/api/stats', { cache: 'no-store' });
-      await b.arrayBuffer();
-      const x = a.headers.get('X-App-Cache');
-      const y = b.headers.get('X-App-Cache');
+    how: 'ลำดับ: GET /api/stats สองครั้ง (คาดหวัง MISS แล้ว HIT — ถ้าเริ่มที่ HIT แสดงว่า cache ยังไม่หมดอายุ) → เขียนข้อมูล (สร้างแล้วลบโพสต์ทดสอบ ต้องมีบัญชี) → GET /api/stats อีกครั้ง คาดหวัง MISS ผ่านเมื่อครั้งที่ 2 เป็น HIT และหลังเขียนเป็น MISS',
+    async run(signal) {
+      const stats = async () => {
+        const r = await fetch('/api/stats', { cache: 'no-store', signal });
+        await r.arrayBuffer();
+        return r.headers.get('X-App-Cache') ?? '—';
+      };
+      const s1 = await stats();
+      const s2 = await stats();
+      if (!(await requireUser())) {
+        return { rows: [['1. GET /api/stats', s1], ['2. GET /api/stats', s2], ['3. เขียนข้อมูล', 'ข้าม (ต้องมีบัญชี)']], verdict: verdict('info', 'ต้องมีบัญชีเพื่อเขียนข้อมูลทดสอบ') };
+      }
+      let write;
+      try {
+        const post = await api('POST', '/api/posts', { json: { body: 'ทดสอบ cache' }, signal });
+        await api('DELETE', `/api/posts/${post.id}`, { signal });
+        write = 'สร้างและลบโพสต์ทดสอบแล้ว';
+      } catch (err) {
+        if (err?.name === 'AbortError' || handleAuthError(err)) throw err;
+        return { rows: [['1. GET /api/stats', s1], ['2. GET /api/stats', s2], ['3. เขียนข้อมูล', `ไม่สำเร็จ (${err.status ?? 'network'})`]], verdict: verdict('fail', 'เขียนข้อมูลทดสอบไม่ได้') };
+      }
+      const s4 = await stats();
+      const ok = s2 === 'HIT' && s4 === 'MISS';
       return {
-        rows: [['X-App-Cache ครั้งที่ 1', x ?? '—'], ['X-App-Cache ครั้งที่ 2', y ?? '—']],
-        verdict: y === 'HIT' ? verdict('pass', x === 'MISS' ? 'MISS แล้ว HIT ตามคาด' : 'ครั้งที่สองเป็น HIT (ครั้งแรก cache ยังอยู่)') : verdict('fail', 'ครั้งที่สองไม่ใช่ HIT'),
+        rows: [
+          ['1. GET /api/stats (คาดหวัง MISS)', s1],
+          ['2. GET /api/stats (คาดหวัง HIT)', s2],
+          ['3. เขียนข้อมูล', write],
+          ['4. GET /api/stats (คาดหวัง MISS)', s4],
+        ],
+        verdict: ok ? verdict('pass', 'HIT แล้ว MISS หลังเขียนตามคาด') : verdict('fail', 'ลำดับ HIT / MISS ไม่ตรงคาด'),
+      };
+    },
+  },
+  {
+    id: 'appcache-wait',
+    title: 'App-level cache หมดอายุ',
+    button: 'รอ 11 วินาทีแล้วตรวจอีกครั้ง',
+    how: 'เรียก /api/stats หนึ่งครั้งเพื่ออุ่น cache รอ 11 วินาที แล้วเรียกอีกครั้ง คาดหวัง MISS (cache อายุ 10 วินาที)',
+    async run(signal, say) {
+      const stats = async () => {
+        const r = await fetch('/api/stats', { cache: 'no-store', signal });
+        await r.arrayBuffer();
+        return r.headers.get('X-App-Cache') ?? '—';
+      };
+      const before = await stats();
+      for (let left = 11; left > 0; left -= 1) {
+        say(`รอ ${left} วินาที…`);
+        await sleep(1000, signal);
+      }
+      const after = await stats();
+      return {
+        rows: [['ก่อนรอ', before], ['หลังรอ 11 วินาที (คาดหวัง MISS)', after]],
+        verdict: after === 'MISS' ? verdict('pass', 'cache หมดอายุแล้ว') : verdict('fail', 'ยังเป็น HIT หลังผ่านไป 11 วินาที'),
       };
     },
   },
@@ -292,11 +342,11 @@ const CHECKS = [
     id: 'static',
     title: 'ไฟล์ static',
     how: 'ดู header ของ app.js และ style.css ควรมี ETag หรือ Last-Modified (จด Cache-Control ที่ server ให้มา)',
-    async run() {
+    async run(signal) {
       const rows = [];
       let ok = true;
       for (const path of ['/app.js', '/style.css']) {
-        const res = await fetch(path, { method: 'HEAD', cache: 'no-store' });
+        const res = await fetch(path, { method: 'HEAD', cache: 'no-store', signal });
         const etag = res.headers.get('ETag');
         const lm = res.headers.get('Last-Modified');
         ok = ok && (!!etag || !!lm);
@@ -309,24 +359,27 @@ const CHECKS = [
 
 export function mountCachingCard() {
   const { root, body } = card('5. Caching');
+  const ctrl = new AbortController();
   const msg = note();
   const buttons = [];
 
   const checkEl = (c) => {
     const out = h('div', { class: 'check__out', role: 'status', 'aria-live': 'polite', 'data-testid': `test-cache-${c.id}` });
-    const run = button('ทดสอบ', async () => {
+    const run = button(c.button ?? 'ทดสอบ', async () => {
       msg.clear();
       await busy(buttons, async () => {
         out.replaceChildren(h('p', { class: 'tcard__sub' }, 'กำลังทดสอบ…'));
         try {
-          const r = await c.run();
+          const r = await c.run(ctrl.signal, (t) => out.replaceChildren(h('p', { class: 'tcard__sub' }, t)));
+          if (ctrl.signal.aborted) return;
           out.replaceChildren(kv(r.rows), h('p', { class: 'check__verdict' }, r.verdict));
-        } catch {
+        } catch (err) {
+          if (err?.name === 'AbortError' || ctrl.signal.aborted) return;
           out.replaceChildren(h('p', { class: 'tnote', 'data-kind': 'err' }, 'ทดสอบไม่สำเร็จ (ข้อผิดพลาดเครือข่าย)'));
         }
       });
     }, { variant: 'secondary', testid: `test-cache-run-${c.id}` });
-    run.setAttribute('aria-label', `ทดสอบ ${c.title}`);
+    if (!c.button) run.setAttribute('aria-label', `ทดสอบ ${c.title}`);
     buttons.push(run);
     return h('div', { class: 'check' },
       h('div', { class: 'check__head' }, h('h3', { class: 'tcard__h3' }, c.title), run),
@@ -336,22 +389,24 @@ export function mountCachingCard() {
   // app-level cache counters and reset (guarded)
   const statsOut = h('div', { class: 'check__out', role: 'status', 'aria-live': 'polite', 'data-testid': 'test-cache-stats' });
   async function showStats() {
-    const s = await api('GET', '/api/cache-stats', { auth: false });
+    const s = await api('GET', '/api/cache-stats', { auth: false, signal: ctrl.signal });
+    if (ctrl.signal.aborted) return;
     statsOut.replaceChildren(kv([['hit', String(s.hits)], ['miss', String(s.misses)]]));
   }
   const statsBtn = button('ดู cache-stats', async () => {
     msg.clear();
     await busy(buttons, async () => {
-      try { await showStats(); } catch { msg.show('ดู cache-stats ไม่สำเร็จ'); }
+      try { await showStats(); } catch (err) { if (!ctrl.signal.aborted) msg.show('ดู cache-stats ไม่สำเร็จ'); }
     });
   }, { variant: 'secondary', testid: 'test-cache-run-stats' });
   const clearBtn = button('ล้าง cache', async () => {
     msg.clear();
     await busy(buttons, async () => {
       try {
-        await api('DELETE', '/api/cache', { auth: false, headers: tokenHeaders() });
+        await api('DELETE', '/api/cache', { auth: false, headers: tokenHeaders(), signal: ctrl.signal });
         await showStats();
       } catch (err) {
+        if (ctrl.signal.aborted) return;
         if (err instanceof ApiError && err.status === 403) msg.show(forbiddenNote());
         else msg.show('ล้าง cache ไม่สำเร็จ');
       }
@@ -366,5 +421,5 @@ export function mountCachingCard() {
       h('p', { class: 'tcard__sub' }, 'GET /api/cache-stats · ล้างด้วย DELETE /api/cache (ต้องมี Test token)'), statsOut),
     msg.el);
 
-  return { root, destroy() {} };
+  return { root, destroy() { ctrl.abort(); } };
 }

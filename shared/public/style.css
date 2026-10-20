@@ -629,6 +629,9 @@ main > h1 { margin-bottom: var(--s-4); }
 /* ---------- buttons, confirm dialog ---------- */
 .btn--secondary { background: var(--chip); color: var(--ink); }
 .btn--secondary:hover { background: var(--line); }
+.btn--outline { background: transparent; color: var(--brand-strong); box-shadow: inset 0 0 0 1.5px var(--brand); }
+.btn--outline:hover { background: var(--brandsoft); }
+.btn--outline:disabled, .btn--outline:disabled:hover { background: var(--chip); box-shadow: none; }
 .btn--danger { background: var(--err); color: var(--onbrand); }
 .btn--danger:hover { background: var(--err); filter: brightness(0.92); }
 .btn--danger:focus-visible { outline-color: var(--ink); }
@@ -1421,9 +1424,6 @@ body[data-route="profile"] .rail { padding-top: var(--s-6); }
 
 .trow { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); }
 .tbtn { width: auto; min-width: var(--tap); padding: 0 var(--s-5); font-size: 15px; }
-.btn--outline { background: transparent; color: var(--brand-strong); box-shadow: inset 0 0 0 1.5px var(--brand); }
-.btn--outline:hover { background: var(--brandsoft); }
-.btn--outline:disabled, .btn--outline:disabled:hover { background: var(--chip); box-shadow: none; }
 .tpick:has(input:focus-visible) { outline: 3px solid var(--ink); outline-offset: 2px; }
 .tpick[aria-busy="true"] { opacity: 0.6; }
 
@@ -1459,10 +1459,10 @@ body[data-route="profile"] .rail { padding-top: var(--s-6); }
 .tnote__code { color: var(--sub); }
 
 .tresult > * + * { margin-top: var(--s-3); }
-.ttiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); gap: var(--s-2); margin: 0; }
+.ttiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(124px, 1fr)); gap: var(--s-2); margin: 0; }
 .ttile { padding: var(--s-3); border: 1px solid var(--line); border-radius: var(--r-tile); background: var(--bg); }
 .ttile__k { color: var(--sub); font-size: 13px; }
-.ttile__v { margin: 0; font-size: 20px; font-weight: 600; line-height: 1.35; }
+.ttile__v { margin: 0; font-size: 20px; font-weight: 600; line-height: 1.35; overflow-wrap: normal; }
 @media (min-width: 720px) { .ttile__v { font-size: 22px; } }
 .tsave { color: var(--brand-strong); }
 
@@ -1515,5 +1515,3 @@ body[data-route="profile"] .rail { padding-top: var(--s-6); }
 .tverdict--pass { color: var(--brand-strong); }
 .tverdict--fail { color: var(--err); }
 .tverdict--info { color: var(--sub); }
-.ttiles { grid-template-columns: repeat(auto-fit, minmax(124px, 1fr)); }
-.ttile__v { overflow-wrap: normal; }

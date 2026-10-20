@@ -25,6 +25,7 @@ export function mountWsCard() {
   const chartHost = h('div', { class: 'tchart' });
   body.append(status.el, controls, summary, msg.el, chartHost);
 
+  const ctrl = new AbortController();
   let ws = null;
   let openedAt = 0;
   let manual = false;
@@ -50,7 +51,7 @@ export function mountWsCard() {
   // The PHP stacks have no WebSocket: say so up front instead of failing a handshake.
   (async () => {
     try {
-      const res = await fetch('/api/ping', { cache: 'no-store' });
+      const res = await fetch('/api/ping', { cache: 'no-store', signal: ctrl.signal });
       const stack = (res.headers.get('X-Stack') ?? '').toLowerCase();
       if (!gone && (stack === 'apache' || stack === 'nginx')) unsupported();
     } catch { /* unknown stack: let the user try */ }
@@ -140,6 +141,8 @@ export function mountWsCard() {
     destroy() {
       gone = true;
       manual = true;
+      ctrl.abort();
+      pong?.resolve(null);
       ws?.close();
     },
   };

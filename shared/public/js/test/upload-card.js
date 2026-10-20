@@ -45,6 +45,7 @@ async function jpegThumbBytes(file) {
 export function mountUploadCard() {
   const { root, body } = card('1. อัปโหลดรูป', { span: 'rows' });
   const msg = note();
+  const ctrl = new AbortController();
   let last = null;
 
   const input = h('input', {
@@ -150,10 +151,11 @@ export function mountUploadCard() {
       const form = new FormData();
       form.append('file', file);
       const t0 = performance.now();
-      const img = await api('POST', '/api/images', { form });
+      const img = await api('POST', '/api/images', { form, signal: ctrl.signal });
       const totalMs = performance.now() - t0;
       const format = String(img.format);
       const jpegBytes = isJpeg(format) ? null : await jpegThumbBytes(file);
+      if (ctrl.signal.aborted) return;
       last = {
         name: file.name,
         type: file.type,
@@ -174,6 +176,7 @@ export function mountUploadCard() {
       paintHistory();
       toast('อัปโหลดสำเร็จ');
     } catch (err) {
+      if (err?.name === 'AbortError' || ctrl.signal.aborted) return;
       fileInfo.textContent = `${file.name} · ${formatBytes(file.size)}`;
       if (handleAuthError(err)) return;
       if (err instanceof ApiError && err.status !== 429 && err.status < 500) {
@@ -191,10 +194,12 @@ export function mountUploadCard() {
     if (!lastUpload || !state.me) return;
     del.disabled = true;
     try {
-      await api('DELETE', `/api/images/${lastUpload.id}`);
+      await api('DELETE', `/api/images/${lastUpload.id}`, { signal: ctrl.signal });
+      if (ctrl.signal.aborted) return;
       lastUpload = null;
       toast('ลบรูปทดสอบแล้ว');
     } catch (err) {
+      if (err?.name === 'AbortError' || ctrl.signal.aborted) return;
       del.disabled = false;
       if (handleAuthError(err)) return;
       if (err instanceof ApiError && err.status === 404) { lastUpload = null; del.disabled = true; return; }
@@ -202,5 +207,5 @@ export function mountUploadCard() {
     }
   }
 
-  return { root, destroy() {} };
+  return { root, destroy() { ctrl.abort(); } };
 }
