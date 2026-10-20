@@ -37,10 +37,11 @@ final class Http
 
     /**
      * @param array<string,mixed> $extra merged into the body next to "error"
+     * @param array<string,string> $headers
      */
-    public static function error(int $status, string $code, array $extra = []): never
+    public static function error(int $status, string $code, array $extra = [], array $headers = []): never
     {
-        self::json($status, ['error' => $code] + $extra);
+        self::json($status, ['error' => $code] + $extra, $headers);
     }
 
     /** @return array<string,mixed> */
