@@ -1,7 +1,7 @@
 import { test, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { api, db, createUser, resetRateLimits, uniq } from './helpers.mjs';
+import { api, db, createUser, resetRateLimits, uniq, waitForMinuteStart } from './helpers.mjs';
 
 const HANDLE_MSG = 'ต้องยาว 3–20 ตัวอักษร ใช้ได้เฉพาะ a-z, 0-9 และ _';
 const NAME_MSG = 'ต้องยาว 1–50 ตัวอักษร';
@@ -103,6 +103,7 @@ test('F2 GET /api/me', async () => {
 });
 
 test('P3 signup rate limit 5/min per ip', async () => {
+  await waitForMinuteStart();
   await resetRateLimits();
   let last;
   for (let i = 0; i < 6; i++) {

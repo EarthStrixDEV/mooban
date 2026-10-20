@@ -1,6 +1,6 @@
 import { test, before } from 'node:test';
 import assert from 'node:assert/strict';
-import { api, db, createUser, resetRateLimits } from './helpers.mjs';
+import { api, db, createUser, resetRateLimits, waitForMinuteStart } from './helpers.mjs';
 
 const ISO = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/;
 const BODY_MSG = 'ต้องยาว 1–280 ตัวอักษร';
@@ -196,6 +196,8 @@ test('likes and comments share the write rate limit bucket (429 after 30)', asyn
   const a = await createUser();
   const b = await createUser();
   const p = await mkPost(a, 'rl target');
+  await waitForMinuteStart();
+  await resetRateLimits();
   let last;
   for (let i = 0; i < 31; i++) {
     last = await api(i % 2 === 0 ? 'PUT' : 'DELETE', `/api/posts/${p.id}/like`, { token: b.token });

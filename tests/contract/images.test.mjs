@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
 import sharp from 'sharp';
-import { api, db, createUser, resetRateLimits, fixture, mediaExec, BASE, STACK } from './helpers.mjs';
+import { api, db, createUser, resetRateLimits, waitForMinuteStart, fixture, mediaExec, BASE, STACK } from './helpers.mjs';
 
 // mediaExec needs the compose service; the Apache stack is the one with a docroot media dir.
 if (!process.env.SERVICE && STACK === 'apache') process.env.SERVICE = 'apache';
@@ -244,6 +244,8 @@ test('upload check order: 401, 422 missing file, 422 alt, 429', async () => {
 
   // fresh user: 10 uploads per minute are allowed (each rejected here with 415), the 11th is limited
   const rl = await createUser();
+  await waitForMinuteStart();
+  await resetRateLimits();
   let last;
   for (let i = 0; i < 11; i++) last = await api('POST', '/api/images', { token: rl.token, form: formFor('test-fake.jpg') });
   assert.equal(last.status, 429);

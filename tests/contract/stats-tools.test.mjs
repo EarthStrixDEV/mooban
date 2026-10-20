@@ -1,7 +1,7 @@
 import { test, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
-import { api, db, createUser, resetRateLimits, BASE, STACK, TEST_TOKEN } from './helpers.mjs';
+import { api, db, createUser, resetRateLimits, waitForMinuteStart, BASE, STACK, TEST_TOKEN } from './helpers.mjs';
 
 const G = { 'X-Test-Token': TEST_TOKEN };
 const ISO = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/;
@@ -171,6 +171,7 @@ test('/api/echo: PUT hides Authorization/Cookie, previews body; >1MB is 413', as
 });
 
 test('/api/limited: 10 per minute, headers on every response', async () => {
+  await waitForMinuteStart();
   await resetRateLimits();
   for (let i = 1; i <= 10; i++) {
     const r = await api('GET', '/api/limited');

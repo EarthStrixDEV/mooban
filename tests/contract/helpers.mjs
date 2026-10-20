@@ -75,6 +75,16 @@ export async function resetRateLimits() {
   }
 }
 
+// Rate limits are fixed 1-minute UTC windows: a burst that crosses a minute boundary
+// would reset the counter mid-test. Start such bursts early in the minute (spec §11).
+export async function waitForMinuteStart(maxStartSecond = 10) {
+  const now = new Date();
+  const sec = now.getUTCSeconds();
+  if (sec <= maxStartSecond) return;
+  const msToNextMinute = (60 - sec) * 1000 - now.getUTCMilliseconds();
+  await new Promise(r => setTimeout(r, msToNextMinute + 200));
+}
+
 export function fixture(name) {
   return path.join(root, 'tests', 'fixtures', name);
 }

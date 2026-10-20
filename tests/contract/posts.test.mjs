@@ -1,6 +1,6 @@
 import { test, before } from 'node:test';
 import assert from 'node:assert/strict';
-import { api, db, createUser, resetRateLimits } from './helpers.mjs';
+import { api, db, createUser, resetRateLimits, waitForMinuteStart } from './helpers.mjs';
 
 const ISO = /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ$/;
 const EMPTY_MSG = 'ต้องมีข้อความหรือรูป';
@@ -196,6 +196,8 @@ test('events: created / updated / deleted payloads', async () => {
 
 test('P3 write rate limit: 31st post in a minute gets 429', async () => {
   const u = await createUser();
+  await waitForMinuteStart();
+  await resetRateLimits();
   let last;
   for (let i = 0; i < 31; i++) {
     last = await post(u, `rl ${i}`);
