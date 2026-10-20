@@ -4,7 +4,7 @@ import { getToken, state, on } from '../store.js';
 import { renderPostCard, applyOwnership } from '../ui/post-card.js';
 import { infiniteList } from '../ui/infinite.js';
 import { mountRail } from '../ui/rail.js';
-import { mountComposer, openComposerOverlay } from '../ui/composer.js';
+import { mountComposer, openComposerOverlay, discardDraft } from '../ui/composer.js';
 
 const PAGE = 20;
 const DESKTOP = '(min-width: 720px)';
@@ -68,6 +68,7 @@ export async function mount(main, rail) {
     mq.removeEventListener('change', mountForViewport);
     document.removeEventListener('mooban:compose', onCompose);
     composer.destroy();
+    discardDraft();
     offMe();
     ctrl.abort();
     list.destroy();

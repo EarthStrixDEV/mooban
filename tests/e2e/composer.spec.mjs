@@ -66,13 +66,81 @@ test('counter warns above 260, posting puts the card on top and clears the form'
   }
 });
 
-test('counter turns error at 280 and blocks posting past it', async ({ page }) => {
+test('counter turns error at 280; 281 code points (text or emoji) disables posting, 280 emoji is allowed', async ({ page }) => {
   await openFeed(page);
   await openComposer(page);
-  await page.getByTestId('composer-input').fill('ก'.repeat(280));
-  await expect(page.getByTestId('composer-count')).toHaveText('280 / 280');
-  await expect(page.getByTestId('composer-count')).toHaveClass(/composer__count--err/);
+  const input = page.getByTestId('composer-input');
+  const count = page.getByTestId('composer-count');
+  const submit = page.getByTestId('composer-submit');
+
+  await input.fill('ก'.repeat(280));
+  await expect(count).toHaveText('280 / 280');
+  await expect(count).toHaveClass(/composer__count--err/);
+  await expect(submit).toBeEnabled();
+
+  await input.fill('ก'.repeat(281));
+  await expect(count).toHaveText('281 / 280');
+  await expect(submit).toBeDisabled();
+
+  await input.fill('😀'.repeat(281));
+  await expect(count).toHaveText('281 / 280');
+  await expect(submit).toBeDisabled();
+
+  await input.fill('😀'.repeat(280));
+  await expect(count).toHaveText('280 / 280');
+  await expect(submit).toBeEnabled();
+});
+
+test('whitespace-only text without an image keeps posting disabled; trimmed length is counted', async ({ page }) => {
+  await openFeed(page);
+  await openComposer(page);
+  const input = page.getByTestId('composer-input');
+  await input.fill(['   ', '　', ' '].join('\n'));
+  await expect(page.getByTestId('composer-count')).toHaveText('0 / 280');
+  await expect(page.getByTestId('composer-submit')).toBeDisabled();
+  await input.fill('  ก  ');
+  await expect(page.getByTestId('composer-count')).toHaveText('1 / 280');
   await expect(page.getByTestId('composer-submit')).toBeEnabled();
+});
+
+test('double click on โพสต์ while /api/me is slow sends exactly one POST', async ({ page }) => {
+  await page.route(/\/api\/me$/, async (route) => {
+    await new Promise((r) => setTimeout(r, 2000));
+    await route.fallback();
+  });
+  const posts = [];
+  page.on('request', (r) => { if (r.method() === 'POST' && /\/api\/posts$/.test(r.url())) posts.push(r.url()); });
+  const user = await createUser({ display_name: 'มินจู' });
+  await signedInPage(page, user);
+  await page.goto('/');
+  await openComposer(page);
+  await page.getByTestId('composer-input').fill('กดสองที');
+  await page.getByTestId('composer-submit').dblclick();
+  await expect(cards(page).first().locator('.post__body')).toHaveText('กดสองที');
+  await page.waitForTimeout(500);
+  expect(posts).toHaveLength(1);
+});
+
+test('desktop: crossing 720px keeps the draft text and its uploaded image', async ({ page }) => {
+  test.skip(isMobile(page), 'desktop only');
+  await openFeed(page);
+  const deletes = [];
+  page.on('request', (r) => { if (r.method() === 'DELETE' && r.url().includes('/api/images/')) deletes.push(r.url()); });
+  await page.getByTestId('composer-input').fill('ร่างข้ามจอ');
+  await page.getByTestId('composer-attach').setInputFiles(path.join(FIX, 'test-1mp.jpg'));
+  await expect(page.getByTestId('composer-preview').locator('img')).toBeVisible();
+
+  await page.setViewportSize({ width: 600, height: 900 });
+  await page.getByRole('button', { name: 'วันนี้มีอะไรในหมู่บ้าน' }).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page.getByTestId('composer-input')).toHaveValue('ร่างข้ามจอ');
+  await expect(page.getByTestId('composer-preview').locator('img')).toBeVisible();
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.getByTestId('composer-input')).toHaveValue('ร่างข้ามจอ');
+  await expect(page.getByTestId('composer-preview').locator('img')).toBeVisible();
+  expect(deletes).toEqual([]);
 });
 
 test('attaching an image previews the thumb and the post card shows the image', async ({ page }) => {

@@ -20,6 +20,8 @@ const IMAGE_ERRORS = {
 
 let uid = 0;
 let overlayOpen = false;
+let shared = null; // one draft shared by the inline card and the overlay, so a viewport change keeps it
+let overlayCtl = null;
 
 // /api/me may still be in flight when the user first touches the composer; give it a moment so a
 // signed-in user is not sent to signup.
@@ -56,7 +58,7 @@ function discardImage(id) {
 
 // Builds the form pieces. The caller places `row` (avatar + textarea + preview + error), `bar`
 // (attach + counter [+ submit]) and, when `submitInBar` is false, `submitBtn` itself.
-function createCore({ rows, submitInBar, onPosted }) {
+function createCore() {
   const id = ++uid;
   const inputId = `composer-body-${id}`;
   const countId = `composer-count-${id}`;
@@ -65,6 +67,7 @@ function createCore({ rows, submitInBar, onPosted }) {
   let posting = false;
   let destroyed = false;
   let seq = 0;
+  const self = { onPosted: null };
 
   const avatar = h('span', { class: 'avatar avatar--me', 'aria-hidden': 'true' });
   const paintAvatar = (me = state.me) => { avatar.textContent = me ? firstGrapheme(me.display_name) : 'ฉ'; };
@@ -74,8 +77,7 @@ function createCore({ rows, submitInBar, onPosted }) {
   const input = h('textarea', {
     id: inputId,
     class: 'composer__input',
-    rows,
-    maxlength: MAX,
+    rows: 2,
     placeholder: PLACEHOLDER,
     'aria-describedby': countId,
     'data-testid': 'composer-input',
@@ -103,7 +105,7 @@ function createCore({ rows, submitInBar, onPosted }) {
     h('div', { class: 'composer__fields' },
       h('label', { class: 'sr-only', for: inputId }, 'ข้อความโพสต์'),
       input, preview, error));
-  const bar = h('div', { class: 'composer__bar' }, attach, count, submitInBar ? submitBtn : null);
+  const bar = h('div', { class: 'composer__bar' }, attach, count);
 
   const length = () => codePointLength(input.value);
   const canSubmit = () => !uploading && !posting && length() <= MAX && (length() > 0 || !!image);
@@ -115,6 +117,9 @@ function createCore({ rows, submitInBar, onPosted }) {
     count.classList.toggle('composer__count--err', n >= MAX);
     submitBtn.disabled = !canSubmit();
     submitBtn.setAttribute('aria-busy', posting ? 'true' : 'false');
+    input.readOnly = posting;
+    const rm = preview.querySelector('.composer__remove');
+    if (rm) rm.disabled = posting;
   }
 
   function setError(msg) {
@@ -139,6 +144,7 @@ function createCore({ rows, submitInBar, onPosted }) {
       onclick: removeImage,
     }, icon('close', { size: 20, stroke: 2.2 })));
     preview.append(frame);
+    frame.querySelector('.composer__remove').disabled = posting;
     if (image) {
       preview.append(h('p', { class: 'composer__caption' },
         `${image.name} · ${formatBytes(image.size)} จะถูกย่อให้อัตโนมัติ`));
@@ -162,6 +168,7 @@ function createCore({ rows, submitInBar, onPosted }) {
     fileInput.value = '';
     if (!file || posting || destroyed) return;
     if (!(await ensureUser())) return;
+    if (destroyed) return;
     if (image) { discardImage(image.id); image = null; }
     const mine = ++seq;
     uploading = true;
@@ -190,10 +197,11 @@ function createCore({ rows, submitInBar, onPosted }) {
 
   async function submit() {
     if (!canSubmit()) return;
-    if (!(await ensureUser())) return;
+    // Lock before awaiting so a double click cannot start a second request.
     posting = true;
     setError('');
     refresh();
+    if (!(await ensureUser())) { posting = false; refresh(); return; }
     try {
       const payload = { body: input.value.trim() };
       if (image) payload.image_id = image.id;
@@ -202,7 +210,7 @@ function createCore({ rows, submitInBar, onPosted }) {
       image = null; // now owned by the post
       input.value = '';
       renderPreview();
-      onPosted?.(post);
+      self.onPosted?.(post);
     } catch (err) {
       if (handleAuthError(err)) return;
       if (err instanceof ApiError && err.status === 422 && err.code === 'validation_failed') {
@@ -228,7 +236,7 @@ function createCore({ rows, submitInBar, onPosted }) {
   submitBtn.addEventListener('click', submit);
   refresh();
 
-  return {
+  Object.assign(self, {
     row,
     bar,
     submitBtn,
@@ -236,6 +244,16 @@ function createCore({ rows, submitInBar, onPosted }) {
     focus: () => input.focus(),
     dirty: () => input.value.trim() !== '' || uploading || !!image,
     busy: () => posting,
+    // Clears the draft and deletes an uploaded-but-unposted image.
+    reset() {
+      seq += 1;
+      uploading = false;
+      if (image) { discardImage(image.id); image = null; }
+      input.value = '';
+      setError('');
+      renderPreview();
+      refresh();
+    },
     destroy() {
       if (destroyed) return;
       destroyed = true;
@@ -243,7 +261,13 @@ function createCore({ rows, submitInBar, onPosted }) {
       offMe();
       if (image) { discardImage(image.id); image = null; }
     },
-  };
+  });
+  return self;
+}
+
+function acquireCore() {
+  if (!shared) shared = createCore();
+  return shared;
 }
 
 export function openComposerOverlay({ onPosted } = {}) {
@@ -251,12 +275,13 @@ export function openComposerOverlay({ onPosted } = {}) {
   overlayOpen = true;
   let close = () => {};
   let asking = false;
+  const ctl = { keepDraft: false, close: () => close() };
+  overlayCtl = ctl;
 
-  const core = createCore({
-    rows: 4,
-    submitInBar: false,
-    onPosted: (post) => { close(); onPosted?.(post); },
-  });
+  const core = acquireCore();
+  core.onPosted = (post) => { close(); onPosted?.(post); };
+  core.input.rows = 4;
+  core.bar.querySelector('.composer__submit')?.remove();
 
   async function requestCancel() {
     if (asking || core.busy()) return;
@@ -284,12 +309,30 @@ export function openComposerOverlay({ onPosted } = {}) {
       return false;
     },
     initialFocus: () => core.input,
-    onClose: () => { overlayOpen = false; core.destroy(); },
+    onClose: () => {
+      overlayOpen = false;
+      overlayCtl = null;
+      if (!ctl.keepDraft) core.reset();
+    },
   });
   return close;
 }
 
+// A viewport change swaps the overlay for the inline card: close it but keep the draft.
+function closeOverlayKeepingDraft() {
+  if (!overlayCtl) return;
+  overlayCtl.keepDraft = true;
+  overlayCtl.close();
+}
+
+/** Drops the draft (and its uploaded image) when the feed goes away. */
+export function discardDraft() {
+  if (overlayCtl) overlayCtl.close();
+  if (shared) { shared.destroy(); shared = null; }
+}
+
 function mountCompact(container, { onPosted }) {
+  closeOverlayKeepingDraft();
   const avatar = h('span', { class: 'avatar avatar--me', 'aria-hidden': 'true' });
   const paint = (me = state.me) => { avatar.textContent = me ? firstGrapheme(me.display_name) : 'ฉ'; };
   paint();
@@ -312,13 +355,18 @@ function mountCompact(container, { onPosted }) {
 }
 
 function mountInline(container, { onPosted }) {
-  const core = createCore({ rows: 2, submitInBar: true, onPosted });
+  closeOverlayKeepingDraft();
+  const core = acquireCore();
+  core.onPosted = onPosted;
+  core.input.rows = 2;
+  core.bar.append(core.submitBtn);
   const el = h('div', { class: 'composer card', 'data-testid': 'composer' }, core.row, core.bar);
   container.append(el);
   return {
     focus: () => core.focus(),
     open: () => core.focus(),
-    destroy() { core.destroy(); el.remove(); },
+    // The draft lives in the shared core and moves to the next host.
+    destroy() { el.remove(); },
   };
 }
 

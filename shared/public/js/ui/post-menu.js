@@ -145,7 +145,6 @@ function startEdit(card) {
     id: inputId,
     class: 'post__edit-input',
     rows: 3,
-    maxlength: MAX,
     'aria-describedby': countId,
     'data-testid': 'post-edit-input',
   });
