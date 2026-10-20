@@ -69,6 +69,7 @@ services:
     volumes:
       - ../node:/app/node:ro
       - ../shared:/app/shared:ro
+      - /app/node/node_modules
       - node-media:/data/media
       - node-cache:/data/cache
     environment:

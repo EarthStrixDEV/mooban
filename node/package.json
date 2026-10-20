@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "description": "Mooban on Node + Express",
-  "engines": { "node": ">=20.12" },
+  "engines": { "node": ">=22" },
   "scripts": { "start": "node app.js" },
   "dependencies": {
     "busboy": "^1.6.0",

@@ -2,6 +2,8 @@ import { config } from './config.js';
 import { encode } from './json.js';
 
 const BODY_LIMIT = 1024 * 1024;
+const BACKSLASH = String.fromCharCode(0x5c);
+const MAX_JSON_DEPTH = 512; // PHP json_decode default
 const INT64_MAX = 9223372036854775807n;
 
 // /api plus the tool endpoints PHP also routes through api.php.
@@ -139,6 +141,22 @@ function reviver(key, value, context) {
   return value;
 }
 
+/** Throws when objects/arrays nest deeper than MAX_JSON_DEPTH (scans outside strings only). */
+function checkDepth(text) {
+  let depth = 0;
+  let inString = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inString) {
+      if (c === BACKSLASH) i++;
+      else if (c === '"') inString = false;
+    } else if (c === '"') inString = true;
+    else if (c === '{' || c === '[') {
+      if (++depth > MAX_JSON_DEPTH) throw new SyntaxError('too deep');
+    } else if (c === '}' || c === ']') depth--;
+  }
+}
+
 /**
  * Read and parse the JSON request body (lazily, so 401/404/429 can come first).
  * Anything but a JSON object (empty, malformed, array, scalar) is 400 invalid_json.
@@ -153,7 +171,8 @@ export async function readBody(req) {
   }
   let obj;
   try {
-    const text = new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks));
+    const text = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(Buffer.concat(chunks));
+    checkDepth(text);
     obj = JSON.parse(text, reviver);
   } catch {
     throw new HttpError(400, 'invalid_json');

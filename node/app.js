@@ -12,7 +12,7 @@ import * as users from './src/routes/users.js';
 
 const app = express();
 app.disable('x-powered-by');
-app.set('trust proxy', config.TRUST_PROXY);
+app.set('trust proxy', config.TRUST_PROXY ? 1 : false); // exactly one proxy hop
 
 app.use(baseHeaders);
 
