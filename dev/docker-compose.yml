@@ -85,8 +85,38 @@ services:
       CACHE_DIR: /data/cache
     command: ["node", "app.js"]
 
+  python:
+    build:
+      context: ../python
+      dockerfile: ../dev/python.Dockerfile
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8084:8084"
+    volumes:
+      - ../python:/app/python:ro
+      - ../shared:/app/shared:ro
+      - python-media:/data/media
+      - python-cache:/data/cache
+    environment:
+      DB_HOST: mysql
+      DB_NAME: mb_python
+      DB_USER: mb
+      DB_PASS: mb
+      APP_STACK: python
+      PORT: "8084"
+      TEST_TOKEN: dev-test-token-0123456789abcd
+      PUBLIC_DIR: /app/shared/public
+      MEDIA_DIR: /data/media
+      CACHE_DIR: /data/cache
+      PYTHONDONTWRITEBYTECODE: "1"
+    command: ["gunicorn", "--worker-class", "gthread", "--workers", "2", "--threads", "16", "--bind", "0.0.0.0:8084", "app:application"]
+
 volumes:
   mysql-data:
   fpm-sock:
   node-media:
   node-cache:
+  python-media:
+  python-cache:
