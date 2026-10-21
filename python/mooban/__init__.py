@@ -1,7 +1,7 @@
 from flask import Flask
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-from . import config, db, http, media, spa
+from . import config, db, http, media, spa, ws
 from .routes import comments, likes, ping, posts, stream, tools, users
 from .routes import images as image_routes
 from .routes import test as test_routes
@@ -29,7 +29,7 @@ def create_app():
         tools.register()
         stream.register()
         test_routes.register()
-    # a later task registers /ws here
+    ws.init_app(app)
 
     app.add_url_rule('/media/<key>/<name>', 'media', media.serve, methods=['GET', 'HEAD'])
     spa.init_app(app)
