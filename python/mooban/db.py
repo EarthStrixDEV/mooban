@@ -8,21 +8,27 @@ from flask import g
 from . import config
 
 
+def connect():
+    """A new standalone connection (UTC, utf8mb4, autocommit). The caller closes it; used by SSE
+    streams, which outlive the request context."""
+    return pymysql.connect(
+        host=config.DB_HOST,
+        port=config.DB_PORT,
+        user=config.DB_USER,
+        password=config.DB_PASS,
+        database=config.DB_NAME,
+        charset='utf8mb4',
+        init_command="SET time_zone='+00:00'",
+        autocommit=True,
+        cursorclass=pymysql.cursors.DictCursor,
+    )
+
+
 def conn():
     """The request's connection (opened on first use, UTC, utf8mb4, autocommit outside tx())."""
     c = g.get('mb_conn')
     if c is None:
-        c = pymysql.connect(
-            host=config.DB_HOST,
-            port=config.DB_PORT,
-            user=config.DB_USER,
-            password=config.DB_PASS,
-            database=config.DB_NAME,
-            charset='utf8mb4',
-            init_command="SET time_zone='+00:00'",
-            autocommit=True,
-            cursorclass=pymysql.cursors.DictCursor,
-        )
+        c = connect()
         g.mb_conn = c
     return c
 
