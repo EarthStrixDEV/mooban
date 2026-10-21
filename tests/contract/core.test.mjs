@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { api, STACK } from './helpers.mjs';
+import { api, STACK, createUser } from './helpers.mjs';
 
 test('GET /api/ping returns pong with stack and headers', async () => {
   const r = await api('GET', '/api/ping');
@@ -50,4 +50,24 @@ test('GET /robots.txt disallows all', async () => {
   const r = await api('GET', '/robots.txt');
   assert.equal(r.status, 200);
   assert.match(r.text, /Disallow: \//);
+});
+
+test('huge integer literal in a JSON body does not drop the connection (422)', async () => {
+  const r = await api('POST', '/api/users', {
+    body: '{"handle":"!!","display_name":"x","n":' + '1'.repeat(5000) + '}',
+  });
+  assert.ok(r.status === 422, `status ${r.status}`);
+  assert.notEqual(r.json, null);
+  const ping = await api('GET', '/api/ping');
+  assert.equal(ping.status, 200);
+});
+
+test('5000-digit image_id is rejected as a missing image', async () => {
+  const u = await createUser();
+  const r = await api('POST', '/api/posts', {
+    token: u.token,
+    body: '{"body":"x","image_id":' + '1'.repeat(5000) + '}',
+  });
+  assert.equal(r.status, 422);
+  assert.equal(r.json.fields.image_id, 'ไม่พบรูปนี้');
 });
