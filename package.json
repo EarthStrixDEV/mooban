@@ -5,6 +5,7 @@
   "scripts": {
     "test:contract": "node --test --test-concurrency=1 \"tests/contract/**/*.test.mjs\"",
     "test:unit": "node --test \"tests/unit/**/*.test.mjs\"",
+    "test:tools": "node --test \"tests/tools/**/*.test.mjs\"",
     "test:e2e": "playwright test"
   },
   "devDependencies": {
