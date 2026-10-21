@@ -98,6 +98,7 @@ test('realtime without a token: 403 message and no result', async ({ page }) => 
 });
 
 test('websocket card says the stack has no WebSocket (apache/nginx)', async ({ page }) => {
+  test.skip(['node', 'python'].includes(process.env.E2E_STACK ?? ''), 'apache/nginx only: no WebSocket');
   await open(page);
   const status = tid(page, 'test-ws-status');
   await expect(status).toHaveText(/stack นี้ไม่รองรับ WebSocket/);
