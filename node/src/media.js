@@ -50,7 +50,7 @@ export function handler() {
   return (req, res, next) => {
     // fetch() adds "Cache-Control: no-cache" to conditional requests, and `fresh` then never answers 304.
     // Revalidating is exactly what a conditional request does (and the files are immutable), so ignore it.
-    delete req.headers['cache-control'];
+    if (req.headers['if-none-match'] || req.headers['if-modified-since']) delete req.headers['cache-control'];
     files(req, res, next);
   };
 }

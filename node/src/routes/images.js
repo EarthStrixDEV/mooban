@@ -39,8 +39,9 @@ async function find(id) {
  * Resolves {file: {path, size, truncated} | null, alt: string | null | undefined};
  * a body that is not multipart (or has no usable `file` part) yields file = null.
  * `alt` is undefined when absent, null when it was cut off by the field size cap.
+ * `state.filePromise` is the in-flight file write, so the caller can wait for it before removing `dir`.
  */
-function receive(req, dir) {
+function receive(req, res, dir, state) {
   return new Promise((resolve, reject) => {
     let bb;
     try {
@@ -55,7 +56,8 @@ function receive(req, dir) {
 
     let file = null;
     let alt;
-    let filePromise = Promise.resolve();
+    let activeStream = null;
+    let activeOut = null;
     let failed = false;
     let total = 0;
 
@@ -63,7 +65,14 @@ function receive(req, dir) {
       if (failed) return;
       failed = true;
       req.unpipe(bb);
-      req.resume(); // let Node discard the rest; nothing is kept
+      // Tear everything down so the temp file is closed and pipeline() settles.
+      bb.destroy();
+      activeStream?.destroy();
+      activeOut?.destroy();
+      if (err instanceof HttpError && err.status === 413) {
+        // Stop reading the rest of an oversized body once the 413 has been flushed.
+        res.once('finish', () => req.destroy());
+      }
       reject(err);
     };
 
@@ -84,10 +93,12 @@ function receive(req, dir) {
       }
       const target = { path: path.join(dir, 'upload'), size: 0, truncated: false };
       file = target;
+      activeStream = stream;
       stream.on('limit', () => { target.truncated = true; });
       const out = fs.createWriteStream(target.path, { mode: 0o600 });
-      filePromise = pipeline(stream, out).then(() => { target.size = out.bytesWritten; });
-      filePromise.catch(() => {}); // surfaced through the busboy 'error' / awaited at close
+      activeOut = out;
+      state.filePromise = pipeline(stream, out).then(() => { target.size = out.bytesWritten; });
+      state.filePromise.catch(() => {}); // surfaced through the busboy 'error' / awaited at close
     });
     bb.on('error', () => {
       // Truncated / malformed multipart: a half-received file is an invalid image.
@@ -97,7 +108,7 @@ function receive(req, dir) {
     });
     bb.on('close', () => {
       if (failed) return;
-      filePromise.then(
+      (state.filePromise ?? Promise.resolve()).then(
         () => resolve({ file, alt }),
         () => fail(new HttpError(422, 'image_invalid')),
       );
@@ -125,8 +136,9 @@ async function create(req, res) {
 
   const dir = await fsp.mkdtemp(path.join(os.tmpdir(), 'mooban-up-'));
   let mediaKey = null;
+  const state = { filePromise: null };
   try {
-    const { file, alt: altIn } = await receive(req, dir);
+    const { file, alt: altIn } = await receive(req, res, dir, state);
     if (file === null) {
       throw new HttpError(422, 'validation_failed', { fields: { file: FILE_MISSING_MSG } });
     }
@@ -175,6 +187,7 @@ async function create(req, res) {
     if (mediaKey !== null) await media.removeDir(mediaKey);
     throw e;
   } finally {
+    await state.filePromise?.catch(() => {}); // the write stream must be closed before the dir can go
     await fsp.rm(dir, { recursive: true, force: true }).catch(() => {});
   }
 }

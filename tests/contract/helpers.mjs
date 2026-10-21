@@ -92,27 +92,45 @@ export function fixture(name) {
 
 // Host fallback (MEDIA_DIR_HOST set): the app runs on the host, so ls/mkdir/rm on the media dir are
 // done with node:fs and print what `docker exec` would. MEDIA_DIR_IN_CONTAINER maps to MEDIA_DIR_HOST.
-async function mediaExecHost(args) {
-  const inContainer = (process.env.MEDIA_DIR_IN_CONTAINER ?? '').replace(/\/+$/, '');
-  const hostDir = process.env.MEDIA_DIR_HOST;
+export async function mediaExecHost(args, env = process.env) {
+  const inContainer = (env.MEDIA_DIR_IN_CONTAINER ?? '').replace(/\/+$/, '');
+  const hostDir = env.MEDIA_DIR_HOST;
+  if (!inContainer || !hostDir) throw new Error('mediaExec host fallback needs MEDIA_DIR_IN_CONTAINER and MEDIA_DIR_HOST');
+  const root = path.resolve(hostDir);
   const [cmd, ...rest] = args;
   const flags = rest.filter(a => a.startsWith('-'));
-  const target = rest.filter(a => !a.startsWith('-')).at(-1);
-  if (!target || !(target === inContainer || target.startsWith(inContainer + '/'))) {
-    throw new Error(`mediaExec host fallback: ${cmd} outside MEDIA_DIR_IN_CONTAINER: ${target}`);
-  }
-  const p = path.join(hostDir, target.slice(inContainer.length));
+  const targets = rest.filter(a => !a.startsWith('-')).map((t) => {
+    if (!(t === inContainer || t.startsWith(inContainer + '/'))) {
+      throw new Error(`mediaExec host fallback: ${cmd} outside MEDIA_DIR_IN_CONTAINER: ${t}`);
+    }
+    const p = path.resolve(root, '.' + t.slice(inContainer.length));
+    if (p !== root && !p.startsWith(root + path.sep)) {
+      throw new Error(`mediaExec host fallback: path escapes MEDIA_DIR_HOST: ${t}`);
+    }
+    return p;
+  });
+  if (targets.length === 0) throw new Error(`mediaExec host fallback: ${cmd} needs a path`);
   switch (cmd) {
     case 'ls': {
-      const names = await fsp.readdir(p); // readdir omits . and .., like `ls -A`
-      return names.sort().map(n => n + '\n').join('');
+      let out = '';
+      for (const p of targets) {
+        const names = await fsp.readdir(p); // readdir omits . and .., like `ls -A`
+        out += names.sort().map(n => n + '\n').join('');
+      }
+      return out;
     }
     case 'mkdir':
-      await fsp.mkdir(p, { recursive: flags.some(f => f.includes('p')) });
+      for (const p of targets) await fsp.mkdir(p, { recursive: flags.some(f => f.includes('p')) });
       return '';
-    case 'rm':
-      await fsp.rm(p, { recursive: flags.some(f => /[rR]/.test(f)), force: flags.some(f => f.includes('f')) });
+    case 'rm': {
+      const recursive = flags.some(f => /[rR]/.test(f));
+      const force = flags.some(f => f.includes('f'));
+      for (const p of targets) {
+        if (recursive && p === root) throw new Error('mediaExec host fallback: refusing to rm -r the media root');
+        await fsp.rm(p, { recursive, force });
+      }
       return '';
+    }
     default:
       throw new Error(`mediaExec host fallback does not support: ${cmd}`);
   }
