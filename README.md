@@ -7,9 +7,7 @@
 | **Apache + PHP** | PHP 8.3 + PDO + GD | Apache (ไฟล์ตรง) | SSE (1 stream = 1 PHP worker) |
 | **Nginx + PHP-FPM** | โค้ด PHP ชุดเดียวกัน | Nginx (ไฟล์ตรง) | SSE |
 | **Node + Express** | Node 22 + mysql2 + sharp | แอปเสิร์ฟเอง | SSE (poll loop เดียวกระจายทุก client) + WebSocket |
-| **Python + Flask** | Python 3.12 + PyMySQL + Pillow | แอปเสิร์ฟเอง | SSE (1 stream = 1 thread) + WebSocket* |
-
-\* WebSocket ของ Python กำลังพัฒนา (ดู [สถานะ](#สถานะ))
+| **Python + Flask** | Python 3.12 + PyMySQL + Pillow | แอปเสิร์ฟเอง | SSE (1 stream = 1 thread) + WebSocket |
 
 หน้าเว็บเป็น **SPA vanilla JS + CSS ล้วน** ไม่มี framework ไม่มี build step ไฟล์ชุดเดียวกัน byte ต่อ byte บนทุก stack, ภาษาไทยทั้งหมด, รองรับ dark mode ตามระบบ, ใช้ได้ตั้งแต่จอกว้าง 360px และผ่าน CSP `default-src 'self'; img-src 'self' data:`
 
@@ -45,7 +43,7 @@ mooban/
 │   ├── contract/        HTTP contract suite ชุดเดียว — รันกับทุก stack
 │   ├── e2e/             Playwright (มือถือ, desktop, dark, 360px)
 │   └── unit/            ฟังก์ชันบริสุทธิ์ฝั่งหน้าเว็บ
-├── tools/               make-test-images.py (สร้างรูปทดสอบ 9 แบบ)
+├── tools/               make-test-images.py (รูปทดสอบ 9 แบบ), sse-load.js (load test SSE)
 ├── design-handoff/      สเปค UI, design tokens, บอร์ดอ้างอิง
 └── docs/                แผนการ implement
 ```
@@ -113,8 +111,8 @@ e2e ครอบคลุมเกณฑ์รับงาน: ปุ่มก�
 | PHP (Apache + Nginx) | ✅ ผ่าน contract suite ครบ |
 | หน้าเว็บ (ฟีด, composer, ไลก์/คอมเมนต์, SSE, แกลเลอรี, lightbox, โปรไฟล์, `/test`) | ✅ ผ่าน e2e + acceptance ครบ |
 | Node + Express (รวม WebSocket) | ✅ ผ่าน contract suite ครบใน container |
-| Python + Flask (CRUD, รูป, SSE, เครื่องมือ, seed) | ✅ |
-| Python WebSocket | 🔄 กำลังพัฒนา |
+| Python + Flask (รวม WebSocket) | ✅ ผ่าน contract suite ครบใน container |
+| ทดสอบบน SWH จริง | ⏳ กรอกผลใน [RESULTS.md](RESULTS.md) |
 | `tools/sse-load.js`, `RESULTS.md`, `DEPLOY.md` | ✅ |
 
 ## หลักการที่ทุก stack ยึดเหมือนกัน
