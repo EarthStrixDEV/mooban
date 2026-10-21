@@ -10,6 +10,9 @@ import * as images from './src/routes/images.js';
 import * as media from './src/media.js';
 import * as ping from './src/routes/ping.js';
 import * as posts from './src/routes/posts.js';
+import * as stream from './src/routes/stream.js';
+import * as testRoutes from './src/routes/test.js';
+import * as tools from './src/routes/tools.js';
 import * as users from './src/routes/users.js';
 
 const app = express();
@@ -24,7 +27,10 @@ posts.register();
 likes.register();
 images.register();
 comments.register();
-app.all(/^\/api(\/|$)/, dispatch);
+tools.register();
+stream.register();
+testRoutes.register();
+app.all(/^\/(api|download|upload|cache)(\/|$)/, dispatch);
 
 app.use('/media', media.handler());
 spa.mount(app);

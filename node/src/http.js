@@ -162,16 +162,26 @@ function checkDepth(text) {
  * Anything but a JSON object (empty, malformed, array, scalar) is 400 invalid_json.
  */
 export async function readBody(req) {
+  return parseObject(await readRaw(req));
+}
+
+/** Raw request body (up to `limit` bytes, else 413 payload_too_large). */
+export async function readRaw(req, limit = BODY_LIMIT) {
   const chunks = [];
   let size = 0;
   for await (const chunk of req) {
     size += chunk.length;
-    if (size > BODY_LIMIT) throw new HttpError(413, 'payload_too_large');
+    if (size > limit) throw new HttpError(413, 'payload_too_large');
     chunks.push(chunk);
   }
+  return Buffer.concat(chunks);
+}
+
+/** Parse a raw body as a JSON object (anything else is 400 invalid_json). */
+export function parseObject(raw) {
   let obj;
   try {
-    const text = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(Buffer.concat(chunks));
+    const text = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true }).decode(raw);
     checkDepth(text);
     obj = JSON.parse(text, reviver);
   } catch {
