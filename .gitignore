@@ -6,3 +6,5 @@ php/config.php
 __pycache__/
 test-results/
 playwright-report/
+
+.dev-data/

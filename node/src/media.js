@@ -1,3 +1,4 @@
+import express from 'express';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { config } from './config.js';
@@ -30,4 +31,26 @@ export async function removeDir(key) {
 export async function removeTmpDir(key) {
   if (!KEY_RE.test(key)) return;
   await rm(path.join(config.MEDIA_DIR, `.tmp-${key}`));
+}
+
+/** Static handler for /media: immutable, nosniff, ETag/Last-Modified, no listing, no dotfiles (.tmp-* staging dirs). */
+export function handler() {
+  const files = express.static(config.MEDIA_DIR, {
+    index: false,
+    redirect: false,
+    dotfiles: 'deny',
+    maxAge: '365d',
+    immutable: true,
+    etag: true,
+    lastModified: true,
+    setHeaders(res) {
+      res.set('X-Content-Type-Options', 'nosniff');
+    },
+  });
+  return (req, res, next) => {
+    // fetch() adds "Cache-Control: no-cache" to conditional requests, and `fresh` then never answers 304.
+    // Revalidating is exactly what a conditional request does (and the files are immutable), so ignore it.
+    delete req.headers['cache-control'];
+    files(req, res, next);
+  };
 }

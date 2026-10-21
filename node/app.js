@@ -6,6 +6,8 @@ import { baseHeaders, dispatch, errorHandler } from './src/http.js';
 import * as spa from './src/spa.js';
 import * as comments from './src/routes/comments.js';
 import * as likes from './src/routes/likes.js';
+import * as images from './src/routes/images.js';
+import * as media from './src/media.js';
 import * as ping from './src/routes/ping.js';
 import * as posts from './src/routes/posts.js';
 import * as users from './src/routes/users.js';
@@ -20,9 +22,11 @@ ping.register();
 users.register();
 posts.register();
 likes.register();
+images.register();
 comments.register();
 app.all(/^\/api(\/|$)/, dispatch);
 
+app.use('/media', media.handler());
 spa.mount(app);
 app.use(errorHandler);
 

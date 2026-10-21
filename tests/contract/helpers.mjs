@@ -2,6 +2,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import path from 'node:path';
+import fsp from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import mysql from 'mysql2/promise';
 
@@ -89,7 +90,36 @@ export function fixture(name) {
   return path.join(root, 'tests', 'fixtures', name);
 }
 
+// Host fallback (MEDIA_DIR_HOST set): the app runs on the host, so ls/mkdir/rm on the media dir are
+// done with node:fs and print what `docker exec` would. MEDIA_DIR_IN_CONTAINER maps to MEDIA_DIR_HOST.
+async function mediaExecHost(args) {
+  const inContainer = (process.env.MEDIA_DIR_IN_CONTAINER ?? '').replace(/\/+$/, '');
+  const hostDir = process.env.MEDIA_DIR_HOST;
+  const [cmd, ...rest] = args;
+  const flags = rest.filter(a => a.startsWith('-'));
+  const target = rest.filter(a => !a.startsWith('-')).at(-1);
+  if (!target || !(target === inContainer || target.startsWith(inContainer + '/'))) {
+    throw new Error(`mediaExec host fallback: ${cmd} outside MEDIA_DIR_IN_CONTAINER: ${target}`);
+  }
+  const p = path.join(hostDir, target.slice(inContainer.length));
+  switch (cmd) {
+    case 'ls': {
+      const names = await fsp.readdir(p); // readdir omits . and .., like `ls -A`
+      return names.sort().map(n => n + '\n').join('');
+    }
+    case 'mkdir':
+      await fsp.mkdir(p, { recursive: flags.some(f => f.includes('p')) });
+      return '';
+    case 'rm':
+      await fsp.rm(p, { recursive: flags.some(f => /[rR]/.test(f)), force: flags.some(f => f.includes('f')) });
+      return '';
+    default:
+      throw new Error(`mediaExec host fallback does not support: ${cmd}`);
+  }
+}
+
 export async function mediaExec(args) {
+  if (process.env.MEDIA_DIR_HOST) return mediaExecHost(args);
   const service = process.env.SERVICE;
   if (!service) throw new Error('SERVICE env is required for mediaExec');
   const { stdout } = await execFileP('docker', [
