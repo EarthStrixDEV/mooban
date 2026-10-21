@@ -30,10 +30,10 @@ const randomNonce = () => {
 };
 
 export function mountRealtimeCard() {
-  const { root, body } = card('2. ความหน่วง Realtime (SSE)');
+  const start = button('วัด latency 10 ครั้ง', measure, { testid: 'test-sse-start' });
+  const { root, body } = card('2. ความหน่วง Realtime (SSE)', { aside: start });
   const status = pill('', 'connecting', { testid: 'test-sse-status' });
   const closedNote = h('p', { class: 'tcard__sub', hidden: true }, 'ยังไม่ได้เชื่อมต่อสตรีม');
-  const start = button('วัด latency 10 ครั้ง', measure, { testid: 'test-sse-start' });
   const progress = h('p', { class: 'tcard__sub', role: 'status', 'aria-live': 'polite' });
   const msg = note();
   const stats = h('div', { class: 'tresult', 'data-testid': 'test-sse-stats', hidden: true });
@@ -42,7 +42,7 @@ export function mountRealtimeCard() {
   const logEmpty = h('p', { class: 'tcard__sub' }, 'ยังไม่มีเหตุการณ์');
 
   body.append(
-    h('div', { class: 'trow' }, status.el, start),
+    status.el,
     closedNote, progress, msg.el, stats, chartHost,
     h('h3', { class: 'tcard__h3' }, 'บันทึกเหตุการณ์'), logEmpty, log);
 

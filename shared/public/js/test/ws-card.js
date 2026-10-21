@@ -14,8 +14,8 @@ const TEXT = {
 };
 
 export function mountWsCard() {
-  const { root, body } = card('3. WebSocket RTT');
   const status = pill(TEXT.idle, 'idle', { testid: 'test-ws-status' });
+  const { root, body } = card('3. WebSocket RTT', { aside: status.el });
   const connect = button('เชื่อมต่อ', onConnect, { testid: 'test-ws-connect' });
   const ping = button('ส่ง ping', onPing, { testid: 'test-ws-ping' });
   const disc = button('ตัดการเชื่อมต่อ', onDisconnect, { variant: 'outline', testid: 'test-ws-disconnect' });
@@ -23,7 +23,7 @@ export function mountWsCard() {
   const summary = h('p', { class: 'tcard__sub', role: 'status', 'aria-live': 'polite', 'data-testid': 'test-ws-rtt' });
   const msg = note();
   const chartHost = h('div', { class: 'tchart' });
-  body.append(status.el, controls, summary, msg.el, chartHost);
+  body.append(controls, summary, msg.el, chartHost);
 
   const ctrl = new AbortController();
   let ws = null;

@@ -7,12 +7,13 @@ import { commentsToggle, setCommentCount } from './comments.js';
 
 // Post card (DESIGN 4.4). Like/comment buttons (like-button.js, comments.js) live in .post__actions
 // with the thread section after it; the owner menu (ui/post-menu.js) is mounted into .post__menu-slot by applyOwnership.
-export function renderPostCard(post, { me = state.me, compact = false } = {}) {
+export function renderPostCard(post, { me = state.me, compact = false, bare = false } = {}) {
   const { author, image } = post;
   const nameId = `p${post.id}-name`;
 
-  // Compact (profile on mobile): the author is already known, so just time -> body -> counts, no buttons.
-  const head = compact
+  // On a profile the author is already known, so the header is just the time.
+  // Compact (mobile) also swaps the buttons for a counts line; bare (desktop) keeps the full buttons.
+  const head = compact || bare
     ? h('header', { class: 'post__head' },
       h('div', { class: 'post__who' },
         h('p', { id: nameId, class: 'sr-only' }, author.display_name),
@@ -31,7 +32,7 @@ export function renderPostCard(post, { me = state.me, compact = false } = {}) {
       h('div', { class: 'post__menu-slot' }));
 
   const el = h('article', {
-    class: `post${compact ? ' post--compact' : ''}`,
+    class: `post${compact ? ' post--compact' : ''}${bare ? ' post--bare' : ''}`,
     'data-testid': 'post-card',
     'data-author': author.handle,
     'data-id': post.id,

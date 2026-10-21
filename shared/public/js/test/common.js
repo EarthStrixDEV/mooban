@@ -22,13 +22,14 @@ export const fmt0 = (n) => (Number.isFinite(n) ? String(Math.round(n)) : '—');
 
 let cardSeq = 0;
 
-/** Numbered card: <section> with an h2. Returns {root, body}. */
-export function card(title, { span, testid } = {}) {
+/** Numbered card: <section> with an h2 (and an optional element beside it, as on the boards). Returns {root, body}. */
+export function card(title, { span, testid, aside } = {}) {
   const id = `tcard-${++cardSeq}`;
   const body = h('div', { class: 'tcard__body' });
+  const heading = h('h2', { id, class: 'tcard__title' }, title);
   const root = h('section', {
     class: `card tcard${span ? ` tcard--${span}` : ''}`, 'aria-labelledby': id, 'data-testid': testid,
-  }, h('h2', { id, class: 'tcard__title' }, title), body);
+  }, aside ? h('div', { class: 'tcard__head' }, heading, aside) : heading, body);
   return { root, body };
 }
 

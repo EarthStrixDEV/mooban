@@ -203,6 +203,7 @@ body[data-route="profile"] .topbar__back,
 body[data-route="test"] .topbar__back { display: flex; }
 body[data-route="profile"] .topbar .wordmark,
 body[data-route="test"] .topbar .wordmark { display: none; }
+body[data-route="gallery"] .topbar { display: none; } /* Mooban-Gallery: the page h1 is the top line */
 
 main {
   grid-area: main;
@@ -321,6 +322,8 @@ body[data-route="test"] .bottomnav { display: none; }
     border-right: 1px solid var(--line);
   }
   body[data-route="test"] main { padding: var(--s-8) 40px; }
+  body[data-route="test"] .sidenav__post { display: none; } /* Mooban-Desktop-Test has no post button */
+  .composer.card .composer__bar { margin-left: calc(44px + var(--s-3)); } /* bar aligns with the text column */
 }
 
 /* ---------- layout: >= 1100 (adds right rail) ---------- */
@@ -401,7 +404,7 @@ body.scroll-locked { overflow: hidden; }
   border: 0;
   border-radius: var(--r-pill);
   background: var(--brandsoft);
-  color: var(--brand-strong);
+  color: var(--ink);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -541,6 +544,9 @@ main > h1 { margin-bottom: var(--s-4); }
   background: var(--card);
 }
 .post__head { display: flex; align-items: center; gap: var(--s-3); }
+/* Profile cards (time-only header): the ⋯ button overlaps the head row so it doesn't push the body down */
+.post--compact .post__head, .post--bare .post__head { min-height: 22px; }
+.post--compact .post__head .post__menu-slot, .post--bare .post__head .post__menu-slot { margin-top: -11px; margin-bottom: -11px; }
 .post__who { flex: 1; min-width: 0; }
 .post__name { font-size: 16px; font-weight: 600; }
 .post__name a {
@@ -1395,7 +1401,7 @@ body[data-route="profile"] .rail { padding-top: var(--s-6); }
   .profile__stats { display: flex; gap: var(--s-6); margin: var(--s-3) var(--s-5) 0; }
   .profile__stat { display: flex; flex-direction: row-reverse; justify-content: flex-end; align-items: baseline; gap: 6px; padding: 0; border: 0; border-radius: 0; background: none; text-align: left; }
   .profile__stat dd { font-size: 16px; }
-  .tab { flex: none; min-height: 52px; padding: 0 var(--s-6); }
+  .tab { min-height: 52px; padding: 0 var(--s-6); }
   .tab__n { display: inline; }
   .profile-photos .list__items, .profile-ph { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
@@ -1410,6 +1416,9 @@ body[data-route="profile"] .rail { padding-top: var(--s-6); }
 .test__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--s-3); align-items: start; padding-top: var(--s-2); }
 .test__grid > .card { margin-top: 0; min-width: 0; }
 .tcard__title { font-size: 16px; }
+.tcard__head { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); }
+.tcard__head .tcard__title { min-width: 0; }
+.tcard__head > :last-child { flex: none; }
 .tcard__h3 { margin-top: var(--s-4); font-size: 14px; font-weight: 600; color: var(--sub); }
 .tcard__sub { margin-top: var(--s-2); color: var(--sub); font-size: 14px; line-height: 1.6; }
 .tcard__body > * + * { margin-top: var(--s-3); }
@@ -1420,6 +1429,7 @@ body[data-route="profile"] .rail { padding-top: var(--s-6); }
   .test__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s-5); padding-top: 0; }
   .test__grid > .tcard { padding: var(--s-6); }
   .tcard__title { font-size: 18px; }
+  [data-testid="test-sse-stats"] .ttiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } /* board: 4 tiles in one row */
   .tcard--rows { grid-row: span 2; }
   .tcard--full { grid-column: 1 / -1; }
 }

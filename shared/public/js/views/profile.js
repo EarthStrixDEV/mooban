@@ -154,7 +154,7 @@ export async function mount(main, rail, params) {
       container: postsPanel,
       emptyText: 'ยังไม่มีโพสต์',
       idOf: (post) => post.id,
-      render: (post) => renderPostCard(post, { me: state.me, compact }),
+      render: (post) => renderPostCard(post, { me: state.me, compact, bare: !compact }),
       async load(cursor) {
         const q = new URLSearchParams({ user: user.handle, limit: String(POST_PAGE) });
         if (cursor !== null) q.set('before', cursor);
