@@ -95,6 +95,8 @@ e2e ครอบคลุมเกณฑ์รับงาน: ปุ่มก�
 
 ## Deploy บน DirectAdmin (สรุป)
 
+คู่มือเต็ม: [DEPLOY.md](DEPLOY.md) · แบบฟอร์มและผลทดสอบ: [RESULTS.md](RESULTS.md)
+
 1. สร้างโดเมนย่อย `apache`, `nginx`, `node`, `python` พร้อม SSL
 2. สร้าง MySQL database แยกต่อ stack แล้วรัน `shared/schema.sql`
 3. คัดลอก `shared/public/*` ไปไว้ใน document root ของแต่ละ stack
@@ -113,7 +115,7 @@ e2e ครอบคลุมเกณฑ์รับงาน: ปุ่มก�
 | Node + Express (รวม WebSocket) | ✅ ผ่าน contract suite ครบใน container |
 | Python + Flask (CRUD, รูป, SSE, เครื่องมือ, seed) | ✅ |
 | Python WebSocket | 🔄 กำลังพัฒนา |
-| `tools/sse-load.js`, `RESULTS.md`, คู่มือ deploy ฉบับเต็ม | ⏳ |
+| `tools/sse-load.js`, `RESULTS.md`, `DEPLOY.md` | ✅ |
 
 ## หลักการที่ทุก stack ยึดเหมือนกัน
 
