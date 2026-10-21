@@ -4,7 +4,7 @@ import re
 import time
 from urllib.parse import parse_qsl, quote
 
-from flask import Response, g, request
+from flask import Response, current_app, g, request
 from werkzeug.exceptions import HTTPException
 
 from . import config
@@ -110,15 +110,15 @@ def int_param(query, name):
     if name not in query:
         return None
     v = query[name]
-    if not isinstance(v, str) or _ID_RE.match(v) is None or int(v) > INT64_MAX:
+    if not isinstance(v, str) or _ID_RE.match(v) is None or len(v) > 19 or int(v) > INT64_MAX:
         raise HttpError(400, 'bad_params')
     return int(v)
 
 
 def parse_id(raw):
     """Numeric path id (Ruling R7: ^[1-9][0-9]*$ and fits int64), else None."""
-    if _ID_RE.match(raw) is None or int(raw) > INT64_MAX:
-        return None
+    if _ID_RE.match(raw) is None or len(raw) > 19 or int(raw) > INT64_MAX:
+        return None  # length first: int() on thousands of digits raises ValueError
     return int(raw)
 
 
@@ -210,9 +210,7 @@ def read_body():
     return parse_object(read_raw())
 
 
-# ---- route table ---------------------------------------------------------------------------
-
-_routes = []
+# ---- route table (kept on the app, so a second create_app() starts empty) -----------------
 
 
 def route(method, pattern, handler):
@@ -221,13 +219,13 @@ def route(method, pattern, handler):
     The handler gets a dict of the named groups and returns a Response (None -> 204).
     """
     src = re.sub(r'\{(\w+)(?::([^}]+))?\}', lambda m: f'(?P<{m.group(1)}>{m.group(2) or "[^/]+"})', pattern)
-    _routes.append((method.upper(), re.compile(src), handler))
+    current_app.extensions['mb_routes'].append((method.upper(), re.compile(src), handler))
 
 
 def dispatch(path):
     """First route whose path and method match, else 405 / 404 (PHP Router::dispatch)."""
     path_matched = False
-    for method, regex, handler in _routes:
+    for method, regex, handler in current_app.extensions['mb_routes']:
         m = regex.fullmatch(path)
         if m is None:
             continue
@@ -281,6 +279,7 @@ def _unexpected(err):
 
 
 def init_app(app):
+    app.extensions['mb_routes'] = []
     app.before_request(_before_request)
     app.after_request(_after_request)
     app.register_error_handler(HttpError, _http_error)

@@ -17,11 +17,12 @@ def create_app():
     app.teardown_appcontext(db.close)
     http.init_app(app)
 
-    ping.register()
-    users.register()
-    posts.register()
-    likes.register()
-    comments.register()
+    with app.app_context():  # route() stores the table on the app
+        ping.register()
+        users.register()
+        posts.register()
+        likes.register()
+        comments.register()
     # later tasks register images, tools, stream, test routes, /media and /ws here
 
     spa.init_app(app)

@@ -137,7 +137,8 @@ test('list: newest first, limit, next_before, filters, bad params', async () => 
   assert.equal(exact.json.data.length, 3);
   assert.equal(exact.json.next_before, null);
 
-  for (const q of ['limit=0', 'limit=51', 'before=abc', 'limit=-1', 'before=0', 'limit=1.5']) {
+  for (const q of ['limit=0', 'limit=51', 'before=abc', 'limit=-1', 'before=0', 'limit=1.5',
+    `limit=${'9'.repeat(25)}`, `before=${'1'.repeat(25)}`]) {
     const bad = await api('GET', `/api/posts?${q}`);
     assert.equal(bad.status, 400, q);
     assert.equal(bad.json.error, 'bad_params');
@@ -149,6 +150,14 @@ test('list: newest first, limit, next_before, filters, bad params', async () => 
   const dflt = await api('GET', '/api/posts');
   assert.equal(dflt.status, 200);
   assert.ok(dflt.json.data.length <= 20);
+});
+
+test('path id longer than int64 is 404, not a server error', async () => {
+  const r = await api('GET', `/api/posts/${'1'.repeat(25)}`);
+  assert.equal(r.status, 404);
+  assert.equal(r.json.error, 'not_found');
+  const big = await api('GET', `/api/posts/${'1'.repeat(4000)}`);
+  assert.equal(big.status, 404);
 });
 
 test('liked_by_me reflects likes only when a token is sent', async () => {

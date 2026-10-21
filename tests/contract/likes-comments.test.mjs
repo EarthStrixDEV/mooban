@@ -178,7 +178,8 @@ test('comments list: oldest first, limit, after, bad params', async () => {
   assert.equal(dflt.status, 200);
   assert.equal(dflt.json.data.length, 3);
 
-  for (const q of ['limit=0', 'limit=51', 'after=abc', 'limit=-1', 'after=0', 'limit=1.5']) {
+  for (const q of ['limit=0', 'limit=51', 'after=abc', 'limit=-1', 'after=0', 'limit=1.5',
+    `after=${'1'.repeat(25)}`]) {
     const bad = await api('GET', `/api/posts/${p.id}/comments?${q}`);
     assert.equal(bad.status, 400, q);
     assert.equal(bad.json.error, 'bad_params');
