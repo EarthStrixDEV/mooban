@@ -1,6 +1,6 @@
 import { test, before } from 'node:test';
 import assert from 'node:assert/strict';
-import { api, db, createUser, resetRateLimits, TEST_TOKEN } from './helpers.mjs';
+import { api, db, createUser, resetRateLimits, TEST_TOKEN, STACK } from './helpers.mjs';
 import { openStream } from './sse.mjs';
 
 const T = { 'X-Test-Token': TEST_TOKEN };
@@ -192,7 +192,9 @@ test('R7 11th stream gets 429 rate_limited; reopen succeeds after closing one', 
   }
 });
 
-test('R7b streams aborted while the server is still opening them do not keep their slot', async () => {
+// PHP only notices a gone client on a failed write (pings every 15 s), so its slots free up in ~60 s (Ruling R13a);
+// fast slot release is a Node/Python property.
+test('R7b streams aborted while the server is still opening them do not keep their slot', { skip: !['node', 'python'].includes(STACK) }, async () => {
   await cleanStreams();
   const { BASE } = await import('./helpers.mjs');
   await Promise.all(Array.from({ length: 12 }, async () => {
