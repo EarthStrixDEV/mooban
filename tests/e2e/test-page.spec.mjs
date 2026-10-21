@@ -246,3 +246,16 @@ test('leaving the page mid-measurement stops cleanly (no errors, no late toast)'
   await page.waitForTimeout(1500);
   await expect(page.getByTestId('toast')).toHaveCount(0);
 });
+
+// Node/Python only: the WebSocket card connects and reports RTT. Run with E2E_STACK=node|python.
+test('websocket card connects and shows RTT after pings (node/python)', async ({ page }) => {
+  test.skip(!['node', 'python'].includes(process.env.E2E_STACK ?? ''), 'needs a stack with WebSocket');
+  await open(page);
+  const status = tid(page, 'test-ws-status');
+  await tid(page, 'test-ws-connect').click();
+  await expect(status).toHaveText('เชื่อมต่อแล้ว');
+  await tid(page, 'test-ws-ping').click();
+  await expect(tid(page, 'test-ws-rtt')).toContainText(/RTT ล่าสุด \d+ ms · เฉลี่ย \d+ ms จาก 20 ครั้ง/, { timeout: 15_000 });
+  await tid(page, 'test-ws-disconnect').click();
+  await expect(status).toHaveText('ยังไม่เชื่อมต่อ');
+});

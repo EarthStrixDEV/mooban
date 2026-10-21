@@ -14,6 +14,7 @@ import * as stream from './src/routes/stream.js';
 import * as testRoutes from './src/routes/test.js';
 import * as tools from './src/routes/tools.js';
 import * as users from './src/routes/users.js';
+import { attachWs } from './src/ws.js';
 
 const app = express();
 app.disable('x-powered-by');
@@ -37,6 +38,7 @@ spa.mount(app);
 app.use(errorHandler);
 
 const server = http.createServer(app);
+attachWs(server);
 server.listen(config.PORT, () => {
   console.log(`mooban (${config.APP_STACK}) listening on :${config.PORT}`);
 });
