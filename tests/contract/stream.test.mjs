@@ -192,6 +192,28 @@ test('R7 11th stream gets 429 rate_limited; reopen succeeds after closing one', 
   }
 });
 
+test('R7b streams aborted while the server is still opening them do not keep their slot', async () => {
+  await cleanStreams();
+  const { BASE } = await import('./helpers.mjs');
+  await Promise.all(Array.from({ length: 12 }, async () => {
+    const ac = new AbortController();
+    const p = fetch(BASE + '/api/stream', { signal: ac.signal }).catch(() => {});
+    await sleep(1 + Math.floor(Math.random() * 4));
+    ac.abort();
+    await p;
+  }));
+  const t0 = Date.now();
+  let s;
+  for (;;) {
+    s = await openStream('/api/stream');
+    if (s.status === 200 || Date.now() - t0 > 5000) break;
+    await sleep(200);
+  }
+  try {
+    assert.equal(s.status, 200, `still ${s.status} after ${Date.now() - t0} ms`);
+  } finally { s.close(); }
+});
+
 test('R8 5 users x 20 concurrent posts: stream records 100 post.created, ids increasing', async () => {
   await resetRateLimits();
   await cleanStreams();

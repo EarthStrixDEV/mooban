@@ -19,6 +19,23 @@ function givenId(req) {
 async function handle(req, res) {
   const ip = clientIp(req);
 
+  // Registered before the first await: a client that leaves during the slot queries is noticed.
+  // res 'close' = the client left (or the response finished); req 'close' fires as soon as a bodiless GET is read.
+  let client = null;
+  let gone = false;
+  let rowId = null;
+  let released = false;
+  const release = () => {
+    if (released || rowId === null) return;
+    released = true;
+    pool.execute('DELETE FROM streams WHERE id = ?', [rowId]).catch(() => {}); // the 70 s expiry reclaims the slot
+  };
+  res.once('close', () => {
+    gone = true;
+    if (client !== null) sse.close(client);
+    else release();
+  });
+
   // 1. Over-limit check BEFORE any SSE header, so 429 is a normal JSON response.
   await pool.execute('DELETE FROM streams WHERE expires_at <= UTC_TIMESTAMP()');
   const [[cnt]] = await pool.execute(
@@ -34,27 +51,19 @@ async function handle(req, res) {
     `INSERT INTO streams (ip, expires_at) VALUES (?, UTC_TIMESTAMP() + INTERVAL ${ROW_TTL_SECONDS} SECOND)`,
     [ip],
   );
-  const rowId = Number(ins.insertId);
-  let released = false;
-  const release = () => {
-    if (released) return;
-    released = true;
-    pool.execute('DELETE FROM streams WHERE id = ?', [rowId]).catch(() => {}); // the 70 s expiry reclaims the slot
-  };
-
-  let client = null;
-  let gone = false;
-  // res 'close' = the client left (or the response finished); req 'close' fires as soon as a bodiless GET is read.
-  res.once('close', () => {
-    gone = true;
-    if (client !== null) sse.close(client);
-    else release();
-  });
+  rowId = Number(ins.insertId);
+  if (gone) { // the close event ran before the row existed
+    release();
+    return;
+  }
 
   try {
     // 3. Resolve the start point before the headers, so a client that sees them can emit and not miss it.
     const start = await sse.startPoint(givenId(req));
-    if (gone) return;
+    if (gone || res.destroyed) {
+      release();
+      return;
+    }
 
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');

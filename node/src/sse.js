@@ -38,7 +38,10 @@ function write(client, text) {
   if (client.closed) return;
   client.lastWrite = Date.now();
   client.res.write(text);
-  if (client.res.writableLength > MAX_BUFFERED_BYTES) close(client);
+  if (client.res.writableLength > MAX_BUFFERED_BYTES) {
+    client.dropped = true;
+    close(client);
+  }
 }
 
 /** Deliver rows newer than the client's cursor, in order. */
@@ -126,7 +129,8 @@ function close(client) {
   if (client.closed) return;
   release(client);
   client.pending = [];
-  if (!client.res.writableEnded) client.res.end();
+  if (client.dropped) client.res.destroy(); // slow reader: free the socket and its buffer now
+  else if (!client.res.writableEnded) client.res.end();
   client.onClose();
 }
 
